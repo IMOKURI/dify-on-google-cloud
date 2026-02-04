@@ -1,5 +1,7 @@
 # Dify on Google Cloud - Terraform Deployment
 
+**Work in progress...**
+
 このTerraformコードは、Google Cloud Platform (GCP)上にDifyをデプロイします。
 
 Difyコミュニティ版を利用し、以下の点を重視しています。
@@ -7,7 +9,6 @@ Difyコミュニティ版を利用し、以下の点を重視しています。
 - Difyコミュニティ版のアップグレードに追従する。
 - Difyコミュニティ版のコードをなるべく改変しない。
 - データベース、ファイルストレージはマネージドサービスを利用する。
-
 
 ## 📁 プロジェクト構成
 

@@ -60,6 +60,11 @@ sed -i "s|^STORAGE_TYPE=.*|STORAGE_TYPE=google-storage|" .env
 sed -i "s|^GOOGLE_STORAGE_BUCKET_NAME=.*|GOOGLE_STORAGE_BUCKET_NAME=${gcs_bucket_name}|" .env
 sed -i "s|^GOOGLE_STORAGE_SERVICE_ACCOUNT_JSON_BASE64=.*|GOOGLE_STORAGE_SERVICE_ACCOUNT_JSON_BASE64=${google_storage_service_account_json_base64}|" .env
 
+# https://github.com/langgenius/dify/pull/31920
+#sed -i "s|^PLUGIN_STORAGE_TYPE=.*|PLUGIN_STORAGE_TYPE=google-storage|" .env
+#sed -i "s|^PLUGIN_STORAGE_OSS_BUCKET=.*|PLUGIN_STORAGE_OSS_BUCKET=${gcs_bucket_name}|" .env
+#sed -i "s|^PLUGIN_GCS_CREDENTIALS=.*|PLUGIN_GCS_CREDENTIALS=${google_storage_service_account_json_base64}|" .env
+
 # Disable Default DB
 sed -i "s|^COMPOSE_PROFILES=.*|COMPOSE_PROFILES=|" .env
 
@@ -70,7 +75,7 @@ sudo -u ubuntu docker-compose up -d
 apt-get install -y nginx
 
 # Configure Nginx as reverse proxy
-cat > /etc/nginx/sites-available/dify << 'EOF'
+cat >/etc/nginx/sites-available/dify <<'EOF'
 server {
     listen 1080;
     server_name _;
@@ -108,4 +113,4 @@ nginx -t
 systemctl enable nginx
 systemctl restart nginx
 
-echo "Setup completed successfully!" > /var/log/startup-script.log
+echo "Setup completed successfully!" >/var/log/startup-script.log
