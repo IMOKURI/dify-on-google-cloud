@@ -5,7 +5,7 @@
 variable "redis_tier" {
   description = "Redis service tier (BASIC for standalone, STANDARD_HA for high availability)"
   type        = string
-  default     = "STANDARD_HA"
+  default     = "BASIC"
 
   validation {
     condition     = contains(["BASIC", "STANDARD_HA"], var.redis_tier)
@@ -77,7 +77,7 @@ variable "redis_persistence_mode" {
 variable "redis_rdb_snapshot_period" {
   description = "Snapshot period for RDB persistence (ONE_HOUR, SIX_HOURS, TWELVE_HOURS, TWENTY_FOUR_HOURS)"
   type        = string
-  default     = "TWELVE_HOURS"
+  default     = "TWENTY_FOUR_HOURS"
 
   validation {
     condition     = contains(["ONE_HOUR", "SIX_HOURS", "TWELVE_HOURS", "TWENTY_FOUR_HOURS"], var.redis_rdb_snapshot_period)
