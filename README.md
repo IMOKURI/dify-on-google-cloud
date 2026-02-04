@@ -176,103 +176,6 @@ Terraform適用時に、Difyのソースコード（指定されたバージョ�
 dify_version = "1.12.0"  # 任意のバージョンタグを指定
 ```
 
-## オートスケーリングの設定
-
-このTerraform構成には、トラフィックに応じて自動的にVMインスタンスを増減するオートスケーリング機能が含まれています。
-
-### 基本設定
-
-```hcl
-# オートスケーリングを有効化
-autoscaling_enabled = true
-
-# 最小インスタンス数（常に実行される数）
-autoscaling_min_replicas = 2
-
-# 最大インスタンス数（ピーク時の上限）
-autoscaling_max_replicas = 10
-
-# CPU使用率の目標値（0.0-1.0）
-# 平均CPU使用率がこの値を超えるとスケールアウト
-autoscaling_cpu_target = 0.7  # 70%
-```
-
-### 高度な設定
-
-```hcl
-# スケーリングイベント間のクールダウン期間（秒）
-autoscaling_cooldown_period = 60
-
-# 一度のスケールイン時に削除する最大インスタンス数
-autoscaling_scale_in_max_replicas = 3
-
-# スケールイン判断に使用する時間枠（秒）
-autoscaling_scale_in_time_window = 120
-```
-
-### カスタムメトリクスによるスケーリング（オプション）
-
-CPU使用率だけでなく、カスタムメトリクスでもスケーリングできます:
-
-```hcl
-autoscaling_custom_metrics = [
-  {
-    name   = "custom.googleapis.com/request_queue_depth"
-    target = 100
-    type   = "GAUGE"
-  },
-  {
-    name   = "custom.googleapis.com/active_connections"
-    target = 1000
-    type   = "GAUGE"
-  }
-]
-```
-
-### オートスケーリングの無効化
-
-固定数のインスタンスで実行する場合:
-
-```hcl
-autoscaling_enabled = false
-autoscaling_min_replicas = 3  # 常に3インスタンスで実行
-```
-
-### インスタンスの確認
-
-```bash
-# Managed Instance Groupの状態を確認
-gcloud compute instance-groups managed describe dify-mig \
-  --region asia-northeast1 \
-  --project your-project-id
-
-# インスタンスの一覧を表示
-gcloud compute instance-groups managed list-instances dify-mig \
-  --region asia-northeast1 \
-  --project your-project-id
-
-# Autoscalerの詳細を確認
-gcloud compute instance-groups managed describe-instance dify-mig \
-  --region asia-northeast1 \
-  --project your-project-id
-```
-
-### スケーリングのベストプラクティス
-
-1. **最小レプリカ数**: 高可用性のため、最低2以上を推奨
-2. **CPU目標値**: 0.6-0.8 (60-80%) が一般的。余裕を持たせることで急激なトラフィック増加に対応
-3. **クールダウン期間**: スケールアウト後の安定化に必要な時間を設定
-4. **スケールイン制限**: 急激なトラフィック減少時に過度なスケールインを防ぐ
-
-## 高可用性構成
-
-### Cloud SQLの高可用性
-
-```hcl
-# main.tfの google_sql_database_instance リソースで
-availability_type = "REGIONAL"  # ZONALからREGIONALに変更
-```
-
 ## トラブルシューティング
 
 ### SSL証明書のプロビジョニング確認
@@ -290,30 +193,6 @@ gcloud compute ssl-certificates describe dify-ssl-cert --global
    ```hcl
    ssh_source_ranges = ["203.0.113.0/24"]
    ```
-
-3. **強力なパスワード**: 自動生成を使用するか、強力なパスワードを設定
-
-5. **バックアップ**: 定期的なバックアップを有効化
-
-   ```hcl
-   cloudsql_backup_enabled = true
-   pgvector_backup_enabled = true
-   ```
-
-6. **監査ログ**: Cloud Auditログを有効化
-   ```hcl
-   cloudsql.enable_pgaudit = "on"
-   ```
-
-## モニタリング
-
-### Cloud Monitoringでの確認項目
-
-- **Database connections**: 接続数の監視
-- **CPU utilization**: CPUの使用率
-- **Memory utilization**: メモリの使用率
-- **Disk utilization**: ディスクの使用率
-- **Replication lag**: レプリカの遅延（リードレプリカ使用時）
 
 ## リソースの削除
 
