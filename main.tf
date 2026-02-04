@@ -109,6 +109,7 @@ module "cloudsql" {
   cloudsql_tier              = var.cloudsql_tier
   cloudsql_disk_size         = var.cloudsql_disk_size
   cloudsql_database_version  = var.cloudsql_database_version
+  cloudsql_availability_type = var.cloudsql_availability_type
   cloudsql_backup_enabled    = var.cloudsql_backup_enabled
   cloudsql_backup_start_time = var.cloudsql_backup_start_time
   db_name                    = var.db_name
@@ -116,26 +117,15 @@ module "cloudsql" {
   db_password                = var.db_password
 
   # pgvector instance configuration
-  pgvector_database_version        = var.pgvector_database_version
-  pgvector_tier                    = var.pgvector_tier
-  pgvector_disk_size               = var.pgvector_disk_size
-  pgvector_availability_type       = var.pgvector_availability_type
-  pgvector_deletion_protection     = var.pgvector_deletion_protection
-  pgvector_backup_enabled          = var.pgvector_backup_enabled
-  pgvector_backup_start_time       = var.pgvector_backup_start_time
-  pgvector_backup_retention_count  = var.pgvector_backup_retention_count
-  pgvector_db_name                 = var.pgvector_db_name
-  pgvector_db_user                 = var.pgvector_db_user
-  pgvector_db_password             = var.pgvector_db_password
-  pgvector_enable_public_ip        = var.pgvector_enable_public_ip
-  pgvector_authorized_networks     = var.pgvector_authorized_networks
-  pgvector_max_connections         = var.pgvector_max_connections
-  pgvector_query_insights_enabled  = var.pgvector_query_insights_enabled
-  pgvector_maintenance_window_day  = var.pgvector_maintenance_window_day
-  pgvector_maintenance_window_hour = var.pgvector_maintenance_window_hour
-  pgvector_enable_read_replica     = var.pgvector_enable_read_replica
-  pgvector_replica_region          = var.pgvector_replica_region
-  pgvector_replica_tier            = var.pgvector_replica_tier
+  pgvector_database_version  = var.pgvector_database_version
+  pgvector_tier              = var.pgvector_tier
+  pgvector_disk_size         = var.pgvector_disk_size
+  pgvector_availability_type = var.pgvector_availability_type
+  pgvector_backup_enabled    = var.pgvector_backup_enabled
+  pgvector_backup_start_time = var.pgvector_backup_start_time
+  pgvector_db_name           = var.pgvector_db_name
+  pgvector_db_user           = var.pgvector_db_user
+  pgvector_db_password       = var.pgvector_db_password
 }
 
 # =============================================================================

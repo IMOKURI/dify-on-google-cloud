@@ -273,14 +273,6 @@ gcloud compute instance-groups managed describe-instance dify-mig \
 availability_type = "REGIONAL"  # ZONALからREGIONALに変更
 ```
 
-### pgvectorのリードレプリカ
-
-```hcl
-pgvector_enable_read_replica = true
-pgvector_replica_region = "us-central1"  # オプション: 別リージョン
-pgvector_replica_tier = "db-custom-2-8192"  # オプション: 小さいマシンタイプ
-```
-
 ## トラブルシューティング
 
 ### SSL証明書のプロビジョニング確認
@@ -299,20 +291,7 @@ gcloud compute ssl-certificates describe dify-ssl-cert --global
    ssh_source_ranges = ["203.0.113.0/24"]
    ```
 
-2. **プライベートIP接続**: Cloud SQLはプライベートIPのみを使用
-
-   ```hcl
-   pgvector_enable_public_ip = false
-   ```
-
 3. **強力なパスワード**: 自動生成を使用するか、強力なパスワードを設定
-
-4. **削除保護**: 本番環境では有効化
-
-   ```hcl
-   deletion_protection = true
-   pgvector_deletion_protection = true
-   ```
 
 5. **バックアップ**: 定期的なバックアップを有効化
 
@@ -336,26 +315,13 @@ gcloud compute ssl-certificates describe dify-ssl-cert --global
 - **Disk utilization**: ディスクの使用率
 - **Replication lag**: レプリカの遅延（リードレプリカ使用時）
 
-### Query Insightsの活用
-
-```bash
-# GCPコンソールで確認
-# Cloud SQL > [インスタンス名] > Query Insights
-```
-
-Query Insightsを有効化:
-
-```hcl
-pgvector_query_insights_enabled = true
-```
-
 ## リソースの削除
 
 ```bash
-# 削除保護を無効化
-# terraform.tfvars または main.tf で deletion_protection = false に設定
+# すべてのリソースを削除
+terraform destroy
 
-terraform apply
+# 削除保護のついたリソースでエラーになるので、コンソールから削除する
 
 # すべてのリソースを削除
 terraform destroy

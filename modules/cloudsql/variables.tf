@@ -34,6 +34,11 @@ variable "cloudsql_database_version" {
   type        = string
 }
 
+variable "cloudsql_availability_type" {
+  description = "Availability type for Cloud SQL"
+  type        = string
+}
+
 variable "cloudsql_backup_enabled" {
   description = "Enable automated backups"
   type        = bool
@@ -82,11 +87,6 @@ variable "pgvector_availability_type" {
   type        = string
 }
 
-variable "pgvector_deletion_protection" {
-  description = "Enable deletion protection for pgvector instance"
-  type        = bool
-}
-
 variable "pgvector_backup_enabled" {
   description = "Enable automated backups for pgvector instance"
   type        = bool
@@ -95,11 +95,6 @@ variable "pgvector_backup_enabled" {
 variable "pgvector_backup_start_time" {
   description = "Backup start time for pgvector instance"
   type        = string
-}
-
-variable "pgvector_backup_retention_count" {
-  description = "Number of backups to retain for pgvector instance"
-  type        = number
 }
 
 variable "pgvector_db_name" {
@@ -117,52 +112,4 @@ variable "pgvector_db_password" {
   type        = string
   default     = ""
   sensitive   = true
-}
-
-variable "pgvector_enable_public_ip" {
-  description = "Enable public IP for pgvector instance"
-  type        = bool
-}
-
-variable "pgvector_authorized_networks" {
-  description = "Authorized networks for pgvector instance"
-  type = list(object({
-    name = string
-    cidr = string
-  }))
-}
-
-variable "pgvector_max_connections" {
-  description = "Maximum number of connections for pgvector instance"
-  type        = string
-}
-
-variable "pgvector_query_insights_enabled" {
-  description = "Enable Query Insights for pgvector instance"
-  type        = bool
-}
-
-variable "pgvector_maintenance_window_day" {
-  description = "Maintenance window day"
-  type        = number
-}
-
-variable "pgvector_maintenance_window_hour" {
-  description = "Maintenance window hour"
-  type        = number
-}
-
-variable "pgvector_enable_read_replica" {
-  description = "Enable read replica for pgvector instance"
-  type        = bool
-}
-
-variable "pgvector_replica_region" {
-  description = "Region for read replica"
-  type        = string
-}
-
-variable "pgvector_replica_tier" {
-  description = "Machine type for read replica"
-  type        = string
 }

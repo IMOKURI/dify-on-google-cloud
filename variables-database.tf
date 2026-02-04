@@ -30,6 +30,17 @@ variable "cloudsql_database_version" {
   }
 }
 
+variable "cloudsql_availability_type" {
+  description = "Availability type for Cloud SQL instance (ZONAL or REGIONAL)"
+  type        = string
+  default     = "ZONAL"
+
+  validation {
+    condition     = contains(["ZONAL", "REGIONAL"], var.cloudsql_availability_type)
+    error_message = "Availability type must be either ZONAL or REGIONAL."
+  }
+}
+
 variable "cloudsql_backup_enabled" {
   description = "Enable automated backups"
   type        = bool
@@ -108,12 +119,6 @@ variable "pgvector_availability_type" {
   }
 }
 
-variable "pgvector_deletion_protection" {
-  description = "Enable deletion protection for pgvector instance"
-  type        = bool
-  default     = true
-}
-
 variable "pgvector_backup_enabled" {
   description = "Enable automated backups for pgvector instance"
   type        = bool
@@ -128,17 +133,6 @@ variable "pgvector_backup_start_time" {
   validation {
     condition     = can(regex("^([01][0-9]|2[0-3]):[0-5][0-9]$", var.pgvector_backup_start_time))
     error_message = "Backup start time must be in HH:MM format (e.g., 04:00)."
-  }
-}
-
-variable "pgvector_backup_retention_count" {
-  description = "Number of backups to retain for pgvector instance"
-  type        = number
-  default     = 7
-
-  validation {
-    condition     = var.pgvector_backup_retention_count >= 1 && var.pgvector_backup_retention_count <= 365
-    error_message = "Backup retention count must be between 1 and 365."
   }
 }
 
@@ -159,71 +153,4 @@ variable "pgvector_db_password" {
   type        = string
   default     = ""
   sensitive   = true
-}
-
-variable "pgvector_enable_public_ip" {
-  description = "Enable public IP for pgvector instance (not recommended for production)"
-  type        = bool
-  default     = false
-}
-
-variable "pgvector_authorized_networks" {
-  description = "Authorized networks for pgvector instance (only used if public IP is enabled)"
-  type = list(object({
-    name = string
-    cidr = string
-  }))
-  default = []
-}
-
-variable "pgvector_max_connections" {
-  description = "Maximum number of connections for pgvector instance"
-  type        = string
-  default     = "200"
-}
-
-variable "pgvector_query_insights_enabled" {
-  description = "Enable Query Insights for pgvector instance"
-  type        = bool
-  default     = true
-}
-
-variable "pgvector_maintenance_window_day" {
-  description = "Maintenance window day (1-7, 1=Monday, 7=Sunday)"
-  type        = number
-  default     = 6 # Saturday
-
-  validation {
-    condition     = var.pgvector_maintenance_window_day >= 1 && var.pgvector_maintenance_window_day <= 7
-    error_message = "Maintenance window day must be between 1 (Monday) and 7 (Sunday)."
-  }
-}
-
-variable "pgvector_maintenance_window_hour" {
-  description = "Maintenance window hour (0-23)"
-  type        = number
-  default     = 4
-
-  validation {
-    condition     = var.pgvector_maintenance_window_hour >= 0 && var.pgvector_maintenance_window_hour <= 23
-    error_message = "Maintenance window hour must be between 0 and 23."
-  }
-}
-
-variable "pgvector_enable_read_replica" {
-  description = "Enable read replica for pgvector instance"
-  type        = bool
-  default     = false
-}
-
-variable "pgvector_replica_region" {
-  description = "Region for read replica (leave empty to use same region as primary)"
-  type        = string
-  default     = ""
-}
-
-variable "pgvector_replica_tier" {
-  description = "Machine type for read replica (leave empty to use same as primary)"
-  type        = string
-  default     = ""
 }

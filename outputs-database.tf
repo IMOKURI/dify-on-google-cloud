@@ -17,11 +17,6 @@ output "cloudsql_private_ip" {
   value       = module.cloudsql.postgres_private_ip
 }
 
-output "cloudsql_public_ip" {
-  description = "Cloud SQL public IP address"
-  value       = null
-}
-
 output "database_name" {
   description = "Database name"
   value       = var.db_name
@@ -64,11 +59,6 @@ output "pgvector_private_ip" {
   value       = module.cloudsql.pgvector_private_ip
 }
 
-output "pgvector_public_ip" {
-  description = "Public IP address of the pgvector Cloud SQL instance (if enabled)"
-  value       = null
-}
-
 output "pgvector_database_name" {
   description = "Database name for pgvector"
   value       = var.pgvector_db_name
@@ -95,14 +85,4 @@ output "pgvector_database_url" {
     var.pgvector_db_name
   )
   sensitive = true
-}
-
-output "pgvector_replica_instance_name" {
-  description = "Name of the pgvector read replica instance"
-  value       = null
-}
-
-output "pgvector_replica_private_ip" {
-  description = "Private IP address of the pgvector read replica"
-  value       = null
 }

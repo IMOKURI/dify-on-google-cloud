@@ -69,37 +69,14 @@ create_service_account_key = true
 # Availability type: ZONAL (single-zone) or REGIONAL (high availability)
 # pgvector_availability_type = "ZONAL"
 
-# Enable deletion protection
-# pgvector_deletion_protection = true
-
 # Database name and credentials
 # pgvector_db_name = "dify_vector"
 # pgvector_db_user = "dify_vector"
 # pgvector_db_password = ""  # Leave empty to auto-generate
 
-# Network configuration
-# pgvector_enable_public_ip = false  # Recommended false for production
-
-# Performance tuning
-# Note: Cloud SQL auto-manages memory settings based on instance tier
-# pgvector_max_connections = "200"
-
 # Backup configuration
 # pgvector_backup_enabled = true
 # pgvector_backup_start_time = "04:00"  # UTC
-# pgvector_backup_retention_count = 7
-
-# Query insights
-# pgvector_query_insights_enabled = true
-
-# Maintenance window
-# pgvector_maintenance_window_day = 6  # Saturday
-# pgvector_maintenance_window_hour = 4  # 4:00 AM
-
-# Read replica (optional)
-# pgvector_enable_read_replica = false
-# pgvector_replica_region = ""  # Leave empty to use same region
-# pgvector_replica_tier = ""  # Leave empty to use same tier as primary
 
 # =============================================================================
 # Google Cloud Storage Configuration
