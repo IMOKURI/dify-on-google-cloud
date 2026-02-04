@@ -23,10 +23,7 @@ Difyコミュニティ版を利用し、以下の点を重視しています。
 │   ├── variables-database.tf    # Cloud SQL設定
 │   ├── variables-storage.tf     # Cloud Storage & IAM設定
 │   └── variables-application.tf # アプリケーション設定
-├── outputs-*.tf                 # カテゴリ別の出力定義
-│   ├── outputs-infrastructure.tf
-│   ├── outputs-database.tf
-│   └── outputs-storage.tf
+├── outputs.tf                   # 出力定義
 ├── startup-script.sh            # VMインスタンスの初期化スクリプト
 ├── terraform.tfvars.example     # 設定例
 └── modules/                     # 各種モジュール

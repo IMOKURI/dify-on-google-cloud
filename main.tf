@@ -71,7 +71,7 @@ module "storage" {
   cors_max_age_seconds  = var.gcs_cors_max_age_seconds
 
   # Labeling
-  labels = local.common_labels
+  labels = var.labels
 }
 
 # =============================================================================

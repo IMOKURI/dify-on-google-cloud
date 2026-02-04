@@ -90,12 +90,6 @@ variable "gcs_cors_max_age_seconds" {
   }
 }
 
-variable "gcs_labels" {
-  description = "Labels to apply to the GCS bucket"
-  type        = map(string)
-  default     = {}
-}
-
 # =============================================================================
 # IAM Configuration
 # =============================================================================

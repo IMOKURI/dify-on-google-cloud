@@ -126,12 +126,6 @@ create_service_account_key = true
 #   }
 # ]
 
-# Custom labels
-# gcs_labels = {
-#   team = "platform"
-#   cost_center = "engineering"
-# }# }
-
 # =============================================================================
 # Auto Scaling Configuration
 # =============================================================================

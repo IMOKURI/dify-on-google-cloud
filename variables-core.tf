@@ -29,3 +29,18 @@ variable "prefix" {
     error_message = "Prefix must start with a letter, contain only lowercase letters, numbers, and hyphens, and be 1-63 characters long."
   }
 }
+
+variable "labels" {
+  description = "Labels to apply to all resources"
+  type        = map(string)
+  default     = {
+    managed_by  = "terraform"
+    solution    = "dify-on-gcp"
+    application = "dify"
+  }
+
+  validation {
+    condition     = alltrue([for k, v in var.labels : length(k) <= 63 && length(v) <= 63])
+    error_message = "All label keys and values must be 63 characters or less."
+  }
+}

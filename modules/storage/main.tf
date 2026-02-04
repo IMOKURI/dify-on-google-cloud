@@ -43,13 +43,7 @@ resource "google_storage_bucket" "dify_storage" {
     }
   }
 
-  labels = merge(
-    {
-      environment = var.prefix
-      managed_by  = "terraform"
-    },
-    var.labels
-  )
+  labels = var.labels
 }
 
 # GCS Bucket for file storage
@@ -93,11 +87,5 @@ resource "google_storage_bucket" "dify_plugin_storage" {
     }
   }
 
-  labels = merge(
-    {
-      environment = var.prefix
-      managed_by  = "terraform"
-    },
-    var.labels
-  )
+  labels = var.labels
 }
