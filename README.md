@@ -173,7 +173,7 @@ ssl_private_key = file("private-key.pem")
 Terraform適用時に、Difyのソースコード（指定されたバージョン）が自動的に `/opt/dify` にダウンロード・配置されます。
 
 ```hcl
-dify_version = "1.12.0"  # 任意のバージョンタグを指定
+dify_version = "1.11.4"  # 任意のバージョンタグを指定
 ```
 
 ## トラブルシューティング

@@ -63,6 +63,9 @@ sed -i "s|^REDIS_PASSWORD=.*|REDIS_PASSWORD='${redis_auth_string}'|" .env
 sed -i "s|^CELERY_BROKER_URL=.*|CELERY_BROKER_URL='redis://:${redis_auth_string}@${redis_host}:6379/1'|" .env
 sed -i "s|^CELERY_SENTINEL_PASSWORD=.*|CELERY_SENTINEL_PASSWORD='${redis_auth_string}'|" .env
 
+# Disable Default DB
+sed -i "s|^COMPOSE_PROFILES=.*|COMPOSE_PROFILES=|" .env
+
 # Start Dify with Docker Compose
 sudo -u ubuntu docker-compose up -d
 
