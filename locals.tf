@@ -33,22 +33,4 @@ locals {
     module.cloudsql.pgvector_private_ip,
     var.pgvector_db_name
   )
-
-  # Redis connection configuration
-  redis_connection_config = {
-    host         = module.redis.redis_host
-    port         = module.redis.redis_port
-    auth_enabled = var.redis_auth_enabled
-    auth_string  = var.redis_auth_enabled ? module.redis.redis_auth_string : ""
-    connection_url = var.redis_auth_enabled ? format(
-      "redis://:%s@%s:%d",
-      module.redis.redis_auth_string,
-      module.redis.redis_host,
-      module.redis.redis_port
-      ) : format(
-      "redis://%s:%d",
-      module.redis.redis_host,
-      module.redis.redis_port
-    )
-  }
 }

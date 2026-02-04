@@ -133,62 +133,6 @@ create_service_account_key = true
 # }# }
 
 # =============================================================================
-# Redis Memorystore Configuration
-# =============================================================================
-
-# Redis service tier
-# - BASIC: Single-node instance (no replication)
-# - STANDARD_HA: High availability with automatic failover
-redis_tier = "BASIC"
-
-# Memory size in GiB (minimum 1 for BASIC, 5 for STANDARD_HA)
-redis_memory_size_gb = 5
-
-# Redis version (REDIS_6_X, REDIS_7_0, REDIS_7_2)
-redis_version = "REDIS_7_2"
-
-# Number of read replicas (0-5, only for STANDARD_HA tier)
-redis_replica_count = 1
-
-# Enable Redis AUTH (authentication)
-redis_auth_enabled = true
-
-# Transit encryption mode (DISABLED or SERVER_AUTHENTICATION)
-# Note: SERVER_AUTHENTICATION requires Redis 6.x or higher
-redis_transit_encryption_mode = "DISABLED"
-
-# Persistence mode (DISABLED or RDB - only for STANDARD_HA tier)
-# RDB enables point-in-time snapshots
-redis_persistence_mode = "RDB"
-
-# Snapshot period for RDB persistence
-# Options: ONE_HOUR, SIX_HOURS, TWELVE_HOURS, TWENTY_FOUR_HOURS
-redis_rdb_snapshot_period = "TWENTY_FOUR_HOURS"
-
-# Start time for RDB snapshots (RFC3339 format, e.g., 2024-01-01T03:00:00Z)
-# Leave empty for automatic scheduling
-redis_rdb_snapshot_start_time = ""
-
-# Maintenance window configuration
-redis_maintenance_window_day = "SUNDAY"
-redis_maintenance_window_hour = 3  # 3:00 AM
-
-# Connection mode
-# - DIRECT_PEERING: Connect via VPC peering (recommended)
-# - PRIVATE_SERVICE_ACCESS: Connect via Private Service Connect
-redis_connect_mode = "DIRECT_PEERING"
-
-# Reserved IP range for Redis instance (must be /29, e.g., 10.0.2.0/29)
-# Leave empty for automatic assignment
-redis_reserved_ip_range = ""
-
-# Custom labels
-# redis_labels = {
-#   tier = "cache"
-#   component = "redis"
-# }
-
-# =============================================================================
 # Auto Scaling Configuration
 # =============================================================================
 
@@ -222,4 +166,3 @@ autoscaling_scale_in_time_window = 120
 #     type   = "GAUGE"
 #   }
 # ]
-

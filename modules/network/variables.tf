@@ -17,9 +17,3 @@ variable "ssh_source_ranges" {
   description = "CIDR ranges allowed to SSH to the instance"
   type        = list(string)
 }
-
-variable "redis_reserved_ip_range" {
-  description = "Reserved IP range for Redis"
-  type        = string
-  default     = ""
-}

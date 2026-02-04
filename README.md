@@ -14,13 +14,11 @@
 │   ├── variables-compute.tf     # Compute Engine設定
 │   ├── variables-database.tf    # Cloud SQL設定
 │   ├── variables-storage.tf     # Cloud Storage & IAM設定
-│   ├── variables-redis.tf       # Redis Memorystore設定
 │   └── variables-application.tf # アプリケーション設定
 ├── outputs-*.tf                 # カテゴリ別の出力定義
 │   ├── outputs-infrastructure.tf
 │   ├── outputs-database.tf
-│   ├── outputs-storage.tf
-│   └── outputs-redis.tf
+│   └── outputs-storage.tf
 ├── startup-script.sh            # VMインスタンスの初期化スクリプト
 ├── terraform.tfvars.example     # 設定例
 └── modules/                     # 各種モジュール
@@ -28,7 +26,6 @@
     ├── storage/                 # Cloud Storage
     ├── iam/                     # サービスアカウント
     ├── cloudsql/                # Cloud SQL (PostgreSQL & pgvector)
-    ├── redis/                   # Redis Memorystore
     ├── loadbalancer/            # ロードバランサー
     └── compute/                 # Managed Instance Group
 ```
@@ -39,7 +36,7 @@
 
 - **ネットワーク**
   - VPCネットワークとサブネット
-  - Private Service Access（Cloud SQLとRedis用）
+  - Private Service Access（Cloud SQL用）
   - ファイアウォールルール
   - 静的外部IPアドレス（Load Balancer用）
 
@@ -61,10 +58,6 @@
   - HTTPS Load Balancer
   - SSL証明書（マネージドまたは自己署名）
 
-- **Redis**
-  - Memorystore for Redis
-  - キャッシュとセッション管理用
-
 - **IAM**
   - Dify用サービスアカウント
   - 必要な権限の自動付与
@@ -85,7 +78,6 @@
      servicenetworking.googleapis.com \
      sqladmin.googleapis.com \
      storage.googleapis.com \
-     redis.googleapis.com \
      cloudresourcemanager.googleapis.com \
      iamcredentials.googleapis.com
    ```

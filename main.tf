@@ -5,7 +5,6 @@
 # with the following components:
 # - VPC Network with Private Service Access
 # - Cloud SQL (PostgreSQL) for main database and pgvector for embeddings
-# - Redis Memorystore for caching
 # - Cloud Storage for file storage
 # - Compute Engine with auto-scaling
 # - Load Balancer with SSL termination
@@ -44,7 +43,6 @@ module "network" {
   region                  = var.region
   subnet_cidr             = var.subnet_cidr
   ssh_source_ranges       = var.ssh_source_ranges
-  redis_reserved_ip_range = var.redis_reserved_ip_range
 }
 
 # =============================================================================
@@ -129,45 +127,6 @@ module "cloudsql" {
 }
 
 # =============================================================================
-# Redis Module - Memorystore for caching and session storage
-# =============================================================================
-
-module "redis" {
-  source = "./modules/redis"
-
-  prefix                    = var.prefix
-  region                    = var.region
-  network_id                = module.network.network_id
-  private_vpc_connection_id = module.network.private_vpc_connection_id
-
-  # Instance configuration
-  tier           = var.redis_tier
-  memory_size_gb = var.redis_memory_size_gb
-  redis_version  = var.redis_version
-  replica_count  = var.redis_replica_count
-
-  # Security settings
-  auth_enabled            = var.redis_auth_enabled
-  transit_encryption_mode = var.redis_transit_encryption_mode
-
-  # Persistence configuration
-  persistence_mode        = var.redis_persistence_mode
-  rdb_snapshot_period     = var.redis_rdb_snapshot_period
-  rdb_snapshot_start_time = var.redis_rdb_snapshot_start_time
-
-  # Maintenance window
-  maintenance_window_day  = var.redis_maintenance_window_day
-  maintenance_window_hour = var.redis_maintenance_window_hour
-
-  # Network configuration
-  connect_mode      = var.redis_connect_mode
-  reserved_ip_range = var.redis_reserved_ip_range
-
-  # Labeling
-  labels = merge(local.common_labels, var.redis_labels)
-}
-
-# =============================================================================
 # Load Balancer Module - HTTPS Load Balancer with SSL termination
 # =============================================================================
 
@@ -215,8 +174,6 @@ module "compute" {
     pgvector_database_name                     = var.pgvector_db_name
     gcs_bucket_name                            = module.storage.bucket_name
     google_storage_service_account_json_base64 = module.iam.service_account_key
-    redis_host                                 = module.redis.redis_host
-    redis_auth_string                          = module.redis.redis_auth_string
     dify_version                               = var.dify_version
   })
 

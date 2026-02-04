@@ -81,14 +81,3 @@ resource "google_service_networking_connection" "private_vpc_connection" {
   service                 = "servicenetworking.googleapis.com"
   reserved_peering_ranges = [google_compute_global_address.private_ip_address.name]
 }
-
-# Reserved IP range for Redis (if specified)
-resource "google_compute_global_address" "redis_ip_range" {
-  count         = var.redis_reserved_ip_range != "" ? 1 : 0
-  name          = "${var.prefix}-redis-ip-range"
-  purpose       = "VPC_PEERING"
-  address_type  = "INTERNAL"
-  prefix_length = 29 # Redis requires /29
-  network       = google_compute_network.network.id
-  address       = split("/", var.redis_reserved_ip_range)[0]
-}
