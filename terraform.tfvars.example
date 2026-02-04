@@ -1,0 +1,248 @@
+# GCP Project Configuration
+project_id = "your-gcp-project-id"
+region     = "asia-northeast1"
+zone       = "asia-northeast1-a"
+
+# Resource Naming
+prefix = "dify"
+
+# Network Configuration
+subnet_cidr = "10.0.1.0/24"
+
+# VM Configuration
+machine_type  = "n1-standard-2"  # 2 vCPUs, 7.5GB RAM
+disk_size_gb  = 50
+
+# SSH Configuration
+ssh_user           = "ubuntu"
+# Option 1: Place your SSH keys in ssh/ directory (locals.tf will auto-read them)
+# - ssh/id_ed25519.pub
+# - ssh/id_ed25519
+# Option 2: Set the keys as string values here (not recommended for private keys)
+ssh_public_key     = "" # Your SSH public key (optional)
+ssh_private_key    = "" # Your SSH private key for provisioning (optional, use ssh/ directory instead)
+ssh_source_ranges  = ["0.0.0.0/0"] # Restrict this in production!
+
+# SSL Configuration
+# Option 1: Use a domain name for Google-managed SSL certificate
+domain_name = "dify.example.com"
+
+# Option 2: Use self-signed certificate (if domain_name is empty)
+# ssl_certificate = file("path/to/certificate.pem")
+# ssl_private_key = file("path/to/private-key.pem")
+
+# Docker Configuration
+docker_compose_version = "v2.24.5"
+
+# Dify Configuration
+dify_version = "1.11.4"
+
+# Cloud SQL Configuration
+cloudsql_tier              = "db-custom-2-7680" # 2 vCPU, 7.5GB RAM
+cloudsql_disk_size         = 50
+cloudsql_database_version  = "POSTGRES_15"
+cloudsql_backup_enabled    = true
+cloudsql_backup_start_time = "03:00"
+
+# Database Configuration
+db_name     = "dify"
+db_user     = "dify"
+db_password = "" # Leave empty to generate random password
+
+# Service Account Key Configuration
+# Set to true if you need to access GCS from outside GCE (not recommended for production)
+# For VM-based deployments, leave as false - the VM will use its service account automatically
+create_service_account_key = true
+
+# =============================================================================
+# pgvector Configuration
+# =============================================================================
+
+# pgvector_database_version = "POSTGRES_16"  # pgvector requires PostgreSQL 11+
+
+# Instance tier (4 vCPU, 16GB RAM recommended for vector operations)
+# pgvector_tier = "db-custom-4-16384"
+
+# Disk size in GB
+# pgvector_disk_size = 100
+
+# Availability type: ZONAL (single-zone) or REGIONAL (high availability)
+# pgvector_availability_type = "ZONAL"
+
+# Enable deletion protection
+# pgvector_deletion_protection = true
+
+# Database name and credentials
+# pgvector_db_name = "dify_vector"
+# pgvector_db_user = "dify_vector"
+# pgvector_db_password = ""  # Leave empty to auto-generate
+
+# Network configuration
+# pgvector_enable_public_ip = false  # Recommended false for production
+
+# Performance tuning
+# Note: Cloud SQL auto-manages memory settings based on instance tier
+# pgvector_max_connections = "200"
+
+# Backup configuration
+# pgvector_backup_enabled = true
+# pgvector_backup_start_time = "04:00"  # UTC
+# pgvector_backup_retention_count = 7
+
+# Query insights
+# pgvector_query_insights_enabled = true
+
+# Maintenance window
+# pgvector_maintenance_window_day = 6  # Saturday
+# pgvector_maintenance_window_hour = 4  # 4:00 AM
+
+# Read replica (optional)
+# pgvector_enable_read_replica = false
+# pgvector_replica_region = ""  # Leave empty to use same region
+# pgvector_replica_tier = ""  # Leave empty to use same tier as primary
+
+# =============================================================================
+# Google Cloud Storage Configuration
+# =============================================================================
+
+# GCS Bucket name (leave empty to auto-generate based on project_id and prefix)
+# gcs_bucket_name = ""
+
+# Bucket location (regional or multi-regional)
+# gcs_location = "ASIA-NORTHEAST1"
+
+# Storage class: STANDARD, NEARLINE, COLDLINE, ARCHIVE
+# gcs_storage_class = "STANDARD"
+
+# Enable versioning for bucket objects
+# gcs_versioning_enabled = false
+
+# Allow bucket deletion even if it contains objects (NOT recommended for production)
+# gcs_force_destroy = false
+
+# CORS configuration
+# gcs_cors_enabled = true
+# gcs_cors_origins = ["*"]
+# gcs_cors_methods = ["GET", "HEAD", "PUT", "POST", "DELETE"]
+# gcs_cors_response_headers = ["*"]
+# gcs_cors_max_age_seconds = 3600
+
+# Lifecycle rules example
+# gcs_lifecycle_rules = [
+#   {
+#     action = {
+#       type = "SetStorageClass"
+#       storage_class = "NEARLINE"
+#     }
+#     condition = {
+#       age = 30
+#       matches_storage_class = ["STANDARD"]
+#     }
+#   },
+#   {
+#     action = {
+#       type = "Delete"
+#     }
+#     condition = {
+#       age = 365
+#     }
+#   }
+# ]
+
+# Custom labels
+# gcs_labels = {
+#   team = "platform"
+#   cost_center = "engineering"
+# }# }
+
+# =============================================================================
+# Redis Memorystore Configuration
+# =============================================================================
+
+# Redis service tier
+# - BASIC: Single-node instance (no replication)
+# - STANDARD_HA: High availability with automatic failover
+redis_tier = "BASIC"
+
+# Memory size in GiB (minimum 1 for BASIC, 5 for STANDARD_HA)
+redis_memory_size_gb = 5
+
+# Redis version (REDIS_6_X, REDIS_7_0, REDIS_7_2)
+redis_version = "REDIS_7_2"
+
+# Number of read replicas (0-5, only for STANDARD_HA tier)
+redis_replica_count = 1
+
+# Enable Redis AUTH (authentication)
+redis_auth_enabled = true
+
+# Transit encryption mode (DISABLED or SERVER_AUTHENTICATION)
+# Note: SERVER_AUTHENTICATION requires Redis 6.x or higher
+redis_transit_encryption_mode = "DISABLED"
+
+# Persistence mode (DISABLED or RDB - only for STANDARD_HA tier)
+# RDB enables point-in-time snapshots
+redis_persistence_mode = "RDB"
+
+# Snapshot period for RDB persistence
+# Options: ONE_HOUR, SIX_HOURS, TWELVE_HOURS, TWENTY_FOUR_HOURS
+redis_rdb_snapshot_period = "TWENTY_FOUR_HOURS"
+
+# Start time for RDB snapshots (RFC3339 format, e.g., 2024-01-01T03:00:00Z)
+# Leave empty for automatic scheduling
+redis_rdb_snapshot_start_time = ""
+
+# Maintenance window configuration
+redis_maintenance_window_day = "SUNDAY"
+redis_maintenance_window_hour = 3  # 3:00 AM
+
+# Connection mode
+# - DIRECT_PEERING: Connect via VPC peering (recommended)
+# - PRIVATE_SERVICE_ACCESS: Connect via Private Service Connect
+redis_connect_mode = "DIRECT_PEERING"
+
+# Reserved IP range for Redis instance (must be /29, e.g., 10.0.2.0/29)
+# Leave empty for automatic assignment
+redis_reserved_ip_range = ""
+
+# Custom labels
+# redis_labels = {
+#   tier = "cache"
+#   component = "redis"
+# }
+
+# =============================================================================
+# Auto Scaling Configuration
+# =============================================================================
+
+# Enable auto scaling for VM instances
+autoscaling_enabled = true
+
+# Minimum number of VM instances (will be used as fixed size if autoscaling_enabled = false)
+autoscaling_min_replicas = 2
+
+# Maximum number of VM instances (only used if autoscaling_enabled = true)
+autoscaling_max_replicas = 10
+
+# Target CPU utilization for autoscaling (0.0-1.0)
+# Autoscaler will add instances when average CPU exceeds this value
+autoscaling_cpu_target = 0.7
+
+# Cooldown period in seconds between scaling events
+autoscaling_cooldown_period = 60
+
+# Maximum number of instances to remove in a single scale-in event
+autoscaling_scale_in_max_replicas = 3
+
+# Time window in seconds for calculating scale-in decisions
+autoscaling_scale_in_time_window = 120
+
+# Custom metrics for autoscaling (optional)
+# autoscaling_custom_metrics = [
+#   {
+#     name   = "custom.googleapis.com/my_metric"
+#     target = 100
+#     type   = "GAUGE"
+#   }
+# ]
+

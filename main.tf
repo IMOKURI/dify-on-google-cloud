@@ -1,0 +1,202 @@
+terraform {
+  required_version = ">= 1.0"
+  required_providers {
+    google = {
+      source  = "hashicorp/google"
+      version = "~> 5.0"
+    }
+    random = {
+      source  = "hashicorp/random"
+      version = "~> 3.6"
+    }
+  }
+}
+
+provider "google" {
+  project = var.project_id
+  region  = var.region
+  zone    = var.zone
+}
+
+# =============================================================================
+# Network Module
+# =============================================================================
+
+module "network" {
+  source = "./modules/network"
+
+  prefix                  = var.prefix
+  region                  = var.region
+  subnet_cidr             = var.subnet_cidr
+  ssh_source_ranges       = var.ssh_source_ranges
+  redis_reserved_ip_range = var.redis_reserved_ip_range
+}
+
+# =============================================================================
+# Storage Module
+# =============================================================================
+
+module "storage" {
+  source = "./modules/storage"
+
+  prefix                = var.prefix
+  project_id            = var.project_id
+  bucket_name           = var.gcs_bucket_name
+  location              = var.gcs_location
+  storage_class         = var.gcs_storage_class
+  versioning_enabled    = var.gcs_versioning_enabled
+  force_destroy         = var.gcs_force_destroy
+  lifecycle_rules       = var.gcs_lifecycle_rules
+  cors_enabled          = var.gcs_cors_enabled
+  cors_origins          = var.gcs_cors_origins
+  cors_methods          = var.gcs_cors_methods
+  cors_response_headers = var.gcs_cors_response_headers
+  cors_max_age_seconds  = var.gcs_cors_max_age_seconds
+  labels                = var.gcs_labels
+}
+
+# =============================================================================
+# IAM Module
+# =============================================================================
+
+module "iam" {
+  source = "./modules/iam"
+
+  prefix                     = var.prefix
+  project_id                 = var.project_id
+  storage_bucket_name        = module.storage.bucket_name
+  create_service_account_key = var.create_service_account_key
+}
+
+# =============================================================================
+# Cloud SQL Module
+# =============================================================================
+
+module "cloudsql" {
+  source = "./modules/cloudsql"
+
+  prefix                    = var.prefix
+  region                    = var.region
+  network_id                = module.network.network_id
+  private_vpc_connection_id = module.network.private_vpc_connection_id
+
+  # Main PostgreSQL instance
+  cloudsql_tier              = var.cloudsql_tier
+  cloudsql_disk_size         = var.cloudsql_disk_size
+  cloudsql_database_version  = var.cloudsql_database_version
+  cloudsql_backup_enabled    = var.cloudsql_backup_enabled
+  cloudsql_backup_start_time = var.cloudsql_backup_start_time
+  db_name                    = var.db_name
+  db_user                    = var.db_user
+  db_password                = var.db_password
+
+  # pgvector instance
+  pgvector_database_version        = var.pgvector_database_version
+  pgvector_tier                    = var.pgvector_tier
+  pgvector_disk_size               = var.pgvector_disk_size
+  pgvector_availability_type       = var.pgvector_availability_type
+  pgvector_deletion_protection     = var.pgvector_deletion_protection
+  pgvector_backup_enabled          = var.pgvector_backup_enabled
+  pgvector_backup_start_time       = var.pgvector_backup_start_time
+  pgvector_backup_retention_count  = var.pgvector_backup_retention_count
+  pgvector_db_name                 = var.pgvector_db_name
+  pgvector_db_user                 = var.pgvector_db_user
+  pgvector_db_password             = var.pgvector_db_password
+  pgvector_enable_public_ip        = var.pgvector_enable_public_ip
+  pgvector_authorized_networks     = var.pgvector_authorized_networks
+  pgvector_max_connections         = var.pgvector_max_connections
+  pgvector_query_insights_enabled  = var.pgvector_query_insights_enabled
+  pgvector_maintenance_window_day  = var.pgvector_maintenance_window_day
+  pgvector_maintenance_window_hour = var.pgvector_maintenance_window_hour
+  pgvector_enable_read_replica     = var.pgvector_enable_read_replica
+  pgvector_replica_region          = var.pgvector_replica_region
+  pgvector_replica_tier            = var.pgvector_replica_tier
+}
+
+# =============================================================================
+# Redis Module
+# =============================================================================
+
+module "redis" {
+  source = "./modules/redis"
+
+  prefix                    = var.prefix
+  region                    = var.region
+  network_id                = module.network.network_id
+  private_vpc_connection_id = module.network.private_vpc_connection_id
+
+  tier                    = var.redis_tier
+  memory_size_gb          = var.redis_memory_size_gb
+  redis_version           = var.redis_version
+  replica_count           = var.redis_replica_count
+  auth_enabled            = var.redis_auth_enabled
+  transit_encryption_mode = var.redis_transit_encryption_mode
+  persistence_mode        = var.redis_persistence_mode
+  rdb_snapshot_period     = var.redis_rdb_snapshot_period
+  rdb_snapshot_start_time = var.redis_rdb_snapshot_start_time
+  maintenance_window_day  = var.redis_maintenance_window_day
+  maintenance_window_hour = var.redis_maintenance_window_hour
+  connect_mode            = var.redis_connect_mode
+  reserved_ip_range       = var.redis_reserved_ip_range
+  labels                  = var.redis_labels
+}
+
+# =============================================================================
+# Load Balancer Module
+# =============================================================================
+
+module "loadbalancer" {
+  source = "./modules/loadbalancer"
+
+  prefix          = var.prefix
+  instance_group  = module.compute.instance_group
+  lb_ip_address   = module.network.lb_ip_address
+  domain_name     = var.domain_name
+  ssl_certificate = var.ssl_certificate
+  ssl_private_key = var.ssl_private_key
+}
+
+# =============================================================================
+# Compute Module
+# =============================================================================
+
+module "compute" {
+  source = "./modules/compute"
+
+  prefix                 = var.prefix
+  region                 = var.region
+  network_name           = module.network.network_name
+  subnet_name            = module.network.subnet_name
+  machine_type           = var.machine_type
+  disk_size_gb           = var.disk_size_gb
+  ssh_user               = var.ssh_user
+  ssh_public_key_content = local.ssh_public_key_content
+  service_account_email  = module.iam.service_account_email
+  health_check_id        = module.loadbalancer.health_check_id
+
+  startup_script = templatefile("${path.module}/startup-script.sh", {
+    docker_compose_version                     = var.docker_compose_version
+    db_host                                    = module.cloudsql.postgres_private_ip
+    database_user                              = var.db_user
+    database_password                          = module.cloudsql.db_password
+    database_name                              = var.db_name
+    pgvector_private_ip                        = module.cloudsql.pgvector_private_ip
+    pgvector_database_user                     = var.pgvector_db_user
+    pgvector_database_password                 = module.cloudsql.pgvector_db_password
+    pgvector_database_name                     = var.pgvector_db_name
+    gcs_bucket_name                            = module.storage.bucket_name
+    google_storage_service_account_json_base64 = module.iam.service_account_key
+    redis_host                                 = module.redis.redis_host
+    redis_auth_string                          = module.redis.redis_auth_string
+    dify_version                               = var.dify_version
+  })
+
+  autoscaling_enabled               = var.autoscaling_enabled
+  autoscaling_min_replicas          = var.autoscaling_min_replicas
+  autoscaling_max_replicas          = var.autoscaling_max_replicas
+  autoscaling_cpu_target            = var.autoscaling_cpu_target
+  autoscaling_cooldown_period       = var.autoscaling_cooldown_period
+  autoscaling_scale_in_max_replicas = var.autoscaling_scale_in_max_replicas
+  autoscaling_scale_in_time_window  = var.autoscaling_scale_in_time_window
+  autoscaling_custom_metrics        = var.autoscaling_custom_metrics
+}
