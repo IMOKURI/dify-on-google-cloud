@@ -83,12 +83,14 @@
    ```
 5. **必要なAPIの有効化**:
    ```bash
-   gcloud services enable compute.googleapis.com
-   gcloud services enable servicenetworking.googleapis.com
-   gcloud services enable sqladmin.googleapis.com
+   gcloud services enable compute.googleapis.com \
+     servicenetworking.googleapis.com \
+     sqladmin.googleapis.com \
+     storage.googleapis.com \
+     redis.googleapis.com \
+     cloudresourcemanager.googleapis.com \
+     iamcredentials.googleapis.com
    ```
-   TODO: Need to update
-
 
 ## クイックスタート
 
