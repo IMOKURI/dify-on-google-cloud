@@ -34,6 +34,12 @@ resource "google_storage_bucket_iam_member" "dify_storage_object_admin" {
   member = "serviceAccount:${google_service_account.dify_sa.email}"
 }
 
+resource "google_storage_bucket_iam_member" "dify_plugin_storage_object_admin" {
+  bucket = var.storage_plugin_bucket_name
+  role   = "roles/storage.objectAdmin"
+  member = "serviceAccount:${google_service_account.dify_sa.email}"
+}
+
 # Service Account Key for GCS access (optional, only if needed outside GCE)
 resource "google_service_account_key" "dify_sa_key" {
   count              = var.create_service_account_key ? 1 : 0

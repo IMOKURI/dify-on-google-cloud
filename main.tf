@@ -39,10 +39,10 @@ provider "google" {
 module "network" {
   source = "./modules/network"
 
-  prefix                  = var.prefix
-  region                  = var.region
-  subnet_cidr             = var.subnet_cidr
-  ssh_source_ranges       = var.ssh_source_ranges
+  prefix            = var.prefix
+  region            = var.region
+  subnet_cidr       = var.subnet_cidr
+  ssh_source_ranges = var.ssh_source_ranges
 }
 
 # =============================================================================
@@ -84,6 +84,7 @@ module "iam" {
   prefix                     = var.prefix
   project_id                 = var.project_id
   storage_bucket_name        = module.storage.bucket_name
+  storage_plugin_bucket_name = module.storage.plugin_bucket_name
   create_service_account_key = var.create_service_account_key
 }
 
@@ -173,6 +174,7 @@ module "compute" {
     pgvector_database_password                 = module.cloudsql.pgvector_db_password
     pgvector_database_name                     = var.pgvector_db_name
     gcs_bucket_name                            = module.storage.bucket_name
+    gcs_plugin_bucket_name                     = module.storage.plugin_bucket_name
     google_storage_service_account_json_base64 = module.iam.service_account_key
     dify_version                               = var.dify_version
   })

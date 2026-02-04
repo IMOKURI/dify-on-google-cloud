@@ -7,6 +7,11 @@ output "gcs_bucket_name" {
   value       = module.storage.bucket_name
 }
 
+output "gcs_plugin_bucket_name" {
+  description = "Name of the plugin GCS bucket"
+  value       = module.storage.plugin_bucket_name
+}
+
 output "gcs_bucket_url" {
   description = "URL of the GCS bucket"
   value       = module.storage.bucket_url

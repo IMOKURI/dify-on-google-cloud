@@ -3,6 +3,11 @@ output "bucket_name" {
   value       = google_storage_bucket.dify_storage.name
 }
 
+output "plugin_bucket_name" {
+  description = "Name of the plugin GCS bucket"
+  value       = google_storage_bucket.dify_plugin_storage.name
+}
+
 output "bucket_url" {
   description = "URL of the GCS bucket"
   value       = google_storage_bucket.dify_storage.url
