@@ -49,8 +49,11 @@ sed -i "s|^DB_DATABASE=.*|DB_DATABASE=${database_name}|" .env
 sed -i "s|^VECTOR_STORE=.*|VECTOR_STORE=pgvector|" .env
 sed -i "s|^PGVECTOR_HOST=.*|PGVECTOR_HOST=${pgvector_private_ip}|" .env
 sed -i "s|^PGVECTOR_USER=.*|PGVECTOR_USER=${pgvector_database_user}|" .env
+sed -i "s|^PGVECTOR_PGUSER=.*|PGVECTOR_PGUSER=${pgvector_database_user}|" .env
 sed -i "s|^PGVECTOR_PASSWORD=.*|PGVECTOR_PASSWORD='${pgvector_database_password}'|" .env
+sed -i "s|^PGVECTOR_POSTGRES_PASSWORD=.*|PGVECTOR_POSTGRES_PASSWORD='${pgvector_database_password}'|" .env
 sed -i "s|^PGVECTOR_DATABASE=.*|PGVECTOR_DATABASE=${pgvector_database_name}|" .env
+sed -i "s|^PGVECTOR_POSTGRES_DB=.*|PGVECTOR_POSTGRES_DB=${pgvector_database_name}|" .env
 
 # GCS Configuration
 sed -i "s|^STORAGE_TYPE=.*|STORAGE_TYPE=google-storage|" .env
