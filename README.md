@@ -69,8 +69,6 @@
   - Dify用サービスアカウント
   - 必要な権限の自動付与
 
-
-
 ## 前提条件
 
 1. **Google Cloud SDK**: `gcloud` コマンドがインストール済み
@@ -148,6 +146,7 @@ domain_name = "dify.example.com"
 ```
 
 DNSレコードを設定:
+
 ```
 A    dify.example.com    <LOAD_BALANCER_IP>
 ```
@@ -173,13 +172,9 @@ ssl_private_key = file("private-key.pem")
 
 Terraform適用時に、Difyのソースコード（指定されたバージョン）が自動的に `/opt/dify` にダウンロード・配置されます。
 
-デフォルトのバージョンは `1.11.4` ですが、`terraform.tfvars` で変更できます:
-
 ```hcl
-dify_version = "1.11.4"  # 任意のバージョンタグを指定
+dify_version = "1.12.0"  # 任意のバージョンタグを指定
 ```
-
-
 
 ## オートスケーリングの設定
 
@@ -269,44 +264,6 @@ gcloud compute instance-groups managed describe-instance dify-mig \
 3. **クールダウン期間**: スケールアウト後の安定化に必要な時間を設定
 4. **スケールイン制限**: 急激なトラフィック減少時に過度なスケールインを防ぐ
 
-### 推奨構成例
-
-#### 小規模〜中規模デプロイ
-```hcl
-autoscaling_enabled = true
-autoscaling_min_replicas = 2
-autoscaling_max_replicas = 5
-autoscaling_cpu_target = 0.7
-machine_type = "n1-standard-2"
-```
-
-#### 大規模デプロイ
-```hcl
-autoscaling_enabled = true
-autoscaling_min_replicas = 3
-autoscaling_max_replicas = 20
-autoscaling_cpu_target = 0.6
-machine_type = "n1-standard-4"
-```
-
-#### 固定サイズ（開発環境）
-```hcl
-autoscaling_enabled = false
-autoscaling_min_replicas = 1
-machine_type = "n1-standard-1"
-```
-
-## パフォーマンスチューニング
-
-### 推奨インスタンスサイズ
-
-| ユースケース | VM | Cloud SQL | pgvector (オプション) |
-|------------|-----|-----------|---------------------|
-| 開発/テスト | n1-standard-2 | db-custom-2-7680 | db-custom-2-8192 |
-| 小規模本番 | n1-standard-2 | db-custom-2-7680 | db-custom-4-16384 |
-| 中規模本番 | n1-standard-4 | db-custom-4-15360 | db-custom-8-32768 |
-| 大規模本番 | n1-standard-8 | db-custom-8-30720 | db-custom-16-65536 |
-
 ## 高可用性構成
 
 ### Cloud SQLの高可用性
@@ -334,15 +291,16 @@ gcloud compute ssl-certificates list
 gcloud compute ssl-certificates describe dify-ssl-cert --global
 ```
 
-
 ## セキュリティのベストプラクティス
 
 1. **SSH接続の制限**: `ssh_source_ranges`を特定のIPに限定
+
    ```hcl
    ssh_source_ranges = ["203.0.113.0/24"]
    ```
 
 2. **プライベートIP接続**: Cloud SQLはプライベートIPのみを使用
+
    ```hcl
    pgvector_enable_public_ip = false
    ```
@@ -350,12 +308,14 @@ gcloud compute ssl-certificates describe dify-ssl-cert --global
 3. **強力なパスワード**: 自動生成を使用するか、強力なパスワードを設定
 
 4. **削除保護**: 本番環境では有効化
+
    ```hcl
    deletion_protection = true
    pgvector_deletion_protection = true
    ```
 
 5. **バックアップ**: 定期的なバックアップを有効化
+
    ```hcl
    cloudsql_backup_enabled = true
    pgvector_backup_enabled = true
@@ -384,63 +344,10 @@ gcloud compute ssl-certificates describe dify-ssl-cert --global
 ```
 
 Query Insightsを有効化:
+
 ```hcl
 pgvector_query_insights_enabled = true
 ```
-
-## コスト最適化
-
-### 開発環境
-
-```hcl
-# 小さいインスタンス
-machine_type = "n1-standard-1"
-cloudsql_tier = "db-custom-1-3840"
-pgvector_tier = "db-custom-2-8192"
-
-# バックアップを無効化
-cloudsql_backup_enabled = false
-pgvector_backup_enabled = false
-
-# 削除保護を無効化
-deletion_protection = false
-pgvector_deletion_protection = false
-
-# Query Insightsを無効化
-pgvector_query_insights_enabled = false
-```
-
-### 本番環境
-
-```hcl
-# 適切なサイズのインスタンス
-machine_type = "n1-standard-2"
-cloudsql_tier = "db-custom-2-7680"
-pgvector_tier = "db-custom-4-16384"
-
-# バックアップを有効化
-cloudsql_backup_enabled = true
-pgvector_backup_enabled = true
-pgvector_backup_retention_count = 7
-
-# 削除保護を有効化
-deletion_protection = true
-pgvector_deletion_protection = true
-
-# Query Insightsを有効化
-pgvector_query_insights_enabled = true
-
-# 高可用性（オプション）
-availability_type = "REGIONAL"
-pgvector_availability_type = "REGIONAL"
-```
-
-### その他のコスト削減
-
-- **Committed Use Discounts**: 1年または3年の契約で割引
-- **スケジューリング**: 夜間や週末にVMを停止
-- **ディスク最適化**: 必要なサイズのみを使用
-- **リージョン選択**: コストの低いリージョンを選択
 
 ## リソースの削除
 

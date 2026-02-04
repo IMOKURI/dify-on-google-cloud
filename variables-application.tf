@@ -11,5 +11,5 @@ variable "docker_compose_version" {
 variable "dify_version" {
   description = "Dify version to download and deploy"
   type        = string
-  default     = "1.11.4"
+  default     = "1.12.0"
 }

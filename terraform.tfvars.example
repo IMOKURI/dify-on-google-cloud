@@ -10,7 +10,7 @@ prefix = "dify"
 subnet_cidr = "10.0.1.0/24"
 
 # VM Configuration
-machine_type  = "n1-standard-2"  # 2 vCPUs, 7.5GB RAM
+machine_type  = "e2-standard-4"
 disk_size_gb  = 50
 
 # SSH Configuration
@@ -35,10 +35,10 @@ domain_name = "dify.example.com"
 docker_compose_version = "v2.24.5"
 
 # Dify Configuration
-dify_version = "1.11.4"
+dify_version = "1.12.0"
 
 # Cloud SQL Configuration
-cloudsql_tier              = "db-custom-2-7680" # 2 vCPU, 7.5GB RAM
+cloudsql_tier              = "db-custom-4-16384" # 4 vCPU, 16GB RAM
 cloudsql_disk_size         = 50
 cloudsql_database_version  = "POSTGRES_15"
 cloudsql_backup_enabled    = true
@@ -216,13 +216,13 @@ redis_reserved_ip_range = ""
 # =============================================================================
 
 # Enable auto scaling for VM instances
-autoscaling_enabled = true
+autoscaling_enabled = false
 
 # Minimum number of VM instances (will be used as fixed size if autoscaling_enabled = false)
-autoscaling_min_replicas = 2
+autoscaling_min_replicas = 1
 
 # Maximum number of VM instances (only used if autoscaling_enabled = true)
-autoscaling_max_replicas = 10
+autoscaling_max_replicas = 4
 
 # Target CPU utilization for autoscaling (0.0-1.0)
 # Autoscaler will add instances when average CPU exceeds this value

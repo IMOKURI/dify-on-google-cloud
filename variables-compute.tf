@@ -5,7 +5,7 @@
 variable "machine_type" {
   description = "Machine type for the VM instance"
   type        = string
-  default     = "n1-standard-2"
+  default     = "e2-standard-4"
 }
 
 variable "disk_size_gb" {
@@ -45,13 +45,13 @@ variable "ssh_private_key" {
 variable "autoscaling_enabled" {
   description = "Enable auto scaling for VM instances"
   type        = bool
-  default     = true
+  default     = false
 }
 
 variable "autoscaling_min_replicas" {
   description = "Minimum number of VM instances"
   type        = number
-  default     = 2
+  default     = 1
 
   validation {
     condition     = var.autoscaling_min_replicas >= 1
@@ -62,7 +62,7 @@ variable "autoscaling_min_replicas" {
 variable "autoscaling_max_replicas" {
   description = "Maximum number of VM instances"
   type        = number
-  default     = 10
+  default     = 4
 
   validation {
     condition     = var.autoscaling_max_replicas >= var.autoscaling_min_replicas
