@@ -1,3 +1,18 @@
+# =============================================================================
+# Dify on Google Cloud Platform - Terraform Configuration
+# =============================================================================
+# This configuration deploys Dify (an LLMOps platform) on Google Cloud Platform
+# with the following components:
+# - VPC Network with Private Service Access
+# - Cloud SQL (PostgreSQL) for main database and pgvector for embeddings
+# - Redis Memorystore for caching
+# - Cloud Storage for file storage
+# - Compute Engine with auto-scaling
+# - Load Balancer with SSL termination
+#
+# Configuration file: terraform.tfvars.example
+# =============================================================================
+
 terraform {
   required_version = ">= 1.0"
   required_providers {
@@ -19,7 +34,7 @@ provider "google" {
 }
 
 # =============================================================================
-# Network Module
+# Network Module - VPC, Subnet, and Private Service Access
 # =============================================================================
 
 module "network" {
@@ -33,30 +48,36 @@ module "network" {
 }
 
 # =============================================================================
-# Storage Module
+# Storage Module - Google Cloud Storage for file uploads
 # =============================================================================
 
 module "storage" {
   source = "./modules/storage"
 
-  prefix                = var.prefix
-  project_id            = var.project_id
-  bucket_name           = var.gcs_bucket_name
-  location              = var.gcs_location
-  storage_class         = var.gcs_storage_class
-  versioning_enabled    = var.gcs_versioning_enabled
-  force_destroy         = var.gcs_force_destroy
-  lifecycle_rules       = var.gcs_lifecycle_rules
+  prefix     = var.prefix
+  project_id = var.project_id
+
+  # Bucket configuration
+  bucket_name        = var.gcs_bucket_name
+  location           = var.gcs_location
+  storage_class      = var.gcs_storage_class
+  versioning_enabled = var.gcs_versioning_enabled
+  force_destroy      = var.gcs_force_destroy
+  lifecycle_rules    = var.gcs_lifecycle_rules
+
+  # CORS configuration
   cors_enabled          = var.gcs_cors_enabled
   cors_origins          = var.gcs_cors_origins
   cors_methods          = var.gcs_cors_methods
   cors_response_headers = var.gcs_cors_response_headers
   cors_max_age_seconds  = var.gcs_cors_max_age_seconds
-  labels                = var.gcs_labels
+
+  # Labeling
+  labels = local.common_labels
 }
 
 # =============================================================================
-# IAM Module
+# IAM Module - Service Account for Dify application
 # =============================================================================
 
 module "iam" {
@@ -69,7 +90,11 @@ module "iam" {
 }
 
 # =============================================================================
-# Cloud SQL Module
+# Cloud SQL Module - PostgreSQL databases for Dify
+# =============================================================================
+# Creates two PostgreSQL instances:
+# 1. Main database - for application data
+# 2. pgvector database - for vector embeddings and similarity search
 # =============================================================================
 
 module "cloudsql" {
@@ -80,7 +105,7 @@ module "cloudsql" {
   network_id                = module.network.network_id
   private_vpc_connection_id = module.network.private_vpc_connection_id
 
-  # Main PostgreSQL instance
+  # Main PostgreSQL instance configuration
   cloudsql_tier              = var.cloudsql_tier
   cloudsql_disk_size         = var.cloudsql_disk_size
   cloudsql_database_version  = var.cloudsql_database_version
@@ -90,7 +115,7 @@ module "cloudsql" {
   db_user                    = var.db_user
   db_password                = var.db_password
 
-  # pgvector instance
+  # pgvector instance configuration
   pgvector_database_version        = var.pgvector_database_version
   pgvector_tier                    = var.pgvector_tier
   pgvector_disk_size               = var.pgvector_disk_size
@@ -114,7 +139,7 @@ module "cloudsql" {
 }
 
 # =============================================================================
-# Redis Module
+# Redis Module - Memorystore for caching and session storage
 # =============================================================================
 
 module "redis" {
@@ -125,24 +150,35 @@ module "redis" {
   network_id                = module.network.network_id
   private_vpc_connection_id = module.network.private_vpc_connection_id
 
-  tier                    = var.redis_tier
-  memory_size_gb          = var.redis_memory_size_gb
-  redis_version           = var.redis_version
-  replica_count           = var.redis_replica_count
+  # Instance configuration
+  tier           = var.redis_tier
+  memory_size_gb = var.redis_memory_size_gb
+  redis_version  = var.redis_version
+  replica_count  = var.redis_replica_count
+
+  # Security settings
   auth_enabled            = var.redis_auth_enabled
   transit_encryption_mode = var.redis_transit_encryption_mode
+
+  # Persistence configuration
   persistence_mode        = var.redis_persistence_mode
   rdb_snapshot_period     = var.redis_rdb_snapshot_period
   rdb_snapshot_start_time = var.redis_rdb_snapshot_start_time
+
+  # Maintenance window
   maintenance_window_day  = var.redis_maintenance_window_day
   maintenance_window_hour = var.redis_maintenance_window_hour
-  connect_mode            = var.redis_connect_mode
-  reserved_ip_range       = var.redis_reserved_ip_range
-  labels                  = var.redis_labels
+
+  # Network configuration
+  connect_mode      = var.redis_connect_mode
+  reserved_ip_range = var.redis_reserved_ip_range
+
+  # Labeling
+  labels = merge(local.common_labels, var.redis_labels)
 }
 
 # =============================================================================
-# Load Balancer Module
+# Load Balancer Module - HTTPS Load Balancer with SSL termination
 # =============================================================================
 
 module "loadbalancer" {
@@ -157,16 +193,18 @@ module "loadbalancer" {
 }
 
 # =============================================================================
-# Compute Module
+# Compute Module - Managed Instance Group with Auto-scaling
 # =============================================================================
 
 module "compute" {
   source = "./modules/compute"
 
-  prefix                 = var.prefix
-  region                 = var.region
-  network_name           = module.network.network_name
-  subnet_name            = module.network.subnet_name
+  prefix       = var.prefix
+  region       = var.region
+  network_name = module.network.network_name
+  subnet_name  = module.network.subnet_name
+
+  # Instance configuration
   machine_type           = var.machine_type
   disk_size_gb           = var.disk_size_gb
   ssh_user               = var.ssh_user
@@ -174,6 +212,7 @@ module "compute" {
   service_account_email  = module.iam.service_account_email
   health_check_id        = module.loadbalancer.health_check_id
 
+  # Startup script with all service configurations
   startup_script = templatefile("${path.module}/startup-script.sh", {
     docker_compose_version                     = var.docker_compose_version
     db_host                                    = module.cloudsql.postgres_private_ip
@@ -191,6 +230,7 @@ module "compute" {
     dify_version                               = var.dify_version
   })
 
+  # Auto-scaling configuration
   autoscaling_enabled               = var.autoscaling_enabled
   autoscaling_min_replicas          = var.autoscaling_min_replicas
   autoscaling_max_replicas          = var.autoscaling_max_replicas
