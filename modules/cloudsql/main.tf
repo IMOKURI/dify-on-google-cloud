@@ -6,14 +6,14 @@
 resource "random_password" "db_password" {
   count   = var.db_password == "" ? 1 : 0
   length  = 32
-  special = true
+  special = false
 }
 
 # Random password for pgvector Cloud SQL (if not provided)
 resource "random_password" "pgvector_db_password" {
   count   = var.pgvector_db_password == "" ? 1 : 0
   length  = 32
-  special = true
+  special = false
 }
 
 # =============================================================================
