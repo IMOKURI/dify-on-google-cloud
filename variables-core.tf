@@ -33,7 +33,7 @@ variable "prefix" {
 variable "labels" {
   description = "Labels to apply to all resources"
   type        = map(string)
-  default     = {
+  default = {
     managed_by  = "terraform"
     solution    = "dify-on-gcp"
     application = "dify"

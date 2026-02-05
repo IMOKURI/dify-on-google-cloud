@@ -26,7 +26,6 @@ resource "google_compute_instance_template" "dify_template" {
   }
 
   metadata = {
-    ssh-keys       = var.ssh_public_key_content != "" ? "${var.ssh_user}:${var.ssh_public_key_content}" : ""
     startup-script = var.startup_script
   }
 

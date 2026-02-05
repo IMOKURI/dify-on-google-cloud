@@ -14,14 +14,7 @@ machine_type  = "e2-standard-4"
 disk_size_gb  = 50
 
 # SSH Configuration
-ssh_user           = "ubuntu"
-# Option 1: Place your SSH keys in ssh/ directory (locals.tf will auto-read them)
-# - ssh/id_ed25519.pub
-# - ssh/id_ed25519
-# Option 2: Set the keys as string values here (not recommended for private keys)
-ssh_public_key     = "" # Your SSH public key (optional)
-ssh_private_key    = "" # Your SSH private key for provisioning (optional, use ssh/ directory instead)
-ssh_source_ranges  = ["0.0.0.0/0"] # Restrict this in production!
+ssh_source_ranges  = ["35.235.240.0/20"]
 
 # SSL Configuration
 # Option 1: Use a domain name for Google-managed SSL certificate

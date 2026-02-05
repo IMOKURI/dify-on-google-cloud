@@ -183,14 +183,6 @@ gcloud compute ssl-certificates list
 gcloud compute ssl-certificates describe dify-ssl-cert --global
 ```
 
-## セキュリティのベストプラクティス
-
-1. **SSH接続の制限**: `ssh_source_ranges`を特定のIPに限定
-
-   ```hcl
-   ssh_source_ranges = ["203.0.113.0/24"]
-   ```
-
 ## リソースの削除
 
 ```bash

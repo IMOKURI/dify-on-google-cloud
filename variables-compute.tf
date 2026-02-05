@@ -19,25 +19,6 @@ variable "disk_size_gb" {
   }
 }
 
-variable "ssh_user" {
-  description = "SSH user name"
-  type        = string
-  default     = "ubuntu"
-}
-
-variable "ssh_public_key" {
-  description = "SSH public key for instance access"
-  type        = string
-  default     = ""
-}
-
-variable "ssh_private_key" {
-  description = "SSH private key for instance provisioning (required for file provisioner)"
-  type        = string
-  default     = ""
-  sensitive   = true
-}
-
 # =============================================================================
 # Auto Scaling Configuration
 # =============================================================================

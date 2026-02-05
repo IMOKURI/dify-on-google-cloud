@@ -155,12 +155,10 @@ module "compute" {
   subnet_name  = module.network.subnet_name
 
   # Instance configuration
-  machine_type           = var.machine_type
-  disk_size_gb           = var.disk_size_gb
-  ssh_user               = var.ssh_user
-  ssh_public_key_content = local.ssh_public_key_content
-  service_account_email  = module.iam.service_account_email
-  health_check_id        = module.loadbalancer.health_check_id
+  machine_type          = var.machine_type
+  disk_size_gb          = var.disk_size_gb
+  service_account_email = module.iam.service_account_email
+  health_check_id       = module.loadbalancer.health_check_id
 
   # Startup script with all service configurations
   startup_script = templatefile("${path.module}/startup-script.sh", {

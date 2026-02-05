@@ -16,7 +16,7 @@ variable "subnet_cidr" {
 variable "ssh_source_ranges" {
   description = "CIDR ranges allowed to SSH to the instance"
   type        = list(string)
-  default     = ["0.0.0.0/0"] # 本番環境では制限することを推奨
+  default     = ["35.235.240.0/20"]
 }
 
 variable "domain_name" {

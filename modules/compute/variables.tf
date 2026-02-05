@@ -28,16 +28,6 @@ variable "disk_size_gb" {
   type        = number
 }
 
-variable "ssh_user" {
-  description = "SSH user name"
-  type        = string
-}
-
-variable "ssh_public_key_content" {
-  description = "SSH public key content"
-  type        = string
-}
-
 variable "startup_script" {
   description = "Startup script content"
   type        = string
