@@ -2,82 +2,54 @@
 
 **Work in progress...**
 
-このTerraformコードは、Google Cloud Platform (GCP)上にDifyをデプロイします。
+This Terraform code deploys Dify on Google Cloud Platform (GCP).
 
-Difyコミュニティ版を利用し、以下の点を重視しています。
+It uses the Dify Community Edition with focus on the following principles:
 
-- Difyコミュニティ版のアップグレードに追従する。
-- Difyコミュニティ版のコードをなるべく改変しない。
-- データベース、ファイルストレージはマネージドサービスを利用する。
+- Follow Dify Community Edition upgrades
+- Minimize modifications to the Dify Community Edition codebase
+- Use managed services for database and file storage
 
-## 📁 プロジェクト構成
+## Components
 
-```
-.
-├── main.tf                      # メインの構成ファイル（モジュール呼び出し）
-├── locals.tf                    # ローカル変数と共通設定
-├── variables-*.tf               # カテゴリ別の変数定義
-│   ├── variables-core.tf        # プロジェクト・リージョン設定
-│   ├── variables-network.tf     # ネットワーク関連
-│   ├── variables-compute.tf     # Compute Engine設定
-│   ├── variables-database.tf    # Cloud SQL設定
-│   ├── variables-storage.tf     # Cloud Storage & IAM設定
-│   └── variables-application.tf # アプリケーション設定
-├── outputs.tf                   # 出力定義
-├── startup-script.sh            # VMインスタンスの初期化スクリプト
-├── terraform.tfvars.example     # 設定例
-└── modules/                     # 各種モジュール
-    ├── network/                 # VPC, サブネット, ファイアウォール
-    ├── storage/                 # Cloud Storage
-    ├── iam/                     # サービスアカウント
-    ├── cloudsql/                # Cloud SQL (PostgreSQL & pgvector)
-    ├── loadbalancer/            # ロードバランサー
-    └── compute/                 # Managed Instance Group
-```
+This Terraform code creates the following resources:
 
-## 構成要素
+- **Network**
+  - VPC network and subnet
+  - Private Service Access (for Cloud SQL)
+  - Firewall rules
+  - Static external IP address (for Load Balancer)
 
-このTerraformコードは以下のリソースを作成します:
+- **Database**
+  - Cloud SQL (PostgreSQL) - Main database
+  - Cloud SQL (PostgreSQL with pgvector) - Vector storage
 
-- **ネットワーク**
-  - VPCネットワークとサブネット
-  - Private Service Access（Cloud SQL用）
-  - ファイアウォールルール
-  - 静的外部IPアドレス（Load Balancer用）
+- **Storage**
+  - Google Cloud Storage - For file uploads and plugin assets
 
-- **データベース**
-  - Cloud SQL (PostgreSQL) - メインデータベース
-  - Cloud SQL (PostgreSQL with pgvector) - ベクトルストレージ
-  - 自動バックアップと高可用性オプション
+- **Compute**
+  - Managed Instance Group (with auto-scaling support)
+  - Custom startup script to install and run Dify
 
-- **ストレージ**
-  - Google Cloud Storage - ファイルアップロード用
-  - CORS設定とライフサイクルポリシー
-
-- **コンピュート**
-  - Managed Instance Group（自動スケーリング対応）
-  - カスタムスタートアップスクリプト
-  - ヘルスチェック
-
-- **ロードバランサー**
+- **Load Balancer**
   - HTTPS Load Balancer
-  - SSL証明書（マネージドまたは自己署名）
+  - SSL certificates (managed or self-signed)
 
 - **IAM**
-  - Dify用サービスアカウント
-  - 必要な権限の自動付与
+  - Service account for Dify
+  - Automatic granting of required permissions
 
-## 前提条件
+## Prerequisites
 
-1. **Google Cloud SDK**: `gcloud` コマンドがインストール済み
-2. **Terraform**: バージョン 1.0 以上
-3. **GCPプロジェクト**: アクティブなGCPプロジェクト
-4. **認証設定**:
+1. **Google Cloud SDK**: `gcloud` command installed
+2. **Terraform**: Version 1.0 or higher
+3. **GCP Project**: Active GCP project
+4. **Authentication Setup**:
    ```bash
    gcloud init
    gcloud auth application-default login
    ```
-5. **必要なAPIの有効化**:
+5. **Enable Required APIs**:
    ```bash
    gcloud services enable compute.googleapis.com \
      servicenetworking.googleapis.com \
@@ -87,73 +59,73 @@ Difyコミュニティ版を利用し、以下の点を重視しています。
      iamcredentials.googleapis.com
    ```
 
-## クイックスタート
+## Quick Start
 
-### 1. 変数ファイルの準備
+### 1. Prepare Variables File
 
 ```bash
 cp terraform.tfvars.example terraform.tfvars
 ```
 
-`terraform.tfvars`を編集し、最低限以下の値を設定:
+Edit `terraform.tfvars` and set at least the following values:
 
 ```hcl
 project_id = "your-gcp-project-id"
 
-# ドメイン名がある場合（推奨）
+# If you have a domain name (recommended)
 domain_name = "dify.example.com"
 
-# または自己署名証明書用の設定
+# Or use self-signed certificate
 # domain_name     = ""
 # ssl_certificate = file("certificate.pem")
 # ssl_private_key = file("private-key.pem")
 ```
 
-### 2. デプロイ
+### 2. Deploy
 
 ```bash
-# 初期化
+# Initialize
 terraform init
 
-# プランの確認
+# Review plan
 terraform plan
 
-# デプロイ実行
+# Execute deployment
 terraform apply
 ```
 
-### 3. デプロイ完了後
+### 3. After Deployment
 
 ```bash
-# 出力情報の確認
+# Check output information
 terraform output
 
-# ブラウザでアクセス
-# https://<load_balancer_ip> または https://your-domain.com
+# Access via browser
+# https://<load_balancer_ip> or https://your-domain.com
 ```
 
-## 詳細設定
+## Detailed Configuration
 
-### SSL証明書の設定
+### SSL Certificate Setup
 
-#### オプション1: Google管理SSL証明書（推奨）
+#### Option 1: Google-Managed SSL Certificate (Recommended)
 
 ```hcl
 domain_name = "dify.example.com"
 ```
 
-DNSレコードを設定:
+Configure DNS record:
 
 ```
 A    dify.example.com    <LOAD_BALANCER_IP>
 ```
 
-証明書のプロビジョニングは最大15分かかります。
+Certificate provisioning can take up to 15 minutes.
 
-#### オプション2: 自己署名証明書
+#### Option 2: Self-Signed Certificate
 
 ```bash
-# 証明書の生成
+# Generate certificate
 openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
   -keyout private-key.pem -out certificate.pem \
   -subj "/C=JP/ST=Tokyo/L=Tokyo/O=Dify/CN=dify.local"
@@ -165,32 +137,32 @@ ssl_certificate = file("certificate.pem")
 ssl_private_key = file("private-key.pem")
 ```
 
-## Difyのデプロイ
+## Dify Deployment
 
-Terraform適用時に、Difyのソースコード（指定されたバージョン）が自動的に `/opt/dify` にダウンロード・配置されます。
+When Terraform is applied, the Dify source code (of the specified version) is automatically downloaded and placed in `/opt/dify`.
 
 ```hcl
-dify_version = "1.11.4"  # 任意のバージョンタグを指定
+dify_version = "1.11.4"  # Specify any version tag
 ```
 
-## トラブルシューティング
+## Troubleshooting
 
-### SSL証明書のプロビジョニング確認
+### Verify SSL Certificate Provisioning
 
 ```bash
-# 証明書の状態確認
+# Check certificate status
 gcloud compute ssl-certificates list
 gcloud compute ssl-certificates describe dify-ssl-cert --global
 ```
 
-## リソースの削除
+## Resource Cleanup
 
 ```bash
-# すべてのリソースを削除
+# Delete all resources
 terraform destroy
 
-# 削除保護のついたリソースでエラーになるので、コンソールから削除する
+# If you get errors due to deletion protection, delete from the console
 
-# すべてのリソースを削除
+# Delete all resources
 terraform destroy
 ```
