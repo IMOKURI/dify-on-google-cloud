@@ -1,7 +1,5 @@
 # Dify on Google Cloud - Terraform Deployment
 
-**Work in progress...**
-
 This Terraform code deploys Dify on Google Cloud Platform (GCP).
 
 It uses the Dify Community Edition with focus on the following principles:
