@@ -88,7 +88,8 @@ create_service_account_key = true
 # gcs_versioning_enabled = false
 
 # Allow bucket deletion even if it contains objects (NOT recommended for production)
-# gcs_force_destroy = false
+# TODO: Set to false after testing
+gcs_force_destroy = true
 
 # CORS configuration
 # gcs_cors_enabled = true

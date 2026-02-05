@@ -26,7 +26,8 @@ resource "google_sql_database_instance" "dify_postgres" {
   database_version = var.cloudsql_database_version
   region           = var.region
 
-  deletion_protection = true
+  # TODO: Enable deletion protection after testing
+  deletion_protection = false
 
   settings {
     tier              = var.cloudsql_tier
@@ -75,6 +76,12 @@ resource "google_sql_database_instance" "dify_postgres" {
   depends_on = [
     var.private_vpc_connection_id
   ]
+
+  timeouts {
+    create = "30m"
+    update = "30m"
+    delete = "30m"
+  }
 }
 
 # Database
@@ -106,7 +113,8 @@ resource "google_sql_database_instance" "dify_pgvector" {
   database_version = var.pgvector_database_version
   region           = var.region
 
-  deletion_protection = true
+  # TODO: Enable deletion protection after testing
+  deletion_protection = false
 
   settings {
     tier              = var.pgvector_tier
@@ -155,6 +163,12 @@ resource "google_sql_database_instance" "dify_pgvector" {
   depends_on = [
     var.private_vpc_connection_id
   ]
+
+  timeouts {
+    create = "30m"
+    update = "30m"
+    delete = "30m"
+  }
 }
 
 # Database for vector storage
