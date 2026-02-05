@@ -17,9 +17,3 @@ variable "storage_plugin_bucket_name" {
   description = "Name of the plugin GCS bucket for IAM permissions"
   type        = string
 }
-
-variable "create_service_account_key" {
-  description = "Whether to create a service account key"
-  type        = bool
-  default     = false
-}

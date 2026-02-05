@@ -42,11 +42,6 @@ db_name     = "dify"
 db_user     = "dify"
 db_password = "" # Leave empty to generate random password
 
-# Service Account Key Configuration
-# Set to true if you need to access GCS from outside GCE (not recommended for production)
-# For VM-based deployments, leave as false - the VM will use its service account automatically
-create_service_account_key = true
-
 # =============================================================================
 # pgvector Configuration
 # =============================================================================

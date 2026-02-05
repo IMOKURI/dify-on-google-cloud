@@ -89,13 +89,3 @@ variable "gcs_cors_max_age_seconds" {
     error_message = "CORS max age must be between 0 and 86400 seconds (24 hours)."
   }
 }
-
-# =============================================================================
-# IAM Configuration
-# =============================================================================
-
-variable "create_service_account_key" {
-  description = "Create service account key for external use (not needed if running on GCE VM)"
-  type        = bool
-  default     = false
-}

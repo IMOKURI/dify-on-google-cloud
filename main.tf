@@ -85,7 +85,6 @@ module "iam" {
   project_id                 = var.project_id
   storage_bucket_name        = module.storage.bucket_name
   storage_plugin_bucket_name = module.storage.plugin_bucket_name
-  create_service_account_key = var.create_service_account_key
 }
 
 # =============================================================================
