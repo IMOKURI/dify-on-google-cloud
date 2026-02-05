@@ -54,16 +54,21 @@ sed -i "s|^PGVECTOR_POSTGRES_PASSWORD=.*|PGVECTOR_POSTGRES_PASSWORD='${pgvector_
 sed -i "s|^PGVECTOR_DATABASE=.*|PGVECTOR_DATABASE=${pgvector_database_name}|" .env
 sed -i "s|^PGVECTOR_POSTGRES_DB=.*|PGVECTOR_POSTGRES_DB=${pgvector_database_name}|" .env
 
-# GCS Configuration
+# GCS Configuration for file storage
 sed -i "s|^STORAGE_TYPE=.*|STORAGE_TYPE=google-storage|" .env
 sed -i "s|^GOOGLE_STORAGE_BUCKET_NAME=.*|GOOGLE_STORAGE_BUCKET_NAME=${gcs_bucket_name}|" .env
 sed -i "s|^GOOGLE_STORAGE_SERVICE_ACCOUNT_JSON_BASE64=.*|GOOGLE_STORAGE_SERVICE_ACCOUNT_JSON_BASE64=${google_storage_service_account_json_base64}|" .env
 
+# GCS Configuration for plugin storage
+sed -i "s|^PLUGIN_STORAGE_TYPE=.*|PLUGIN_STORAGE_TYPE=google-storage|" .env
+sed -i "s|^PLUGIN_STORAGE_OSS_BUCKET=.*|PLUGIN_STORAGE_OSS_BUCKET=${gcs_plugin_bucket_name}|" .env
 # https://github.com/IMOKURI/dify-on-google-cloud/issues/1
-#sed -i "s|^PLUGIN_STORAGE_TYPE=.*|PLUGIN_STORAGE_TYPE=google-storage|" .env
-#sed -i "s|^PLUGIN_STORAGE_OSS_BUCKET=.*|PLUGIN_STORAGE_OSS_BUCKET=${gcs_plugin_bucket_name}|" .env
+# Dify does not yet support GCS credentials in .env for plugin storage, so we modify docker-compose.yaml directly.
 #sed -i "s|^PLUGIN_GCS_CREDENTIALS=.*|PLUGIN_GCS_CREDENTIALS=${google_storage_service_account_json_base64}|" .env
-#sed -i "s|^      AZURE_BLOB_STORAGE_CONNECTION_STRING: .*|      GCS_CREDENTIALS: ${google_storage_service_account_json_base64}|" docker-compose.yaml
+sed -i "s|^      AZURE_BLOB_STORAGE_CONNECTION_STRING: .*|      GCS_CREDENTIALS: ${google_storage_service_account_json_base64}|" docker-compose.yaml
+# https://github.com/langgenius/dify-plugin-daemon/pull/568
+# There are errors like "installed_bucket.go:81: [ERROR]failed to create PluginUniqueIdentifier" in plugin_daemon.
+# But it seems to work fine regardless.
 
 chown -R ubuntu:ubuntu /opt/dify-$DIFY_VERSION
 
