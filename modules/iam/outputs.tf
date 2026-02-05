@@ -10,6 +10,6 @@ output "service_account_name" {
 
 output "service_account_key" {
   description = "Service account key (if created)"
-  value       = google_service_account_key.dify_sa_key[0].private_key
+  value       = google_service_account_key.dify_sa_key.private_key
   sensitive   = true
 }
