@@ -163,6 +163,8 @@ When Terraform is applied,
 1. Remove the old VM first. So the service will be temporarily unavailable during the upgrade.
 1. Deploy the new VM with the migration process.
 
+Upgrade can take up to 15 minutes.
+
 ## Troubleshooting
 
 ### Verify SSL Certificate Provisioning
