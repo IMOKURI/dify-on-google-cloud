@@ -26,7 +26,7 @@ This Terraform code creates the following resources:
   - Google Cloud Storage - For file uploads and plugin assets
 
 - **Compute**
-  - Managed Instance Group (with auto-scaling support)
+  - Managed Instance Group
   - Custom startup script to install and run Dify
 
 - **Load Balancer**
@@ -164,3 +164,13 @@ terraform destroy
 # Delete all resources
 terraform destroy
 ```
+
+## Known Issues
+
+### plugin_daemon
+
+- There are errors like follows.
+  https://github.com/langgenius/dify-plugin-daemon/pull/568
+  ```
+  installed_bucket.go:81: [ERROR]failed to create PluginUniqueIdentifier from path plugin_packages/<org>/<plugin>:<version>: plugin_unique_identifier is not valid: _packages/<org>/<plugin>:<version>
+  ```

@@ -114,38 +114,3 @@ gcs_force_destroy = true
 #     }
 #   }
 # ]
-
-# =============================================================================
-# Auto Scaling Configuration
-# =============================================================================
-
-# Enable auto scaling for VM instances
-autoscaling_enabled = false
-
-# Minimum number of VM instances (will be used as fixed size if autoscaling_enabled = false)
-autoscaling_min_replicas = 1
-
-# Maximum number of VM instances (only used if autoscaling_enabled = true)
-autoscaling_max_replicas = 4
-
-# Target CPU utilization for autoscaling (0.0-1.0)
-# Autoscaler will add instances when average CPU exceeds this value
-autoscaling_cpu_target = 0.7
-
-# Cooldown period in seconds between scaling events
-autoscaling_cooldown_period = 60
-
-# Maximum number of instances to remove in a single scale-in event
-autoscaling_scale_in_max_replicas = 3
-
-# Time window in seconds for calculating scale-in decisions
-autoscaling_scale_in_time_window = 120
-
-# Custom metrics for autoscaling (optional)
-# autoscaling_custom_metrics = [
-#   {
-#     name   = "custom.googleapis.com/my_metric"
-#     target = 100
-#     type   = "GAUGE"
-#   }
-# ]

@@ -66,9 +66,6 @@ sed -i "s|^PLUGIN_STORAGE_OSS_BUCKET=.*|PLUGIN_STORAGE_OSS_BUCKET=${gcs_plugin_b
 # Dify does not yet support GCS credentials in .env for plugin storage, so we modify docker-compose.yaml directly.
 #sed -i "s|^PLUGIN_GCS_CREDENTIALS=.*|PLUGIN_GCS_CREDENTIALS=${google_storage_service_account_json_base64}|" .env
 sed -i "s|^      AZURE_BLOB_STORAGE_CONNECTION_STRING: .*|      GCS_CREDENTIALS: ${google_storage_service_account_json_base64}|" docker-compose.yaml
-# https://github.com/langgenius/dify-plugin-daemon/pull/568
-# There are errors like "installed_bucket.go:81: [ERROR]failed to create PluginUniqueIdentifier" in plugin_daemon.
-# But it seems to work fine regardless.
 
 chown -R ubuntu:ubuntu /opt/dify-$DIFY_VERSION
 
@@ -77,47 +74,5 @@ sed -i "s|^COMPOSE_PROFILES=.*|COMPOSE_PROFILES=|" .env
 
 # Start Dify with Docker Compose
 sudo -u ubuntu docker-compose up -d
-
-# Install Nginx for reverse proxy
-apt-get install -y nginx
-
-# Configure Nginx as reverse proxy
-cat >/etc/nginx/sites-available/dify <<'EOF'
-server {
-    listen 1080;
-    server_name _;
-
-    client_max_body_size 100M;
-
-    location /health {
-        access_log off;
-        return 200 "healthy\n";
-        add_header Content-Type text/plain;
-    }
-
-    location / {
-        proxy_pass http://localhost:80;
-        proxy_http_version 1.1;
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection 'upgrade';
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-        proxy_cache_bypass $http_upgrade;
-        proxy_read_timeout 300s;
-        proxy_connect_timeout 75s;
-    }
-}
-EOF
-
-# Enable site
-ln -sf /etc/nginx/sites-available/dify /etc/nginx/sites-enabled/
-rm -f /etc/nginx/sites-enabled/default
-
-# Test and reload Nginx
-nginx -t
-systemctl enable nginx
-systemctl restart nginx
 
 echo "Setup completed successfully!" >/var/log/startup-script.log

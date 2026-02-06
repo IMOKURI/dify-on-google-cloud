@@ -6,7 +6,7 @@
 # - VPC Network with Private Service Access
 # - Cloud SQL (PostgreSQL) for main database and pgvector for embeddings
 # - Cloud Storage for file storage
-# - Compute Engine with auto-scaling
+# - Compute Engine
 # - Load Balancer with SSL termination
 #
 # Configuration file: terraform.tfvars.example
@@ -142,7 +142,7 @@ module "loadbalancer" {
 }
 
 # =============================================================================
-# Compute Module - Managed Instance Group with Auto-scaling
+# Compute Module - Managed Instance Group
 # =============================================================================
 
 module "compute" {
@@ -175,14 +175,4 @@ module "compute" {
     google_storage_service_account_json_base64 = module.iam.service_account_key
     dify_version                               = var.dify_version
   })
-
-  # Auto-scaling configuration
-  autoscaling_enabled               = var.autoscaling_enabled
-  autoscaling_min_replicas          = var.autoscaling_min_replicas
-  autoscaling_max_replicas          = var.autoscaling_max_replicas
-  autoscaling_cpu_target            = var.autoscaling_cpu_target
-  autoscaling_cooldown_period       = var.autoscaling_cooldown_period
-  autoscaling_scale_in_max_replicas = var.autoscaling_scale_in_max_replicas
-  autoscaling_scale_in_time_window  = var.autoscaling_scale_in_time_window
-  autoscaling_custom_metrics        = var.autoscaling_custom_metrics
 }

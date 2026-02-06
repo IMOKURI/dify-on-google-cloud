@@ -11,8 +11,8 @@ resource "google_compute_health_check" "dify_health_check" {
   unhealthy_threshold = 3
 
   http_health_check {
-    port         = 1080
-    request_path = "/health"
+    port         = 80
+    request_path = "/"
   }
 }
 

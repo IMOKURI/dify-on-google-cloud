@@ -1,5 +1,5 @@
 # =============================================================================
-# Compute Module - Instance Template, MIG, and Autoscaler
+# Compute Module - Instance Template and MIG
 # =============================================================================
 
 # Instance Template with Docker
@@ -39,7 +39,7 @@ resource "google_compute_instance_template" "dify_template" {
   }
 }
 
-# Managed Instance Group for Auto Scaling
+# Managed Instance Group
 resource "google_compute_region_instance_group_manager" "dify_mig" {
   name               = "${var.prefix}-mig"
   base_instance_name = "${var.prefix}-instance"
@@ -49,16 +49,16 @@ resource "google_compute_region_instance_group_manager" "dify_mig" {
     instance_template = google_compute_instance_template.dify_template.id
   }
 
-  target_size = var.autoscaling_enabled ? null : var.autoscaling_min_replicas
+  target_size = 1
 
   named_port {
     name = "http"
-    port = 1080
+    port = 80
   }
 
   auto_healing_policies {
     health_check      = var.health_check_id
-    initial_delay_sec = 300
+    initial_delay_sec = 1800
   }
 
   update_policy {
@@ -73,39 +73,5 @@ resource "google_compute_region_instance_group_manager" "dify_mig" {
 
   lifecycle {
     create_before_destroy = true
-  }
-}
-
-# Autoscaler for Managed Instance Group
-resource "google_compute_region_autoscaler" "dify_autoscaler" {
-  count  = var.autoscaling_enabled ? 1 : 0
-  name   = "${var.prefix}-autoscaler"
-  region = var.region
-  target = google_compute_region_instance_group_manager.dify_mig.id
-
-  autoscaling_policy {
-    max_replicas    = var.autoscaling_max_replicas
-    min_replicas    = var.autoscaling_min_replicas
-    cooldown_period = var.autoscaling_cooldown_period
-
-    cpu_utilization {
-      target = var.autoscaling_cpu_target
-    }
-
-    dynamic "metric" {
-      for_each = var.autoscaling_custom_metrics
-      content {
-        name   = metric.value.name
-        target = metric.value.target
-        type   = metric.value.type
-      }
-    }
-
-    scale_in_control {
-      max_scaled_in_replicas {
-        fixed = var.autoscaling_scale_in_max_replicas
-      }
-      time_window_sec = var.autoscaling_scale_in_time_window
-    }
   }
 }
