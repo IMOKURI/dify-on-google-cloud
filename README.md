@@ -20,10 +20,10 @@ This Terraform code creates the following resources:
 
 - **Database**
   - Cloud SQL (PostgreSQL) - Main database
-  - Cloud SQL (PostgreSQL with pgvector) - Vector storage
+  - Cloud SQL (PostgreSQL with pgvector) - Vector database
 
 - **Storage**
-  - Google Cloud Storage - For file uploads and plugin assets
+  - Filestore - For file uploads and plugin assets
 
 - **Compute**
   - Managed Instance Group
@@ -52,7 +52,6 @@ This Terraform code creates the following resources:
    gcloud services enable compute.googleapis.com \
      servicenetworking.googleapis.com \
      sqladmin.googleapis.com \
-     storage.googleapis.com \
      cloudresourcemanager.googleapis.com \
      iamcredentials.googleapis.com
    ```

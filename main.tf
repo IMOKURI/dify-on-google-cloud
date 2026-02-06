@@ -1,17 +1,3 @@
-# =============================================================================
-# Dify on Google Cloud Platform - Terraform Configuration
-# =============================================================================
-# This configuration deploys Dify (an LLMOps platform) on Google Cloud Platform
-# with the following components:
-# - VPC Network with Private Service Access
-# - Cloud SQL (PostgreSQL) for main database and pgvector for embeddings
-# - Cloud Storage for file storage
-# - Compute Engine
-# - Load Balancer with SSL termination
-#
-# Configuration file: terraform.tfvars.example
-# =============================================================================
-
 terraform {
   required_version = ">= 1.0"
   required_providers {
@@ -46,31 +32,19 @@ module "network" {
 }
 
 # =============================================================================
-# Storage Module - Google Cloud Storage for file uploads
+# Filestore Module - Managed NFS for Dify volumes
 # =============================================================================
 
-module "storage" {
-  source = "./modules/storage"
+module "filestore" {
+  source = "./modules/filestore"
 
-  prefix     = var.prefix
-  project_id = var.project_id
+  prefix                = var.prefix
+  zone                  = var.zone
+  network_name          = module.network.network_name
+  filestore_tier        = var.filestore_tier
+  filestore_capacity_gb = var.filestore_capacity_gb
+  filestore_share_name  = var.filestore_share_name
 
-  # Bucket configuration
-  bucket_name        = var.gcs_bucket_name
-  location           = var.gcs_location
-  storage_class      = var.gcs_storage_class
-  versioning_enabled = var.gcs_versioning_enabled
-  force_destroy      = var.gcs_force_destroy
-  lifecycle_rules    = var.gcs_lifecycle_rules
-
-  # CORS configuration
-  cors_enabled          = var.gcs_cors_enabled
-  cors_origins          = var.gcs_cors_origins
-  cors_methods          = var.gcs_cors_methods
-  cors_response_headers = var.gcs_cors_response_headers
-  cors_max_age_seconds  = var.gcs_cors_max_age_seconds
-
-  # Labeling
   labels = var.labels
 }
 
@@ -81,10 +55,8 @@ module "storage" {
 module "iam" {
   source = "./modules/iam"
 
-  prefix                     = var.prefix
-  project_id                 = var.project_id
-  storage_bucket_name        = module.storage.bucket_name
-  storage_plugin_bucket_name = module.storage.plugin_bucket_name
+  prefix     = var.prefix
+  project_id = var.project_id
 }
 
 # =============================================================================
@@ -161,18 +133,17 @@ module "compute" {
 
   # Startup script with all service configurations
   startup_script = templatefile("${path.module}/startup-script.sh", {
-    docker_compose_version                     = var.docker_compose_version
-    db_host                                    = module.cloudsql.postgres_private_ip
-    database_user                              = var.db_user
-    database_password                          = module.cloudsql.db_password
-    database_name                              = var.db_name
-    pgvector_private_ip                        = module.cloudsql.pgvector_private_ip
-    pgvector_database_user                     = var.pgvector_db_user
-    pgvector_database_password                 = module.cloudsql.pgvector_db_password
-    pgvector_database_name                     = var.pgvector_db_name
-    gcs_bucket_name                            = module.storage.bucket_name
-    gcs_plugin_bucket_name                     = module.storage.plugin_bucket_name
-    google_storage_service_account_json_base64 = module.iam.service_account_key
-    dify_version                               = var.dify_version
+    docker_compose_version     = var.docker_compose_version
+    db_host                    = module.cloudsql.postgres_private_ip
+    database_user              = var.db_user
+    database_password          = module.cloudsql.db_password
+    database_name              = var.db_name
+    pgvector_private_ip        = module.cloudsql.pgvector_private_ip
+    pgvector_database_user     = var.pgvector_db_user
+    pgvector_database_password = module.cloudsql.pgvector_db_password
+    pgvector_database_name     = var.pgvector_db_name
+    filestore_ip               = module.filestore.filestore_ip
+    filestore_share_name       = module.filestore.filestore_share_name
+    dify_version               = var.dify_version
   })
 }

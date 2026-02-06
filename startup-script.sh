@@ -3,10 +3,22 @@ set -e
 
 echo "Setup started." >/var/log/startup-script.log
 
+# =============================================================================
+# System Upgrade
+# =============================================================================
+
 # Update system
 apt-get update
 apt-get upgrade -y
+
+# Install additional tools
+apt-get install -y git curl wget vim nano htop nfs-common
+
 echo "System upgraded." >>/var/log/startup-script.log
+
+# =============================================================================
+# Docker Setup
+# =============================================================================
 
 # Install Docker
 curl -fsSL https://get.docker.com -o get-docker.sh
@@ -28,14 +40,67 @@ systemctl enable docker
 systemctl start docker
 echo "Docker service started." >>/var/log/startup-script.log
 
-# Install additional tools
-apt-get install -y git curl wget vim nano htop
+# =============================================================================
+# Download Dify
+# =============================================================================
 
 # Download and extract Dify
 DIFY_VERSION="${dify_version}"
 curl -L "https://github.com/langgenius/dify/archive/refs/tags/$DIFY_VERSION.tar.gz" -o /tmp/dify-$DIFY_VERSION.tar.gz
 mkdir -p /opt
 tar -xzf /tmp/dify-$DIFY_VERSION.tar.gz -C /opt/
+
+# =============================================================================
+# Filestore Setup
+# =============================================================================
+
+# Mount Filestore to Dify volumes directory
+FILESTORE_IP="${filestore_ip}"
+FILESTORE_SHARE="${filestore_share_name}"
+DIFY_DIR="/opt/dify-$DIFY_VERSION"
+VOLUMES_DIR="$DIFY_DIR/docker/volumes"
+TEMP_MOUNT="/mnt/filestore_temp"
+
+# Create temporary mount point and mount Filestore
+mkdir -p "$TEMP_MOUNT"
+mount -t nfs -o rw,intr "$FILESTORE_IP:/$FILESTORE_SHARE" "$TEMP_MOUNT"
+
+# Check if Filestore is empty (first time mounting)
+if [ -z "$(ls -A $TEMP_MOUNT)" ]; then
+    echo "Filestore is empty. Copying initial volumes data..." >>/var/log/startup-script.log
+
+    # Copy contents from source volumes directory to Filestore
+    if [ -d "$VOLUMES_DIR" ]; then
+        cp -a "$VOLUMES_DIR/." "$TEMP_MOUNT/"
+        echo "Initial volumes data copied to Filestore." >>/var/log/startup-script.log
+    else
+        echo "Warning: Source volumes directory not found." >>/var/log/startup-script.log
+    fi
+else
+    echo "Filestore already contains data. Skipping initial copy." >>/var/log/startup-script.log
+fi
+
+# Unmount temporary mount
+umount "$TEMP_MOUNT"
+rmdir "$TEMP_MOUNT"
+
+# Remove existing volumes directory if it exists
+if [ -d "$VOLUMES_DIR" ]; then
+    rm -rf "$VOLUMES_DIR"
+fi
+
+# Create mount point and mount Filestore
+mkdir -p "$VOLUMES_DIR"
+mount -t nfs -o rw,intr "$FILESTORE_IP:/$FILESTORE_SHARE" "$VOLUMES_DIR"
+
+# Add to /etc/fstab for automatic mounting on reboot
+echo "$FILESTORE_IP:/$FILESTORE_SHARE $VOLUMES_DIR nfs rw,intr 0 0" >>/etc/fstab
+
+echo "Filestore mounted successfully." >>/var/log/startup-script.log
+
+# =============================================================================
+# Configure Dify
+# =============================================================================
 
 # Create .env file from .env.example
 cd /opt/dify-$DIFY_VERSION/docker
@@ -58,24 +123,15 @@ sed -i "s|^PGVECTOR_POSTGRES_PASSWORD=.*|PGVECTOR_POSTGRES_PASSWORD='${pgvector_
 sed -i "s|^PGVECTOR_DATABASE=.*|PGVECTOR_DATABASE=${pgvector_database_name}|" .env
 sed -i "s|^PGVECTOR_POSTGRES_DB=.*|PGVECTOR_POSTGRES_DB=${pgvector_database_name}|" .env
 
-# GCS Configuration for file storage
-sed -i "s|^STORAGE_TYPE=.*|STORAGE_TYPE=google-storage|" .env
-sed -i "s|^GOOGLE_STORAGE_BUCKET_NAME=.*|GOOGLE_STORAGE_BUCKET_NAME=${gcs_bucket_name}|" .env
-sed -i "s|^GOOGLE_STORAGE_SERVICE_ACCOUNT_JSON_BASE64=.*|GOOGLE_STORAGE_SERVICE_ACCOUNT_JSON_BASE64=${google_storage_service_account_json_base64}|" .env
-
-# GCS Configuration for plugin storage
-sed -i "s|^PLUGIN_STORAGE_TYPE=.*|PLUGIN_STORAGE_TYPE=google-storage|" .env
-sed -i "s|^PLUGIN_STORAGE_OSS_BUCKET=.*|PLUGIN_STORAGE_OSS_BUCKET=${gcs_plugin_bucket_name}|" .env
-# https://github.com/IMOKURI/dify-on-google-cloud/issues/1
-# Dify does not yet support GCS credentials in .env for plugin storage, so we modify docker-compose.yaml directly.
-#sed -i "s|^PLUGIN_GCS_CREDENTIALS=.*|PLUGIN_GCS_CREDENTIALS=${google_storage_service_account_json_base64}|" .env
-sed -i "s|^      AZURE_BLOB_STORAGE_CONNECTION_STRING: .*|      GCS_CREDENTIALS: ${google_storage_service_account_json_base64}|" docker-compose.yaml
-
 # Disable Default DB
 sed -i "s|^COMPOSE_PROFILES=.*|COMPOSE_PROFILES=|" .env
 
 chown -R ubuntu:ubuntu /opt/dify-$DIFY_VERSION
 echo "Dify was configured." >>/var/log/startup-script.log
+
+# =============================================================================
+# Start Dify
+# =============================================================================
 
 # Start Dify with Docker Compose
 sudo -u ubuntu docker-compose up -d

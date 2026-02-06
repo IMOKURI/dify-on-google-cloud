@@ -6,15 +6,15 @@ zone       = "asia-northeast1-a"
 # Resource Naming
 prefix = "dify"
 
+# Docker Configuration
+docker_compose_version = "v2.24.5"
+
+# Dify Configuration
+dify_version = "1.11.4"
+
+# =============================================================================
 # Network Configuration
-subnet_cidr = "10.0.1.0/24"
-
-# VM Configuration
-machine_type  = "e2-standard-8"
-disk_size_gb  = 50
-
-# SSH Configuration
-ssh_source_ranges  = ["35.235.240.0/20"]
+# =============================================================================
 
 # SSL Configuration
 # Option 1: Use a domain name for Google-managed SSL certificate
@@ -24,11 +24,23 @@ domain_name = "dify.example.com"
 # ssl_certificate = file("path/to/certificate.pem")
 # ssl_private_key = file("path/to/private-key.pem")
 
-# Docker Configuration
-docker_compose_version = "v2.24.5"
+# Network Configuration
+subnet_cidr = "10.0.1.0/24"
 
-# Dify Configuration
-dify_version = "1.11.4"
+# SSH Configuration
+ssh_source_ranges  = ["35.235.240.0/20"]
+
+# =============================================================================
+# VM Instance Configuration
+# =============================================================================
+
+# VM Configuration
+machine_type  = "e2-standard-8"
+disk_size_gb  = 50
+
+# =============================================================================
+# Cloud SQL Configuration
+# =============================================================================
 
 # Cloud SQL Configuration
 cloudsql_tier              = "db-custom-4-16384" # 4 vCPU, 16GB RAM
@@ -65,52 +77,3 @@ db_password = "" # Leave empty to generate random password
 # Backup configuration
 # pgvector_backup_enabled = true
 # pgvector_backup_start_time = "04:00"  # UTC
-
-# =============================================================================
-# Google Cloud Storage Configuration
-# =============================================================================
-
-# GCS Bucket name (leave empty to auto-generate based on project_id and prefix)
-# gcs_bucket_name = ""
-
-# Bucket location (regional or multi-regional)
-# gcs_location = "ASIA-NORTHEAST1"
-
-# Storage class: STANDARD, NEARLINE, COLDLINE, ARCHIVE
-# gcs_storage_class = "STANDARD"
-
-# Enable versioning for bucket objects
-# gcs_versioning_enabled = false
-
-# Allow bucket deletion even if it contains objects (NOT recommended for production)
-# TODO: Set to false after testing
-gcs_force_destroy = true
-
-# CORS configuration
-# gcs_cors_enabled = true
-# gcs_cors_origins = ["*"]
-# gcs_cors_methods = ["GET", "HEAD", "PUT", "POST", "DELETE"]
-# gcs_cors_response_headers = ["*"]
-# gcs_cors_max_age_seconds = 3600
-
-# Lifecycle rules example
-# gcs_lifecycle_rules = [
-#   {
-#     action = {
-#       type = "SetStorageClass"
-#       storage_class = "NEARLINE"
-#     }
-#     condition = {
-#       age = 30
-#       matches_storage_class = ["STANDARD"]
-#     }
-#   },
-#   {
-#     action = {
-#       type = "Delete"
-#     }
-#     condition = {
-#       age = 365
-#     }
-#   }
-# ]

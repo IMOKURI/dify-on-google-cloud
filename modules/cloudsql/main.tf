@@ -171,7 +171,7 @@ resource "google_sql_database_instance" "dify_pgvector" {
   }
 }
 
-# Database for vector storage
+# Database for vector database
 resource "google_sql_database" "pgvector_db" {
   name     = var.pgvector_db_name
   instance = google_sql_database_instance.dify_pgvector.name
