@@ -1,9 +1,12 @@
 #!/bin/bash
 set -e
 
+echo "Setup started." >/var/log/startup-script.log
+
 # Update system
 apt-get update
 apt-get upgrade -y
+echo "System upgraded." >>/var/log/startup-script.log
 
 # Install Docker
 curl -fsSL https://get.docker.com -o get-docker.sh
@@ -23,6 +26,7 @@ ln -sf /usr/local/bin/docker-compose /usr/bin/docker-compose
 # Enable Docker service
 systemctl enable docker
 systemctl start docker
+echo "Docker service started." >>/var/log/startup-script.log
 
 # Install additional tools
 apt-get install -y git curl wget vim nano htop
@@ -67,12 +71,13 @@ sed -i "s|^PLUGIN_STORAGE_OSS_BUCKET=.*|PLUGIN_STORAGE_OSS_BUCKET=${gcs_plugin_b
 #sed -i "s|^PLUGIN_GCS_CREDENTIALS=.*|PLUGIN_GCS_CREDENTIALS=${google_storage_service_account_json_base64}|" .env
 sed -i "s|^      AZURE_BLOB_STORAGE_CONNECTION_STRING: .*|      GCS_CREDENTIALS: ${google_storage_service_account_json_base64}|" docker-compose.yaml
 
-chown -R ubuntu:ubuntu /opt/dify-$DIFY_VERSION
-
 # Disable Default DB
 sed -i "s|^COMPOSE_PROFILES=.*|COMPOSE_PROFILES=|" .env
+
+chown -R ubuntu:ubuntu /opt/dify-$DIFY_VERSION
+echo "Dify was configured." >>/var/log/startup-script.log
 
 # Start Dify with Docker Compose
 sudo -u ubuntu docker-compose up -d
 
-echo "Setup completed successfully!" >/var/log/startup-script.log
+echo "Setup completed successfully!" >>/var/log/startup-script.log
