@@ -35,7 +35,7 @@ resource "google_compute_instance_template" "dify_template" {
   }
 
   lifecycle {
-    create_before_destroy = false
+    create_before_destroy = true
   }
 }
 
@@ -63,11 +63,10 @@ resource "google_compute_region_instance_group_manager" "dify_mig" {
 
   update_policy {
     type                           = "PROACTIVE"
-    instance_redistribution_type   = "PROACTIVE"
     minimal_action                 = "REPLACE"
     most_disruptive_allowed_action = "REPLACE"
-    max_surge_fixed                = 3
-    max_unavailable_fixed          = 0
+    max_surge_fixed                = 0
+    max_unavailable_fixed          = 1
     replacement_method             = "SUBSTITUTE"
   }
 
