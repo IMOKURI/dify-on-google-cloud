@@ -66,7 +66,7 @@ resource "google_compute_region_instance_group_manager" "dify_mig" {
     minimal_action                 = "REPLACE"
     most_disruptive_allowed_action = "REPLACE"
     max_surge_fixed                = 0
-    max_unavailable_fixed          = 1
+    max_unavailable_fixed          = 3
     replacement_method             = "SUBSTITUTE"
   }
 
