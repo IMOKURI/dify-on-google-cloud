@@ -70,6 +70,9 @@ Edit `terraform.tfvars` and set at least the following values:
 ```hcl
 project_id = "your-gcp-project-id"
 
+# Dify version to be deployed
+dify_version = "1.11.4"
+
 # If you have a domain name (recommended)
 domain_name = "dify.example.com"
 
@@ -137,11 +140,28 @@ ssl_private_key = file("private-key.pem")
 
 ## Dify Deployment
 
-When Terraform is applied, the Dify source code (of the specified version) is automatically downloaded and placed in `/opt/dify`.
+When Terraform is applied,
+
+1. Dify source code (of the specified version) is automatically downloaded to `/opt/dify-<version>`.
+1. Update Dify environment variables by [startup-script.sh](./startup-script.sh).
+1. Start Dify application.
+
+### Upgrada Strategy
+
+[Check Dify Release Note](https://github.com/langgenius/dify/releases) and Update [startup-script.sh](./startup-script.sh) if needed.
 
 ```hcl
-dify_version = "1.11.4"  # Specify any version tag
+dify_version = "1.12.1"  # Specify new version tag
 ```
+
+```bash
+terraform apply  # Apply upgrade
+```
+
+When Terraform is applied,
+
+1. Remove the old VM first. So the service will be temporarily unavailable during the upgrade.
+1. Deploy the new VM with the migration process.
 
 ## Troubleshooting
 
@@ -151,6 +171,17 @@ dify_version = "1.11.4"  # Specify any version tag
 # Check certificate status
 gcloud compute ssl-certificates list
 gcloud compute ssl-certificates describe dify-ssl-cert --global
+```
+
+### Check Dify logs
+
+Access VM via ssh and check logs.
+
+```bash
+sudo su - ubuntu
+cd /opt/dify-<version>/docker
+docker compose ps
+docker compose logs -f
 ```
 
 ## Resource Cleanup
