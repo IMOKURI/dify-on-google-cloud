@@ -173,6 +173,14 @@ gcloud compute ssl-certificates list
 gcloud compute ssl-certificates describe dify-ssl-cert --global
 ```
 
+### Check startup script log
+
+Access VM via ssh and check logs.
+
+```bash
+tail -f /var/log/startup-script.log
+```
+
 ### Check Dify logs
 
 Access VM via ssh and check logs.
