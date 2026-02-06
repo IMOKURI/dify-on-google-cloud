@@ -3,24 +3,24 @@ set -e
 
 # ログ設定
 LOG_FILE="/var/log/startup-script.log"
-exec > >(tee -a $${LOG_FILE})
+exec > >(tee -a ${LOG_FILE})
 exec 2>&1
 
 # ログ出力関数
 log() {
-    echo "[$$(date '+%Y-%m-%d %H:%M:%S')] $$1"
+    echo "[$(date '+%Y-%m-%d %H:%M:%S')] $1"
 }
 
 log_success() {
-    echo "[$$(date '+%Y-%m-%d %H:%M:%S')] ✓ $$1"
+    echo "[$(date '+%Y-%m-%d %H:%M:%S')] ✓ $1"
 }
 
 log_error() {
-    echo "[$$(date '+%Y-%m-%d %H:%M:%S')] ✗ ERROR: $$1" >&2
+    echo "[$(date '+%Y-%m-%d %H:%M:%S')] ✗ ERROR: $1" >&2
 }
 
 # エラーハンドリング
-trap 'log_error "Script failed at line $$LINENO"' ERR
+trap 'log_error "Script failed at line $LINENO"' ERR
 
 log "=========================================="
 log "Dify インストールスクリプト開始"
@@ -46,8 +46,8 @@ log_success "ubuntu ユーザーを docker グループに追加完了"
 # Install Docker Compose
 log "Docker Compose インストール開始..."
 DOCKER_COMPOSE_VERSION="${docker_compose_version}"
-log "Docker Compose バージョン: $${DOCKER_COMPOSE_VERSION}"
-curl -L "https://github.com/docker/compose/releases/download/$${DOCKER_COMPOSE_VERSION}/docker-compose-$$(uname -s)-$$(uname -m)" -o /usr/local/bin/docker-compose
+log "Docker Compose バージョン: $DOCKER_COMPOSE_VERSION"
+curl -L "https://github.com/docker/compose/releases/download/$DOCKER_COMPOSE_VERSION/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
 chmod +x /usr/local/bin/docker-compose
 log_success "Docker Compose インストール完了"
 
@@ -70,18 +70,18 @@ log_success "追加ツールインストール完了"
 # Download and extract Dify
 log "Dify ダウンロード開始..."
 DIFY_VERSION="${dify_version}"
-log "Dify バージョン: $${DIFY_VERSION}"
-curl -L "https://github.com/langgenius/dify/archive/refs/tags/$${DIFY_VERSION}.tar.gz" -o /tmp/dify-$${DIFY_VERSION}.tar.gz
+log "Dify バージョン: $DIFY_VERSION"
+curl -L "https://github.com/langgenius/dify/archive/refs/tags/$DIFY_VERSION.tar.gz" -o /tmp/dify-$DIFY_VERSION.tar.gz
 log_success "Dify ダウンロード完了"
 
 log "Dify 展開中..."
 mkdir -p /opt
-tar -xzf /tmp/dify-$${DIFY_VERSION}.tar.gz -C /opt/
-log_success "Dify 展開完了: /opt/dify-$${DIFY_VERSION}"
+tar -xzf /tmp/dify-$DIFY_VERSION.tar.gz -C /opt/
+log_success "Dify 展開完了: /opt/dify-$DIFY_VERSION"
 
 # Create .env file from .env.example
 log "環境設定ファイル作成中..."
-cd /opt/dify-$${DIFY_VERSION}/docker
+cd /opt/dify-$DIFY_VERSION/docker
 cp .env.example .env
 log_success ".env ファイル作成完了"
 
@@ -124,7 +124,7 @@ sed -i "s|^      AZURE_BLOB_STORAGE_CONNECTION_STRING: .*|      GCS_CREDENTIALS:
 log_success "GCS プラグインストレージ設定完了 (Bucket: ${gcs_plugin_bucket_name})"
 
 log "ファイル所有者を変更中..."
-chown -R ubuntu:ubuntu /opt/dify-$${DIFY_VERSION}
+chown -R ubuntu:ubuntu /opt/dify-$DIFY_VERSION
 log_success "ファイル所有者変更完了"
 
 log "Dify プロファイル設定中..."
@@ -141,7 +141,7 @@ log_success "Dify 起動完了"
 log "=========================================="
 log "✓ セットアップが正常に完了しました！"
 log "=========================================="
-log "Dify バージョン: $${DIFY_VERSION}"
-log "インストールパス: /opt/dify-$${DIFY_VERSION}"
-log "ログファイル: $${LOG_FILE}"
+log "Dify バージョン: $DIFY_VERSION"
+log "インストールパス: /opt/dify-$DIFY_VERSION"
+log "ログファイル: $LOG_FILE"
 log "=========================================="
