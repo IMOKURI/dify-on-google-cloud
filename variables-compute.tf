@@ -5,7 +5,7 @@
 variable "machine_type" {
   description = "Machine type for the VM instance"
   type        = string
-  default     = "e2-standard-4"
+  default     = "e2-standard-8"
 }
 
 variable "disk_size_gb" {

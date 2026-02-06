@@ -10,7 +10,7 @@ prefix = "dify"
 subnet_cidr = "10.0.1.0/24"
 
 # VM Configuration
-machine_type  = "e2-standard-4"
+machine_type  = "e2-standard-8"
 disk_size_gb  = 50
 
 # SSH Configuration
