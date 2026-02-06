@@ -35,7 +35,7 @@ resource "google_compute_instance_template" "dify_template" {
   }
 
   lifecycle {
-    create_before_destroy = true
+    create_before_destroy = false
   }
 }
 
@@ -72,6 +72,6 @@ resource "google_compute_region_instance_group_manager" "dify_mig" {
   }
 
   lifecycle {
-    create_before_destroy = true
+    create_before_destroy = false
   }
 }
