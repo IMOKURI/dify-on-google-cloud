@@ -65,9 +65,10 @@ TEMP_MOUNT="/mnt/filestore_temp"
 mkdir -p "$TEMP_MOUNT"
 mount -t nfs -o rw,intr "$FILESTORE_IP:/$FILESTORE_SHARE" "$TEMP_MOUNT"
 
-# Check if Filestore is empty (first time mounting)
-if [ -z "$(ls -A $TEMP_MOUNT)" ]; then
-    echo "Filestore is empty. Copying initial volumes data..." >>/var/log/startup-script.log
+# Check if Filestore is empty (only lost+found exists)
+ITEM_COUNT=$(ls -A "$TEMP_MOUNT" | grep -v '^lost+found$' | wc -l)
+if [ "$ITEM_COUNT" -eq 0 ]; then
+    echo "Filestore is empty (only lost+found exists). Copying initial volumes data..." >>/var/log/startup-script.log
 
     # Copy contents from source volumes directory to Filestore
     if [ -d "$VOLUMES_DIR" ]; then
