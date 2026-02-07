@@ -51,6 +51,37 @@ mkdir -p /opt
 tar -xzf /tmp/dify-$DIFY_VERSION.tar.gz -C /opt/
 
 # =============================================================================
+# Configure Dify
+# =============================================================================
+
+# Create .env file from .env.example
+cd /opt/dify-$DIFY_VERSION/docker
+cp .env.example .env
+
+# Replace configuration values using sed
+# Database Configuration
+sed -i "s|^DB_HOST=.*|DB_HOST=${db_host}|" .env
+sed -i "s|^DB_USERNAME=.*|DB_USERNAME=${database_user}|" .env
+sed -i "s|^DB_PASSWORD=.*|DB_PASSWORD='${database_password}'|" .env
+sed -i "s|^DB_DATABASE=.*|DB_DATABASE=${database_name}|" .env
+
+# pgvector Configuration
+sed -i "s|^VECTOR_STORE=.*|VECTOR_STORE=pgvector|" .env
+sed -i "s|^PGVECTOR_HOST=.*|PGVECTOR_HOST=${pgvector_private_ip}|" .env
+sed -i "s|^PGVECTOR_USER=.*|PGVECTOR_USER=${pgvector_database_user}|" .env
+sed -i "s|^PGVECTOR_PGUSER=.*|PGVECTOR_PGUSER=${pgvector_database_user}|" .env
+sed -i "s|^PGVECTOR_PASSWORD=.*|PGVECTOR_PASSWORD='${pgvector_database_password}'|" .env
+sed -i "s|^PGVECTOR_POSTGRES_PASSWORD=.*|PGVECTOR_POSTGRES_PASSWORD='${pgvector_database_password}'|" .env
+sed -i "s|^PGVECTOR_DATABASE=.*|PGVECTOR_DATABASE=${pgvector_database_name}|" .env
+sed -i "s|^PGVECTOR_POSTGRES_DB=.*|PGVECTOR_POSTGRES_DB=${pgvector_database_name}|" .env
+
+# Disable Default DB
+sed -i "s|^COMPOSE_PROFILES=.*|COMPOSE_PROFILES=|" .env
+
+chown -R ubuntu:ubuntu /opt/dify-$DIFY_VERSION
+echo "Dify was configured." >>/var/log/startup-script.log
+
+# =============================================================================
 # Filestore Setup
 # =============================================================================
 
@@ -98,37 +129,6 @@ mount -t nfs -o rw,intr "$FILESTORE_IP:/$FILESTORE_SHARE" "$VOLUMES_DIR"
 echo "$FILESTORE_IP:/$FILESTORE_SHARE $VOLUMES_DIR nfs rw,intr 0 0" >>/etc/fstab
 
 echo "Filestore mounted successfully." >>/var/log/startup-script.log
-
-# =============================================================================
-# Configure Dify
-# =============================================================================
-
-# Create .env file from .env.example
-cd /opt/dify-$DIFY_VERSION/docker
-cp .env.example .env
-
-# Replace configuration values using sed
-# Database Configuration
-sed -i "s|^DB_HOST=.*|DB_HOST=${db_host}|" .env
-sed -i "s|^DB_USERNAME=.*|DB_USERNAME=${database_user}|" .env
-sed -i "s|^DB_PASSWORD=.*|DB_PASSWORD='${database_password}'|" .env
-sed -i "s|^DB_DATABASE=.*|DB_DATABASE=${database_name}|" .env
-
-# pgvector Configuration
-sed -i "s|^VECTOR_STORE=.*|VECTOR_STORE=pgvector|" .env
-sed -i "s|^PGVECTOR_HOST=.*|PGVECTOR_HOST=${pgvector_private_ip}|" .env
-sed -i "s|^PGVECTOR_USER=.*|PGVECTOR_USER=${pgvector_database_user}|" .env
-sed -i "s|^PGVECTOR_PGUSER=.*|PGVECTOR_PGUSER=${pgvector_database_user}|" .env
-sed -i "s|^PGVECTOR_PASSWORD=.*|PGVECTOR_PASSWORD='${pgvector_database_password}'|" .env
-sed -i "s|^PGVECTOR_POSTGRES_PASSWORD=.*|PGVECTOR_POSTGRES_PASSWORD='${pgvector_database_password}'|" .env
-sed -i "s|^PGVECTOR_DATABASE=.*|PGVECTOR_DATABASE=${pgvector_database_name}|" .env
-sed -i "s|^PGVECTOR_POSTGRES_DB=.*|PGVECTOR_POSTGRES_DB=${pgvector_database_name}|" .env
-
-# Disable Default DB
-sed -i "s|^COMPOSE_PROFILES=.*|COMPOSE_PROFILES=|" .env
-
-chown -R ubuntu:ubuntu /opt/dify-$DIFY_VERSION
-echo "Dify was configured." >>/var/log/startup-script.log
 
 # =============================================================================
 # Start Dify
