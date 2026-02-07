@@ -20,13 +20,13 @@ variable "network_name" {
 variable "filestore_tier" {
   description = "Filestore service tier (BASIC_HDD, BASIC_SSD, HIGH_SCALE_SSD, or ENTERPRISE)"
   type        = string
-  default     = "BASIC_SSD"
+  default     = "BASIC_HDD"
 }
 
 variable "filestore_capacity_gb" {
   description = "Filestore capacity in GB"
   type        = number
-  default     = 2560
+  default     = 1024
 }
 
 variable "filestore_share_name" {
