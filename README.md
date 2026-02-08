@@ -49,11 +49,12 @@ This Terraform code creates the following resources:
    ```
 5. **Enable Required APIs**:
    ```bash
-   gcloud services enable compute.googleapis.com \
-     servicenetworking.googleapis.com \
-     sqladmin.googleapis.com \
-     cloudresourcemanager.googleapis.com \
-     iamcredentials.googleapis.com
+   gcloud services enable cloudresourcemanager.googleapis.com
+   gcloud services enable compute.googleapis.com
+   gcloud services enable file.googleapis.com
+   gcloud services enable iamcredentials.googleapis.com
+   gcloud services enable servicenetworking.googleapis.com
+   gcloud services enable sqladmin.googleapis.com
    ```
 
 ## Quick Start
