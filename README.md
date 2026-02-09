@@ -70,20 +70,22 @@ graph TB
                 subgraph Storage["Storage"]
                     FS[Filestore<br/>NFS Share<br/>File Storage]
                 end
-
-                subgraph Database["Database"]
-                    SQL1[Cloud SQL PostgreSQL<br/>Main DB]
-                    SQL2[Cloud SQL PostgreSQL<br/>pgvector DB]
-                end
             end
 
             subgraph Firewall["Firewall Rules"]
-                FW_LB[LB → Instance<br/>HTTP/HTTPS]
-                FW_SSH[SSH Access]
-                FW_HC[Health Check]
+                FW_LB[LB → Instance<br/>HTTP:80]
+                FW_SSH[SSH Access<br/>Port:22]
+                FW_HC[Health Check<br/>Port:80]
             end
 
-            PSC[Private Service Connection<br/>for Cloud SQL]
+            PSC[Private Service Connection<br/>VPC Peering]
+        end
+
+        subgraph GoogleManaged["Google-Managed VPC"]
+            subgraph Database["Cloud SQL Instances"]
+                SQL1[Cloud SQL PostgreSQL<br/>Main DB]
+                SQL2[Cloud SQL PostgreSQL<br/>pgvector DB]
+            end
         end
 
         subgraph IAM["IAM"]
@@ -102,19 +104,19 @@ graph TB
     Backend -->|HTTP:80| MIG
     HC -->|Health Check| Instance
 
-    Instance -->|Private IP| SQL1
-    Instance -->|Private IP| SQL2
     Instance -->|NFS Mount| FS
     Instance -.->|Authentication| SA
+    Instance -->|Private IP<br/>via VPC Peering| SQL1
+    Instance -->|Private IP<br/>via VPC Peering| SQL2
 
-    SQL1 -.->|VPC Peering| PSC
-    SQL2 -.->|VPC Peering| PSC
+    PSC -.->|VPC Peering| Database
 
     style User fill:#e1f5ff
     style LB fill:#fff4e6
     style VPC fill:#f0f9ff
     style MIG fill:#e8f5e9
     style Database fill:#fce4ec
+    style GoogleManaged fill:#f5f5f5
     style Storage fill:#fff9c4
     style IAM fill:#f3e5f5
 ```
