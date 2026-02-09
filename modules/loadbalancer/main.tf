@@ -18,6 +18,11 @@ resource "google_compute_backend_service" "dify_backend" {
     capacity_scaler = 1.0
     max_utilization = 0.8
   }
+
+  timeouts {
+    create = "20m"
+    update = "20m"
+  }
 }
 
 # URL Map
