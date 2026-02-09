@@ -226,6 +226,9 @@ ssl_private_key = file("private-key.pem")
 
 If you want to add packages to sandbox, write packages into [python-requirements.txt](./assets/python-requirements.txt).
 
+> [!note]
+> dify-sandbox restricts system call. Please refer to [this document](https://github.com/langgenius/dify-sandbox/blob/2d0ad28fcfa7e3958311c8622d2e0c7b939feb24/FAQ.md?plain=1#L51).
+
 ## Dify Deployment
 
 When Terraform is applied,
