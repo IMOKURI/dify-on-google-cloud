@@ -1,8 +1,3 @@
-output "health_check_id" {
-  description = "Health check ID"
-  value       = google_compute_health_check.dify_health_check.id
-}
-
 output "backend_service_id" {
   description = "Backend service ID"
   value       = google_compute_backend_service.dify_backend.id

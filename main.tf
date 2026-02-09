@@ -109,7 +109,7 @@ module "cloudsql" {
 # =============================================================================
 # Load Balancer Module - HTTPS Load Balancer with SSL termination
 # =============================================================================
-# Note: Health check is created first and used by compute module.
+# Note: Health check is created in compute module and shared with load balancer.
 # Backend service is created after compute module creates the instance group.
 # =============================================================================
 
@@ -117,6 +117,7 @@ module "loadbalancer" {
   source = "./modules/loadbalancer"
 
   prefix          = var.prefix
+  health_check_id = module.compute.health_check_id
   instance_group  = module.compute.instance_group
   lb_ip_address   = module.network.lb_ip_address
   domain_name     = var.domain_name
@@ -145,7 +146,6 @@ module "compute" {
   machine_type          = var.machine_type
   disk_size_gb          = var.disk_size_gb
   service_account_email = module.iam.service_account_email
-  health_check_id       = module.loadbalancer.health_check_id
 
   # Startup script with all service configurations
   startup_script = templatefile("${path.module}/startup-script.sh", {

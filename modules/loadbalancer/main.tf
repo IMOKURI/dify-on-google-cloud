@@ -1,20 +1,6 @@
 # =============================================================================
-# Load Balancer Module - Health Check, Backend Service, URL Map, SSL, and Forwarding Rule
+# Load Balancer Module - Backend Service, URL Map, SSL, and Forwarding Rule
 # =============================================================================
-
-# Health Check
-resource "google_compute_health_check" "dify_health_check" {
-  name                = "${var.prefix}-health-check"
-  check_interval_sec  = 10
-  timeout_sec         = 5
-  healthy_threshold   = 2
-  unhealthy_threshold = 3
-
-  http_health_check {
-    port         = 80
-    request_path = "/console/api/ping"
-  }
-}
 
 # Backend Service
 resource "google_compute_backend_service" "dify_backend" {
@@ -23,7 +9,7 @@ resource "google_compute_backend_service" "dify_backend" {
   port_name             = "http"
   timeout_sec           = 30
   enable_cdn            = false
-  health_checks         = [google_compute_health_check.dify_health_check.id]
+  health_checks         = [var.health_check_id]
   load_balancing_scheme = "EXTERNAL_MANAGED"
 
   backend {
@@ -32,10 +18,6 @@ resource "google_compute_backend_service" "dify_backend" {
     capacity_scaler = 1.0
     max_utilization = 0.8
   }
-
-  depends_on = [
-    google_compute_health_check.dify_health_check
-  ]
 }
 
 # URL Map

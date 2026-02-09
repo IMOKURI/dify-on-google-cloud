@@ -17,3 +17,8 @@ output "instance_group" {
   description = "Managed instance group URL"
   value       = google_compute_region_instance_group_manager.dify_mig.instance_group
 }
+
+output "health_check_id" {
+  description = "Health check ID for load balancer"
+  value       = google_compute_health_check.dify_health_check.id
+}

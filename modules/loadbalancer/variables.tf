@@ -3,6 +3,11 @@ variable "prefix" {
   type        = string
 }
 
+variable "health_check_id" {
+  description = "Health check ID from compute module"
+  type        = string
+}
+
 variable "instance_group" {
   description = "Managed instance group URL"
   type        = string

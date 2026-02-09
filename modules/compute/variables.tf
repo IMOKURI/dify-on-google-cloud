@@ -37,8 +37,3 @@ variable "service_account_email" {
   description = "Service account email"
   type        = string
 }
-
-variable "health_check_id" {
-  description = "Health check ID"
-  type        = string
-}

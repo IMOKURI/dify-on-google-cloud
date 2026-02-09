@@ -2,6 +2,20 @@
 # Compute Module - Instance Template and MIG
 # =============================================================================
 
+# Health Check for MIG auto-healing and Load Balancer
+resource "google_compute_health_check" "dify_health_check" {
+  name                = "${var.prefix}-health-check"
+  check_interval_sec  = 10
+  timeout_sec         = 5
+  healthy_threshold   = 2
+  unhealthy_threshold = 3
+
+  http_health_check {
+    port         = 80
+    request_path = "/console/api/ping"
+  }
+}
+
 # Instance Template with Docker
 resource "google_compute_instance_template" "dify_template" {
   name_prefix  = "${var.prefix}-template-"
@@ -57,7 +71,7 @@ resource "google_compute_region_instance_group_manager" "dify_mig" {
   }
 
   auto_healing_policies {
-    health_check      = var.health_check_id
+    health_check      = google_compute_health_check.dify_health_check.id
     initial_delay_sec = 900
   }
 
