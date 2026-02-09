@@ -121,6 +121,10 @@ graph TB
     style IAM fill:#f3e5f5
 ```
 
+## Cost Estimation
+
+[![infracost](https://img.shields.io/endpoint?url=https://dashboard.api.infracost.io/shields/json/e913e414-683b-497a-b278-fa6c85782d47/repos/d8e48f68-1e25-418e-9539-39a0e8ad0119/branch/c09e32bc-f447-4b24-a4d6-4903aa975fab)](https://dashboard.infracost.io/org/nenegi01mo/repos/d8e48f68-1e25-418e-9539-39a0e8ad0119?tab=branches)
+
 ## Prerequisites
 
 1. **Google Cloud SDK**: `gcloud` command installed
