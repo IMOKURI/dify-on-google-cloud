@@ -84,6 +84,7 @@ resource "google_compute_global_forwarding_rule" "dify_https_forwarding_rule" {
   port_range            = "443"
   target                = google_compute_target_https_proxy.dify_https_proxy.id
   ip_address            = var.lb_ip_address
+  labels                = var.labels
 
   depends_on = [
     google_compute_target_https_proxy.dify_https_proxy

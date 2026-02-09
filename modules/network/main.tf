@@ -72,7 +72,8 @@ resource "google_compute_firewall" "allow_health_check" {
 
 # Static IP for Load Balancer
 resource "google_compute_global_address" "lb_ip" {
-  name = "${var.prefix}-lb-ip"
+  name   = "${var.prefix}-lb-ip"
+  labels = var.labels
 }
 
 # =============================================================================
@@ -86,6 +87,7 @@ resource "google_compute_global_address" "private_ip_address" {
   address_type  = "INTERNAL"
   prefix_length = 16
   network       = google_compute_network.network.id
+  labels        = var.labels
 }
 
 resource "google_service_networking_connection" "private_vpc_connection" {

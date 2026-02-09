@@ -35,13 +35,18 @@ variable "labels" {
   type        = map(string)
   default = {
     managed_by  = "terraform"
-    solution    = "dify-on-gcp"
-    application = "dify"
+    environment = "dev" # Must be one of: dev, stage, prod
+    service     = "dify"
   }
 
   validation {
     condition     = alltrue([for k, v in var.labels : length(k) <= 63 && length(v) <= 63])
     error_message = "All label keys and values must be 63 characters or less."
+  }
+
+  validation {
+    condition     = contains(["dev", "stage", "prod"], lower(lookup(var.labels, "environment", "dev")))
+    error_message = "Environment label must be one of: dev, stage, prod."
   }
 }
 

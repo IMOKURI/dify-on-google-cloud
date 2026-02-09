@@ -27,6 +27,7 @@ module "iam" {
 
   prefix     = var.prefix
   project_id = var.project_id
+  labels     = var.labels
 }
 
 # =============================================================================
@@ -40,6 +41,7 @@ module "network" {
   region            = var.region
   subnet_cidr       = var.subnet_cidr
   ssh_source_ranges = var.ssh_source_ranges
+  labels            = var.labels
 }
 
 # =============================================================================
@@ -101,6 +103,8 @@ module "cloudsql" {
   pgvector_db_user           = var.pgvector_db_user
   pgvector_db_password       = var.pgvector_db_password
 
+  labels = var.labels
+
   depends_on = [
     module.network
   ]
@@ -142,6 +146,8 @@ module "compute" {
   # Python requirements file content
   python_requirements = file("${path.module}/assets/python-requirements.txt")
 
+  labels = var.labels
+
   depends_on = [
     module.iam,
     module.network,
@@ -167,6 +173,8 @@ module "loadbalancer" {
   domain_name     = var.domain_name
   ssl_certificate = var.ssl_certificate
   ssl_private_key = var.ssl_private_key
+
+  labels = var.labels
 
   depends_on = [
     module.network,

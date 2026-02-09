@@ -34,6 +34,8 @@ resource "google_sql_database_instance" "dify_postgres" {
     disk_type         = "PD_SSD"
     availability_type = var.cloudsql_availability_type
 
+    user_labels = var.labels
+
     backup_configuration {
       enabled                        = var.cloudsql_backup_enabled
       start_time                     = var.cloudsql_backup_start_time
@@ -131,6 +133,8 @@ resource "google_sql_database_instance" "dify_pgvector" {
     disk_size         = var.pgvector_disk_size
     disk_type         = "PD_SSD"
     availability_type = var.pgvector_availability_type
+
+    user_labels = var.labels
 
     backup_configuration {
       enabled                        = var.pgvector_backup_enabled

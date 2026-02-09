@@ -21,6 +21,7 @@ resource "google_compute_instance_template" "dify_template" {
   name_prefix  = "${var.prefix}-template-"
   machine_type = var.machine_type
   tags         = ["dify-instance"]
+  labels       = var.labels
 
   disk {
     source_image = "ubuntu-os-cloud/ubuntu-2204-lts"

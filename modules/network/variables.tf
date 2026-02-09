@@ -17,3 +17,9 @@ variable "ssh_source_ranges" {
   description = "CIDR ranges allowed to SSH to the instance"
   type        = list(string)
 }
+
+variable "labels" {
+  description = "Labels to apply to resources"
+  type        = map(string)
+  default     = {}
+}

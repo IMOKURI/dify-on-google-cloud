@@ -34,3 +34,9 @@ variable "ssl_private_key" {
   type        = string
   sensitive   = true
 }
+
+variable "labels" {
+  description = "Labels to apply to resources"
+  type        = map(string)
+  default     = {}
+}

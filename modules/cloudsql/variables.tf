@@ -111,3 +111,9 @@ variable "pgvector_db_password" {
   type        = string
   sensitive   = true
 }
+
+variable "labels" {
+  description = "Labels to apply to resources"
+  type        = map(string)
+  default     = {}
+}
