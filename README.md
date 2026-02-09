@@ -222,17 +222,21 @@ ssl_certificate = file("certificate.pem")
 ssl_private_key = file("private-key.pem")
 ```
 
+### Additional Sandbox Packages
+
+If you want to add packages to sandbox, write packages into [python-requirements.txt](./assets/python-requirements.txt).
+
 ## Dify Deployment
 
 When Terraform is applied,
 
 1. Dify source code (of the specified version) is automatically downloaded to `/opt/dify-<version>`.
-1. Update Dify environment variables by [startup-script.sh](./startup-script.sh).
+1. Update Dify environment variables by [startup-script.sh](./assets/startup-script.sh).
 1. Start Dify application.
 
 ### Upgrada Strategy
 
-[Check Dify Release Note](https://github.com/langgenius/dify/releases) and Update [startup-script.sh](./startup-script.sh) if needed.
+[Check Dify Release Note](https://github.com/langgenius/dify/releases) and Update [startup-script.sh](./assets/startup-script.sh) if needed.
 
 ```hcl
 dify_version = "1.12.1"  # Specify new version tag
