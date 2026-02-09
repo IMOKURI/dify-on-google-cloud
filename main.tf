@@ -124,7 +124,7 @@ module "compute" {
   service_account_email = module.iam.service_account_email
 
   # Startup script with all service configurations
-  startup_script = templatefile("${path.module}/startup-script.sh", {
+  startup_script = templatefile("${path.module}/assets/startup-script.sh", {
     docker_compose_version     = var.docker_compose_version
     db_host                    = module.cloudsql.postgres_private_ip
     database_user              = var.db_user
@@ -138,6 +138,9 @@ module "compute" {
     filestore_share_name       = module.filestore.filestore_share_name
     dify_version               = var.dify_version
   })
+
+  # Python requirements file content
+  python_requirements = file("${path.module}/assets/python-requirements.txt")
 
   depends_on = [
     module.iam,

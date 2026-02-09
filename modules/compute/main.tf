@@ -40,7 +40,8 @@ resource "google_compute_instance_template" "dify_template" {
   }
 
   metadata = {
-    startup-script = var.startup_script
+    startup-script      = var.startup_script
+    python-requirements = var.python_requirements
   }
 
   service_account {

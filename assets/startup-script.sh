@@ -108,9 +108,17 @@ if [ "$ITEM_COUNT" -eq 0 ]; then
     else
         echo "Warning: Source volumes directory not found." >>/var/log/startup-script.log
     fi
+
+    # Additional python packages to be installed in sandbox container.
+    mkdir -p "$TEMP_MOUNT/sandbox/dependencies"
 else
     echo "Filestore already contains data. Skipping initial copy." >>/var/log/startup-script.log
 fi
+
+# Get python-requirements.txt from metadata and save to /tmp
+curl -s "http://metadata.google.internal/computeMetadata/v1/instance/attributes/python-requirements" \
+    -H "Metadata-Flavor: Google" > "$TEMP_MOUNT/sandbox/dependencies/python-requirements.txt"
+echo "Python requirements copied to sandbox volume" >>/var/log/startup-script.log
 
 # Unmount temporary mount
 umount "$TEMP_MOUNT"
