@@ -1,4 +1,113 @@
 # =============================================================================
+# Core Project Configuration
+# =============================================================================
+
+variable "project_id" {
+  description = "GCP Project ID"
+  type        = string
+}
+
+variable "region" {
+  description = "GCP Region"
+  type        = string
+  default     = "asia-northeast1"
+}
+
+variable "zone" {
+  description = "GCP Zone"
+  type        = string
+  default     = "asia-northeast1-a"
+}
+
+variable "prefix" {
+  description = "Prefix for resource names"
+  type        = string
+  default     = "dify"
+
+  validation {
+    condition     = can(regex("^[a-z][a-z0-9-]{0,62}$", var.prefix))
+    error_message = "Prefix must start with a letter, contain only lowercase letters, numbers, and hyphens, and be 1-63 characters long."
+  }
+}
+
+variable "labels" {
+  description = "Labels to apply to all resources"
+  type        = map(string)
+  default = {
+    managed_by  = "terraform"
+    solution    = "dify-on-gcp"
+    application = "dify"
+  }
+
+  validation {
+    condition     = alltrue([for k, v in var.labels : length(k) <= 63 && length(v) <= 63])
+    error_message = "All label keys and values must be 63 characters or less."
+  }
+}
+
+# =============================================================================
+# Network Configuration
+# =============================================================================
+
+variable "subnet_cidr" {
+  description = "CIDR range for the subnet"
+  type        = string
+  default     = "10.0.1.0/24"
+
+  validation {
+    condition     = can(cidrhost(var.subnet_cidr, 0))
+    error_message = "Subnet CIDR must be a valid IPv4 CIDR notation."
+  }
+}
+
+variable "ssh_source_ranges" {
+  description = "CIDR ranges allowed to SSH to the instance"
+  type        = list(string)
+  default     = ["35.235.240.0/20"]
+}
+
+variable "domain_name" {
+  description = "Domain name for SSL certificate (leave empty to use self-signed certificate)"
+  type        = string
+  default     = ""
+}
+
+variable "ssl_certificate" {
+  description = "Self-signed SSL certificate (PEM format, required if domain_name is empty)"
+  type        = string
+  default     = ""
+  sensitive   = true
+}
+
+variable "ssl_private_key" {
+  description = "Self-signed SSL private key (PEM format, required if domain_name is empty)"
+  type        = string
+  default     = ""
+  sensitive   = true
+}
+
+# =============================================================================
+# Compute Instance Configuration
+# =============================================================================
+
+variable "machine_type" {
+  description = "Machine type for the VM instance"
+  type        = string
+  default     = "e2-standard-8"
+}
+
+variable "disk_size_gb" {
+  description = "Boot disk size in GB"
+  type        = number
+  default     = 50
+
+  validation {
+    condition     = var.disk_size_gb >= 10 && var.disk_size_gb <= 65536
+    error_message = "Disk size must be between 10 and 65536 GB."
+  }
+}
+
+# =============================================================================
 # Cloud SQL - Main PostgreSQL Configuration
 # =============================================================================
 
@@ -33,7 +142,7 @@ variable "cloudsql_database_version" {
 variable "cloudsql_availability_type" {
   description = "Availability type for Cloud SQL instance (ZONAL or REGIONAL)"
   type        = string
-  default     = "ZONAL"
+  default     = "REGIONAL"
 
   validation {
     condition     = contains(["ZONAL", "REGIONAL"], var.cloudsql_availability_type)
@@ -112,7 +221,7 @@ variable "pgvector_disk_size" {
 variable "pgvector_availability_type" {
   description = "Availability type for pgvector instance (ZONAL or REGIONAL)"
   type        = string
-  default     = "ZONAL"
+  default     = "REGIONAL"
 
   validation {
     condition     = contains(["ZONAL", "REGIONAL"], var.pgvector_availability_type)
@@ -154,4 +263,42 @@ variable "pgvector_db_password" {
   type        = string
   default     = ""
   sensitive   = true
+}
+
+# =============================================================================
+# Filestore Configuration Variables
+# =============================================================================
+
+variable "filestore_tier" {
+  description = "Filestore service tier (BASIC_HDD, BASIC_SSD, HIGH_SCALE_SSD, or ENTERPRISE)"
+  type        = string
+  default     = "BASIC_HDD"
+}
+
+variable "filestore_capacity_gb" {
+  description = "Filestore capacity in GB (minimum 1024 GB for BASIC_HDD, 2560 GB for BASIC_SSD)"
+  type        = number
+  default     = 1024
+}
+
+variable "filestore_share_name" {
+  description = "Name of the Filestore share"
+  type        = string
+  default     = "dify_volumes"
+}
+
+# =============================================================================
+# Application Configuration
+# =============================================================================
+
+variable "docker_compose_version" {
+  description = "Docker Compose version to install"
+  type        = string
+  default     = "v2.24.5"
+}
+
+variable "dify_version" {
+  description = "Dify version to download and deploy"
+  type        = string
+  default     = "1.11.4"
 }
