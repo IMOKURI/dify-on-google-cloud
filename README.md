@@ -37,6 +37,88 @@ This Terraform code creates the following resources:
   - Service account for Dify
   - Automatic granting of required permissions
 
+## Architecture
+
+```mermaid
+graph TB
+    subgraph Internet["Internet"]
+        User[User]
+    end
+
+    subgraph GCP["Google Cloud Platform"]
+        subgraph DNS["DNS (Optional)"]
+            Domain[Domain Name]
+        end
+
+        LB_IP[Static Global IP]
+
+        subgraph LB["Load Balancer"]
+            HTTPS[HTTPS Forwarding Rule<br/>Port: 443]
+            SSL[SSL Certificate<br/>Google-managed or Self-signed]
+            Proxy[HTTPS Proxy]
+            URLMap[URL Map]
+            Backend[Backend Service]
+            HC[Health Check<br/>/console/api/ping]
+        end
+
+        subgraph VPC["VPC Network"]
+            subgraph Subnet["Subnet"]
+                subgraph MIG["Managed Instance Group"]
+                    Instance[Compute Instance<br/>Ubuntu 22.04<br/>Docker + Dify]
+                end
+
+                subgraph Storage["Storage"]
+                    FS[Filestore<br/>NFS Share<br/>File Storage]
+                end
+
+                subgraph Database["Database"]
+                    SQL1[Cloud SQL PostgreSQL<br/>Main DB]
+                    SQL2[Cloud SQL PostgreSQL<br/>pgvector DB]
+                end
+            end
+
+            subgraph Firewall["Firewall Rules"]
+                FW_LB[LB → Instance<br/>HTTP/HTTPS]
+                FW_SSH[SSH Access]
+                FW_HC[Health Check]
+            end
+
+            PSC[Private Service Connection<br/>for Cloud SQL]
+        end
+
+        subgraph IAM["IAM"]
+            SA[Service Account<br/>For Dify]
+        end
+    end
+
+    User -->|HTTPS| Domain
+    Domain -->|DNS Resolution| LB_IP
+    User -->|HTTPS| LB_IP
+    LB_IP --> HTTPS
+    HTTPS --> SSL
+    SSL --> Proxy
+    Proxy --> URLMap
+    URLMap --> Backend
+    Backend -->|HTTP:80| MIG
+    HC -->|Health Check| Instance
+
+    Instance -->|Private IP| SQL1
+    Instance -->|Private IP| SQL2
+    Instance -->|NFS Mount| FS
+    Instance -.->|Authentication| SA
+
+    SQL1 -.->|VPC Peering| PSC
+    SQL2 -.->|VPC Peering| PSC
+
+    style User fill:#e1f5ff
+    style LB fill:#fff4e6
+    style VPC fill:#f0f9ff
+    style MIG fill:#e8f5e9
+    style Database fill:#fce4ec
+    style Storage fill:#fff9c4
+    style IAM fill:#f3e5f5
+```
+
 ## Prerequisites
 
 1. **Google Cloud SDK**: `gcloud` command installed
@@ -205,13 +287,3 @@ terraform destroy
 # Delete all resources
 terraform destroy
 ```
-
-## Known Issues
-
-### plugin_daemon
-
-- There are errors like follows.
-  https://github.com/langgenius/dify-plugin-daemon/pull/568
-  ```
-  installed_bucket.go:81: [ERROR]failed to create PluginUniqueIdentifier from path plugin_packages/<org>/<plugin>:<version>: plugin_unique_identifier is not valid: _packages/<org>/<plugin>:<version>
-  ```

@@ -26,8 +26,7 @@ resource "google_sql_database_instance" "dify_postgres" {
   database_version = var.cloudsql_database_version
   region           = var.region
 
-  # TODO: Enable deletion protection after testing
-  deletion_protection = false
+  deletion_protection = true
 
   settings {
     tier              = var.cloudsql_tier
@@ -113,8 +112,7 @@ resource "google_sql_database_instance" "dify_pgvector" {
   database_version = var.pgvector_database_version
   region           = var.region
 
-  # TODO: Enable deletion protection after testing
-  deletion_protection = false
+  deletion_protection = true
 
   settings {
     tier              = var.pgvector_tier

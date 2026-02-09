@@ -62,7 +62,6 @@ variable "db_user" {
 variable "db_password" {
   description = "Database password (leave empty to auto-generate)"
   type        = string
-  default     = ""
   sensitive   = true
 }
 
@@ -110,6 +109,5 @@ variable "pgvector_db_user" {
 variable "pgvector_db_password" {
   description = "Database password for pgvector"
   type        = string
-  default     = ""
   sensitive   = true
 }

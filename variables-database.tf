@@ -73,6 +73,7 @@ variable "db_user" {
 variable "db_password" {
   description = "Database password"
   type        = string
+  default     = ""
   sensitive   = true
 }
 
@@ -86,7 +87,7 @@ variable "pgvector_database_version" {
   default     = "POSTGRES_16"
 
   validation {
-    condition     = can(regex("^POSTGRES_([1-9][1-9]|1[1-9])$", var.pgvector_database_version))
+    condition     = can(regex("^POSTGRES_(1[1-9]|[2-9][0-9])$", var.pgvector_database_version))
     error_message = "pgvector requires PostgreSQL 11 or higher."
   }
 }
