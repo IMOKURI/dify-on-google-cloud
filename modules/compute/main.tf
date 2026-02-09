@@ -70,6 +70,10 @@ resource "google_compute_region_instance_group_manager" "dify_mig" {
     replacement_method             = "SUBSTITUTE"
   }
 
+  depends_on = [
+    google_compute_instance_template.dify_template
+  ]
+
   lifecycle {
     create_before_destroy = false
   }

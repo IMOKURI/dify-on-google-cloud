@@ -87,12 +87,20 @@ resource "google_sql_database_instance" "dify_postgres" {
 resource "google_sql_database" "dify_db" {
   name     = var.db_name
   instance = google_sql_database_instance.dify_postgres.name
+
+  depends_on = [
+    google_sql_database_instance.dify_postgres
+  ]
 }
 
 # Plugin Database
 resource "google_sql_database" "dify_plugin_db" {
   name     = "${var.db_name}_plugin"
   instance = google_sql_database_instance.dify_postgres.name
+
+  depends_on = [
+    google_sql_database_instance.dify_postgres
+  ]
 }
 
 # Database User
@@ -100,6 +108,10 @@ resource "google_sql_user" "dify_user" {
   name     = var.db_user
   instance = google_sql_database_instance.dify_postgres.name
   password = var.db_password != "" ? var.db_password : random_password.db_password[0].result
+
+  depends_on = [
+    google_sql_database_instance.dify_postgres
+  ]
 }
 
 # =============================================================================
@@ -173,6 +185,10 @@ resource "google_sql_database_instance" "dify_pgvector" {
 resource "google_sql_database" "pgvector_db" {
   name     = var.pgvector_db_name
   instance = google_sql_database_instance.dify_pgvector.name
+
+  depends_on = [
+    google_sql_database_instance.dify_pgvector
+  ]
 }
 
 # Database User for pgvector
@@ -180,4 +196,8 @@ resource "google_sql_user" "pgvector_user" {
   name     = var.pgvector_db_user
   instance = google_sql_database_instance.dify_pgvector.name
   password = var.pgvector_db_password != "" ? var.pgvector_db_password : random_password.pgvector_db_password[0].result
+
+  depends_on = [
+    google_sql_database_instance.dify_pgvector
+  ]
 }

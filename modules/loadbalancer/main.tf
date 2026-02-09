@@ -32,12 +32,20 @@ resource "google_compute_backend_service" "dify_backend" {
     capacity_scaler = 1.0
     max_utilization = 0.8
   }
+
+  depends_on = [
+    google_compute_health_check.dify_health_check
+  ]
 }
 
 # URL Map
 resource "google_compute_url_map" "dify_url_map" {
   name            = "${var.prefix}-url-map"
   default_service = google_compute_backend_service.dify_backend.id
+
+  depends_on = [
+    google_compute_backend_service.dify_backend
+  ]
 }
 
 # SSL Certificate (Google-managed)
@@ -75,6 +83,10 @@ resource "google_compute_target_https_proxy" "dify_https_proxy" {
     ] : [
     google_compute_ssl_certificate.dify_self_signed[0].id
   ]
+
+  depends_on = [
+    google_compute_url_map.dify_url_map
+  ]
 }
 
 # Global Forwarding Rule (HTTPS)
@@ -85,4 +97,8 @@ resource "google_compute_global_forwarding_rule" "dify_https_forwarding_rule" {
   port_range            = "443"
   target                = google_compute_target_https_proxy.dify_https_proxy.id
   ip_address            = var.lb_ip_address
+
+  depends_on = [
+    google_compute_target_https_proxy.dify_https_proxy
+  ]
 }

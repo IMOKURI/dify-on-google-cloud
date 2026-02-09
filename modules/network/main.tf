@@ -28,6 +28,10 @@ resource "google_compute_firewall" "allow_lb" {
 
   source_ranges = ["130.211.0.0/22", "35.191.0.0/16"] # Google Cloud Load Balancer IP ranges
   target_tags   = ["dify-instance"]
+
+  depends_on = [
+    google_compute_network.network
+  ]
 }
 
 # Firewall Rules - Allow SSH
@@ -42,6 +46,10 @@ resource "google_compute_firewall" "allow_ssh" {
 
   source_ranges = var.ssh_source_ranges
   target_tags   = ["dify-instance"]
+
+  depends_on = [
+    google_compute_network.network
+  ]
 }
 
 # Firewall Rules - Allow Health Check
@@ -56,6 +64,10 @@ resource "google_compute_firewall" "allow_health_check" {
 
   source_ranges = ["35.191.0.0/16", "130.211.0.0/22"]
   target_tags   = ["dify-instance"]
+
+  depends_on = [
+    google_compute_network.network
+  ]
 }
 
 # Static IP for Load Balancer
@@ -80,4 +92,8 @@ resource "google_service_networking_connection" "private_vpc_connection" {
   network                 = google_compute_network.network.id
   service                 = "servicenetworking.googleapis.com"
   reserved_peering_ranges = [google_compute_global_address.private_ip_address.name]
+
+  depends_on = [
+    google_compute_global_address.private_ip_address
+  ]
 }

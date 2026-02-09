@@ -46,6 +46,10 @@ module "filestore" {
   filestore_share_name  = var.filestore_share_name
 
   labels = var.labels
+
+  depends_on = [
+    module.network
+  ]
 }
 
 # =============================================================================
@@ -96,10 +100,17 @@ module "cloudsql" {
   pgvector_db_name           = var.pgvector_db_name
   pgvector_db_user           = var.pgvector_db_user
   pgvector_db_password       = var.pgvector_db_password
+
+  depends_on = [
+    module.network
+  ]
 }
 
 # =============================================================================
 # Load Balancer Module - HTTPS Load Balancer with SSL termination
+# =============================================================================
+# Note: Health check is created first and used by compute module.
+# Backend service is created after compute module creates the instance group.
 # =============================================================================
 
 module "loadbalancer" {
@@ -111,6 +122,11 @@ module "loadbalancer" {
   domain_name     = var.domain_name
   ssl_certificate = var.ssl_certificate
   ssl_private_key = var.ssl_private_key
+
+  depends_on = [
+    module.network,
+    module.compute
+  ]
 }
 
 # =============================================================================
@@ -146,4 +162,11 @@ module "compute" {
     filestore_share_name       = module.filestore.filestore_share_name
     dify_version               = var.dify_version
   })
+
+  depends_on = [
+    module.network,
+    module.iam,
+    module.cloudsql,
+    module.filestore
+  ]
 }

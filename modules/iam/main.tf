@@ -13,10 +13,18 @@ resource "google_project_iam_member" "dify_sa_log_writer" {
   project = var.project_id
   role    = "roles/logging.logWriter"
   member  = "serviceAccount:${google_service_account.dify_sa.email}"
+
+  depends_on = [
+    google_service_account.dify_sa
+  ]
 }
 
 resource "google_project_iam_member" "dify_sa_metric_writer" {
   project = var.project_id
   role    = "roles/monitoring.metricWriter"
   member  = "serviceAccount:${google_service_account.dify_sa.email}"
+
+  depends_on = [
+    google_service_account.dify_sa
+  ]
 }
