@@ -19,6 +19,17 @@ provider "google" {
 }
 
 # =============================================================================
+# IAM Module - Service Account for Dify application
+# =============================================================================
+
+module "iam" {
+  source = "./modules/iam"
+
+  prefix     = var.prefix
+  project_id = var.project_id
+}
+
+# =============================================================================
 # Network Module - VPC, Subnet, and Private Service Access
 # =============================================================================
 
@@ -50,17 +61,6 @@ module "filestore" {
   depends_on = [
     module.network
   ]
-}
-
-# =============================================================================
-# IAM Module - Service Account for Dify application
-# =============================================================================
-
-module "iam" {
-  source = "./modules/iam"
-
-  prefix     = var.prefix
-  project_id = var.project_id
 }
 
 # =============================================================================
@@ -107,30 +107,6 @@ module "cloudsql" {
 }
 
 # =============================================================================
-# Load Balancer Module - HTTPS Load Balancer with SSL termination
-# =============================================================================
-# Note: Health check is created in compute module and shared with load balancer.
-# Backend service is created after compute module creates the instance group.
-# =============================================================================
-
-module "loadbalancer" {
-  source = "./modules/loadbalancer"
-
-  prefix          = var.prefix
-  health_check_id = module.compute.health_check_id
-  instance_group  = module.compute.instance_group
-  lb_ip_address   = module.network.lb_ip_address
-  domain_name     = var.domain_name
-  ssl_certificate = var.ssl_certificate
-  ssl_private_key = var.ssl_private_key
-
-  depends_on = [
-    module.network,
-    module.compute
-  ]
-}
-
-# =============================================================================
 # Compute Module - Managed Instance Group
 # =============================================================================
 
@@ -164,9 +140,33 @@ module "compute" {
   })
 
   depends_on = [
-    module.network,
     module.iam,
-    module.cloudsql,
-    module.filestore
+    module.network,
+    module.filestore,
+    module.cloudsql
+  ]
+}
+
+# =============================================================================
+# Load Balancer Module - HTTPS Load Balancer with SSL termination
+# =============================================================================
+# Note: Health check is created in compute module and shared with load balancer.
+# Backend service is created after compute module creates the instance group.
+# =============================================================================
+
+module "loadbalancer" {
+  source = "./modules/loadbalancer"
+
+  prefix          = var.prefix
+  health_check_id = module.compute.health_check_id
+  instance_group  = module.compute.instance_group
+  lb_ip_address   = module.network.lb_ip_address
+  domain_name     = var.domain_name
+  ssl_certificate = var.ssl_certificate
+  ssl_private_key = var.ssl_private_key
+
+  depends_on = [
+    module.network,
+    module.compute
   ]
 }
