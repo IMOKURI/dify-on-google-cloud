@@ -1,10 +1,10 @@
 # GCP Project Configuration
 project_id = "your-gcp-project-id"
-region     = "asia-northeast1"
-zone       = "asia-northeast1-a"
 
 # Availability type: ZONAL (single-zone) or REGIONAL (high availability)
 availability_type = "ZONAL"
+region            = "asia-northeast1"
+zone              = "asia-northeast1-a"
 
 # Dify Configuration
 dify_version = "1.11.4"
@@ -47,9 +47,9 @@ pgvector_disk_size = 100
 # =============================================================================
 # Filestore Configuration
 # =============================================================================
-
 # BASIC_HDD/BASIC_SSD tiers require zone
 # HIGH_SCALE_SSD/ENTERPRISE tiers support zone or region
+# =============================================================================
 
 # Filestore tier: BASIC_HDD, BASIC_SSD, HIGH_SCALE_SSD, or ENTERPRISE
 filestore_tier = "BASIC_HDD"
