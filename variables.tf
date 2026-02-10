@@ -22,7 +22,7 @@ variable "zone" {
 variable "availability_type" {
   description = "Availability type (ZONAL or REGIONAL)"
   type        = string
-  default     = "REGIONAL"
+  default     = "ZONAL"
 
   validation {
     condition     = contains(["ZONAL", "REGIONAL"], var.availability_type)
