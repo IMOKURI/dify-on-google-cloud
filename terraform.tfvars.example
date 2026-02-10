@@ -3,9 +3,6 @@ project_id = "your-gcp-project-id"
 region     = "asia-northeast1"
 zone       = "asia-northeast1-a"
 
-# Docker Configuration
-docker_compose_version = "v2.24.5"
-
 # Dify Configuration
 dify_version = "1.11.4"
 
@@ -25,8 +22,8 @@ domain_name = "dify.example.com"
 # VM Instance Configuration
 # =============================================================================
 
-machine_type  = "e2-standard-8"
-disk_size_gb  = 50
+machine_type = "e2-standard-8"
+disk_size_gb = 50
 
 # =============================================================================
 # Cloud SQL Configuration
