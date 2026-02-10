@@ -3,6 +3,9 @@ project_id = "your-gcp-project-id"
 region     = "asia-northeast1"
 zone       = "asia-northeast1-a"
 
+# Availability type: ZONAL (single-zone) or REGIONAL (high availability)
+availability_type = "ZONAL"
+
 # Dify Configuration
 dify_version = "1.11.4"
 
@@ -33,9 +36,6 @@ disk_size_gb = 50
 cloudsql_tier      = "db-custom-4-16384"
 cloudsql_disk_size = 50
 
-# Availability type: ZONAL (single-zone) or REGIONAL (high availability)
-cloudsql_availability_type = "ZONAL"
-
 # =============================================================================
 # pgvector Configuration
 # =============================================================================
@@ -44,5 +44,15 @@ cloudsql_availability_type = "ZONAL"
 pgvector_tier      = "db-custom-4-16384"
 pgvector_disk_size = 100
 
-# Availability type: ZONAL (single-zone) or REGIONAL (high availability)
-pgvector_availability_type = "ZONAL"
+# =============================================================================
+# Filestore Configuration
+# =============================================================================
+
+# BASIC_HDD/BASIC_SSD tiers require zone
+# HIGH_SCALE_SSD/ENTERPRISE tiers support zone or region
+
+# Filestore tier: BASIC_HDD, BASIC_SSD, HIGH_SCALE_SSD, or ENTERPRISE
+filestore_tier = "BASIC_HDD"
+
+# Filestore capacity in GB (minimum 1024 GB for BASIC_HDD, 2560 GB for BASIC_SSD)
+filestore_capacity_gb = 1024
