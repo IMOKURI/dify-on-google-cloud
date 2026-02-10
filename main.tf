@@ -143,8 +143,11 @@ module "compute" {
     dify_version               = var.dify_version
   })
 
-  # Python requirements file content
+  # Sandbox python requirements file content
   python_requirements = file("${path.module}/assets/python-requirements.txt")
+
+  # Sandbox configuration file content
+  sandbox_config = file("${path.module}/assets/sandbox/config.yaml")
 
   labels = var.labels
 

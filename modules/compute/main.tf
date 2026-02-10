@@ -43,6 +43,7 @@ resource "google_compute_instance_template" "dify_template" {
   metadata = {
     startup-script      = var.startup_script
     python-requirements = var.python_requirements
+    sandbox-config      = var.sandbox_config
   }
 
   service_account {

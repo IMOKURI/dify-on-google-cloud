@@ -1,0 +1,68 @@
+app:
+  port: 8194
+  debug: True
+  key: dify-sandbox
+max_workers: 4
+max_requests: 50
+worker_timeout: 5
+python_path: /usr/local/bin/python3
+enable_network: True # please make sure there is no network risk in your environment
+allowed_syscalls:
+  - 5
+  - 28
+  - 61
+  - 178
+  - 182
+  - 195
+  - 248
+  - 250
+  - 259
+  - 267
+  - 268
+  - 272
+  - 276
+  - 281
+  - 282
+  - 283
+  - 295
+  - 297
+  - 299
+  - 307
+  - 310
+  - 320
+  - 325
+  - 330
+  - 337
+  - 344
+  - 359
+  - 370
+  - 373
+  - 376
+  - 383
+  - 387
+  - 391
+  - 395
+  - 397
+  - 404
+  - 418
+  - 427
+  - 442
+  - 445
+  - 448
+  - 451
+  - 454
+  - 462
+  - 464
+  - 465
+  - 473
+  - 479
+  - 484
+  - 487
+  - 489
+  - 496
+  - 497
+  - 499
+proxy:
+  socks5: ''
+  http: ''
+  https: ''
