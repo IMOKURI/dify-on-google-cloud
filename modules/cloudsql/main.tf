@@ -32,9 +32,13 @@ resource "google_sql_database_instance" "dify_postgres" {
     tier              = var.cloudsql_tier
     disk_size         = var.cloudsql_disk_size
     disk_type         = "PD_SSD"
-    availability_type = var.cloudsql_availability_type
+    availability_type = var.availability_type
 
     user_labels = var.labels
+
+    location_preference {
+      zone = var.zone
+    }
 
     backup_configuration {
       enabled                        = var.cloudsql_backup_enabled
@@ -132,9 +136,13 @@ resource "google_sql_database_instance" "dify_pgvector" {
     tier              = var.pgvector_tier
     disk_size         = var.pgvector_disk_size
     disk_type         = "PD_SSD"
-    availability_type = var.pgvector_availability_type
+    availability_type = var.availability_type
 
     user_labels = var.labels
+
+    location_preference {
+      zone = var.zone
+    }
 
     backup_configuration {
       enabled                        = var.pgvector_backup_enabled

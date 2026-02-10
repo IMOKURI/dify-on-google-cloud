@@ -8,6 +8,16 @@ variable "region" {
   type        = string
 }
 
+variable "zone" {
+  description = "GCP Zone for Cloud SQL location preference"
+  type        = string
+}
+
+variable "availability_type" {
+  description = "Availability type"
+  type        = string
+}
+
 variable "network_id" {
   description = "VPC network ID"
   type        = string
@@ -31,11 +41,6 @@ variable "cloudsql_disk_size" {
 
 variable "cloudsql_database_version" {
   description = "PostgreSQL version for Cloud SQL"
-  type        = string
-}
-
-variable "cloudsql_availability_type" {
-  description = "Availability type for Cloud SQL"
   type        = string
 }
 
@@ -79,11 +84,6 @@ variable "pgvector_tier" {
 variable "pgvector_disk_size" {
   description = "Cloud SQL disk size in GB for pgvector instance"
   type        = number
-}
-
-variable "pgvector_availability_type" {
-  description = "Availability type for pgvector instance"
-  type        = string
 }
 
 variable "pgvector_backup_enabled" {

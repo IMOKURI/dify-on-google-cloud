@@ -78,6 +78,8 @@ module "cloudsql" {
 
   prefix                    = var.prefix
   region                    = var.region
+  zone                      = var.zone
+  availability_type         = var.availability_type
   network_id                = module.network.network_id
   private_vpc_connection_id = module.network.private_vpc_connection_id
 
@@ -85,7 +87,6 @@ module "cloudsql" {
   cloudsql_tier              = var.cloudsql_tier
   cloudsql_disk_size         = var.cloudsql_disk_size
   cloudsql_database_version  = var.cloudsql_database_version
-  cloudsql_availability_type = var.availability_type
   cloudsql_backup_enabled    = var.cloudsql_backup_enabled
   cloudsql_backup_start_time = var.cloudsql_backup_start_time
   db_name                    = var.db_name
@@ -96,7 +97,6 @@ module "cloudsql" {
   pgvector_database_version  = var.pgvector_database_version
   pgvector_tier              = var.pgvector_tier
   pgvector_disk_size         = var.pgvector_disk_size
-  pgvector_availability_type = var.availability_type
   pgvector_backup_enabled    = var.pgvector_backup_enabled
   pgvector_backup_start_time = var.pgvector_backup_start_time
   pgvector_db_name           = var.pgvector_db_name
