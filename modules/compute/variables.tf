@@ -44,6 +44,12 @@ variable "python_requirements" {
   default     = ""
 }
 
+variable "sandbox_config" {
+  description = "Sandbox configuration file content"
+  type        = string
+  default     = ""
+}
+
 variable "labels" {
   description = "Labels to apply to resources"
   type        = map(string)
