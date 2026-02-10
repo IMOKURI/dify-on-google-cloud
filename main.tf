@@ -144,7 +144,7 @@ module "compute" {
   })
 
   # Sandbox python requirements file content
-  python_requirements = file("${path.module}/assets/python-requirements.txt")
+  python_requirements = file("${path.module}/assets/sandbox/python-requirements.txt")
 
   # Sandbox configuration file content
   sandbox_config = file("${path.module}/assets/sandbox/config.yaml")
