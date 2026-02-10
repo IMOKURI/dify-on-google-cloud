@@ -117,10 +117,12 @@ module "cloudsql" {
 module "compute" {
   source = "./modules/compute"
 
-  prefix       = var.prefix
-  region       = var.region
-  network_name = module.network.network_name
-  subnet_name  = module.network.subnet_name
+  prefix            = var.prefix
+  region            = var.region
+  zone              = var.zone
+  availability_type = var.availability_type
+  network_name      = module.network.network_name
+  subnet_name       = module.network.subnet_name
 
   # Instance configuration
   machine_type          = var.machine_type
