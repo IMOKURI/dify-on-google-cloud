@@ -12,7 +12,7 @@ apt-get update
 apt-get upgrade -y
 
 # Install additional tools
-apt-get install -y git curl wget vim nano htop nfs-common
+apt-get install -y git curl ca-certificates wget vim nano htop nfs-common
 
 echo "System upgraded." >>/var/log/startup-script.log
 
@@ -20,20 +20,25 @@ echo "System upgraded." >>/var/log/startup-script.log
 # Docker Setup
 # =============================================================================
 
-# Install Docker
-curl -fsSL https://get.docker.com -o get-docker.sh
-sh get-docker.sh
+# Add Docker's official GPG key
+install -m 0755 -d /etc/apt/keyrings
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+chmod a+r /etc/apt/keyrings/docker.asc
+
+# Add the repository to Apt sources
+echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
+  $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
+  tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+# Update apt package index
+apt-get update
+
+# Install Docker Engine, CLI, containerd, and Docker Compose plugin
+apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 
 # Add ubuntu user to docker group
 usermod -aG docker ubuntu
-
-# Install Docker Compose
-DOCKER_COMPOSE_VERSION="${docker_compose_version}"
-curl -L "https://github.com/docker/compose/releases/download/$DOCKER_COMPOSE_VERSION/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-chmod +x /usr/local/bin/docker-compose
-
-# Create docker-compose symlink
-ln -sf /usr/local/bin/docker-compose /usr/bin/docker-compose
 
 # Enable Docker service
 systemctl enable docker
@@ -152,6 +157,6 @@ echo "Filestore mounted successfully." >>/var/log/startup-script.log
 # =============================================================================
 
 # Start Dify with Docker Compose
-sudo -u ubuntu docker-compose up -d
+sudo -u ubuntu docker compose up -d
 
 echo "Setup completed successfully!" >>/var/log/startup-script.log

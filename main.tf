@@ -129,7 +129,6 @@ module "compute" {
 
   # Startup script with all service configurations
   startup_script = templatefile("${path.module}/assets/startup-script.sh", {
-    docker_compose_version     = var.docker_compose_version
     db_host                    = module.cloudsql.postgres_private_ip
     database_user              = var.db_user
     database_password          = module.cloudsql.db_password
