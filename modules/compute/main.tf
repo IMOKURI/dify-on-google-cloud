@@ -56,8 +56,9 @@ resource "google_compute_instance_template" "dify_template" {
   }
 }
 
-# Managed Instance Group
-resource "google_compute_region_instance_group_manager" "dify_mig" {
+# Regional Managed Instance Group
+resource "google_compute_region_instance_group_manager" "dify_mig_regional" {
+  count              = var.availability_type == "REGIONAL" ? 1 : 0
   name               = "${var.prefix}-mig"
   base_instance_name = "${var.prefix}-instance"
   region             = var.region
@@ -84,6 +85,47 @@ resource "google_compute_region_instance_group_manager" "dify_mig" {
     most_disruptive_allowed_action = "REPLACE"
     max_surge_fixed                = 0
     max_unavailable_fixed          = 3
+    replacement_method             = "SUBSTITUTE"
+  }
+
+  depends_on = [
+    google_compute_instance_template.dify_template
+  ]
+
+  lifecycle {
+    create_before_destroy = false
+  }
+}
+
+# Zonal Managed Instance Group
+resource "google_compute_instance_group_manager" "dify_mig_zonal" {
+  count              = var.availability_type == "ZONAL" ? 1 : 0
+  name               = "${var.prefix}-mig"
+  base_instance_name = "${var.prefix}-instance"
+  zone               = var.zone
+
+  version {
+    instance_template = google_compute_instance_template.dify_template.id
+  }
+
+  target_size = 1
+
+  named_port {
+    name = "http"
+    port = 80
+  }
+
+  auto_healing_policies {
+    health_check      = google_compute_health_check.dify_health_check.id
+    initial_delay_sec = 900
+  }
+
+  update_policy {
+    type                           = "PROACTIVE"
+    minimal_action                 = "REPLACE"
+    most_disruptive_allowed_action = "REPLACE"
+    max_surge_fixed                = 0
+    max_unavailable_fixed          = 1
     replacement_method             = "SUBSTITUTE"
   }
 

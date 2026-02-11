@@ -7,8 +7,8 @@ variable "prefix" {
   type        = string
 }
 
-variable "zone" {
-  description = "Zone for the Filestore instance"
+variable "location" {
+  description = "Zone or Region for the Filestore instance (BASIC_HDD/BASIC_SSD: zone only, HIGH_SCALE_SSD/ENTERPRISE: zone or region)"
   type        = string
 }
 

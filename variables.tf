@@ -19,6 +19,17 @@ variable "zone" {
   default     = "asia-northeast1-a"
 }
 
+variable "availability_type" {
+  description = "Availability type (ZONAL or REGIONAL)"
+  type        = string
+  default     = "ZONAL"
+
+  validation {
+    condition     = contains(["ZONAL", "REGIONAL"], var.availability_type)
+    error_message = "Availability type must be either ZONAL or REGIONAL."
+  }
+}
+
 variable "prefix" {
   description = "Prefix for resource names"
   type        = string
@@ -144,17 +155,6 @@ variable "cloudsql_database_version" {
   }
 }
 
-variable "cloudsql_availability_type" {
-  description = "Availability type for Cloud SQL instance (ZONAL or REGIONAL)"
-  type        = string
-  default     = "REGIONAL"
-
-  validation {
-    condition     = contains(["ZONAL", "REGIONAL"], var.cloudsql_availability_type)
-    error_message = "Availability type must be either ZONAL or REGIONAL."
-  }
-}
-
 variable "cloudsql_backup_enabled" {
   description = "Enable automated backups"
   type        = bool
@@ -220,17 +220,6 @@ variable "pgvector_disk_size" {
   validation {
     condition     = var.pgvector_disk_size >= 10
     error_message = "pgvector disk size must be at least 10 GB."
-  }
-}
-
-variable "pgvector_availability_type" {
-  description = "Availability type for pgvector instance (ZONAL or REGIONAL)"
-  type        = string
-  default     = "REGIONAL"
-
-  validation {
-    condition     = contains(["ZONAL", "REGIONAL"], var.pgvector_availability_type)
-    error_message = "Availability type must be either ZONAL or REGIONAL."
   }
 }
 

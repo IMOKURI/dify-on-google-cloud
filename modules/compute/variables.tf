@@ -8,6 +8,16 @@ variable "region" {
   type        = string
 }
 
+variable "zone" {
+  description = "GCP Zone (required when availability_type is ZONAL)"
+  type        = string
+}
+
+variable "availability_type" {
+  description = "Availability type: REGIONAL or ZONAL"
+  type        = string
+}
+
 variable "network_name" {
   description = "VPC network name"
   type        = string

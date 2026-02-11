@@ -4,7 +4,7 @@
 
 resource "google_filestore_instance" "dify_filestore" {
   name     = "${var.prefix}-filestore"
-  location = var.zone
+  location = var.location
   tier     = var.filestore_tier
 
   file_shares {
