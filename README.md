@@ -7,7 +7,7 @@ It uses the Dify Community Edition with focus on the following principles:
 
 - Follow Dify Community Edition upgrades.
 - Minimize modifications to the Dify Community Edition codebase.
-- Use managed services for database and file storage.
+- Use managed services for database, file storage and cache.
 
 ## Table of Contents
 <a id="markdown-table-of-contents" name="table-of-contents"></a>
@@ -173,7 +173,7 @@ graph TB
 ## Quick Start
 <a id="markdown-quick-start" name="quick-start"></a>
 
-### 1. Prepare Variables File
+### Prepare Variables File
 <a id="markdown-prepare-variables-file" name="prepare-variables-file"></a>
 
 ```bash
@@ -197,7 +197,7 @@ domain_name = "dify.example.com"
 # ssl_private_key = file("private-key.pem")
 ```
 
-### 2. Deploy
+### Deploy
 <a id="markdown-deploy" name="deploy"></a>
 
 ```bash
@@ -211,7 +211,7 @@ terraform plan
 terraform apply
 ```
 
-### 3. After Deployment
+### After Deployment
 <a id="markdown-after-deployment" name="after-deployment"></a>
 
 ```bash
