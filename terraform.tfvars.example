@@ -66,6 +66,3 @@ redis_tier = "BASIC"
 
 # Redis memory size in GB (1-300)
 redis_memory_size_gb = 10
-
-# Enable Redis AUTH (password authentication) - recommended for production
-redis_auth_enabled = true
