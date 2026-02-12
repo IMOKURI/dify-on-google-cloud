@@ -85,6 +85,8 @@ sed -i "s|^REDIS_HOST=.*|REDIS_HOST=${redis_host}|" .env
 sed -i "s|^REDIS_PORT=.*|REDIS_PORT=${redis_port}|" .env
 sed -i "s|^REDIS_PASSWORD=.*|REDIS_PASSWORD='${redis_auth_string}'|" .env
 sed -i "s|^CELERY_BROKER_URL=.*|CELERY_BROKER_URL='redis://:${redis_auth_string}@${redis_host}:${redis_port}/1'|" .env
+# Disable built-in Redis by adding profile to docker-compose.yaml
+sed -i "/image: redis:6-alpine/a \    profiles: ['redis']" docker-compose.yaml
 
 # Disable Default DB
 sed -i "s|^COMPOSE_PROFILES=.*|COMPOSE_PROFILES=|" .env
