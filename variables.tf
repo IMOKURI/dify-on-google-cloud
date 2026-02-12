@@ -19,6 +19,12 @@ variable "zone" {
   default     = "asia-northeast1-a"
 }
 
+variable "alternative_zone" {
+  description = "Alternative GCP Zone for high availability (used for Redis STANDARD_HA tier)"
+  type        = string
+  default     = "asia-northeast1-b"
+}
+
 variable "availability_type" {
   description = "Availability type (ZONAL or REGIONAL)"
   type        = string
@@ -282,11 +288,96 @@ variable "filestore_share_name" {
 }
 
 # =============================================================================
+# Memorystore for Redis Configuration
+# =============================================================================
+
+variable "redis_tier" {
+  description = "Redis tier (BASIC for standalone, STANDARD_HA for high availability)"
+  type        = string
+  default     = "BASIC"
+
+  validation {
+    condition     = contains(["BASIC", "STANDARD_HA"], var.redis_tier)
+    error_message = "Redis tier must be either BASIC or STANDARD_HA."
+  }
+}
+
+variable "redis_memory_size_gb" {
+  description = "Redis memory size in GB (1-300)"
+  type        = number
+  default     = 10
+
+  validation {
+    condition     = var.redis_memory_size_gb >= 1 && var.redis_memory_size_gb <= 300
+    error_message = "Redis memory size must be between 1 and 300 GB."
+  }
+}
+
+variable "redis_version" {
+  description = "Redis version (REDIS_6_X or REDIS_7_X)"
+  type        = string
+  default     = "REDIS_6_X"
+
+  validation {
+    condition     = contains(["REDIS_6_X", "REDIS_7_X"], var.redis_version)
+    error_message = "Redis version must be either REDIS_6_X or REDIS_7_X."
+  }
+}
+
+variable "redis_reserved_ip_range" {
+  description = "CIDR range for Redis reserved IP (optional, e.g., 10.0.2.0/29)"
+  type        = string
+  default     = null
+}
+
+variable "redis_configs" {
+  description = "Redis configuration parameters (e.g., maxmemory-policy)"
+  type        = map(string)
+  default = {
+    maxmemory-policy = "allkeys-lru"
+  }
+}
+
+variable "redis_auth_enabled" {
+  description = "Enable Redis AUTH (password authentication) for enhanced security"
+  type        = bool
+  default     = true
+}
+
+variable "redis_maintenance_policy_enabled" {
+  description = "Enable maintenance policy for Redis"
+  type        = bool
+  default     = true
+}
+
+variable "redis_maintenance_day" {
+  description = "Day of week for Redis maintenance (MONDAY, TUESDAY, etc.)"
+  type        = string
+  default     = "SATURDAY"
+
+  validation {
+    condition     = contains(["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY"], var.redis_maintenance_day)
+    error_message = "Maintenance day must be a valid day of the week."
+  }
+}
+
+variable "redis_maintenance_start_hour" {
+  description = "Hour to start Redis maintenance (0-23)"
+  type        = number
+  default     = 2
+
+  validation {
+    condition     = var.redis_maintenance_start_hour >= 0 && var.redis_maintenance_start_hour <= 23
+    error_message = "Maintenance start hour must be between 0 and 23."
+  }
+}
+
+# =============================================================================
 # Application Configuration
 # =============================================================================
 
 variable "dify_version" {
   description = "Dify version to download and deploy"
   type        = string
-  default     = "1.11.4"
+  default     = "1.13.0"
 }

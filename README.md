@@ -57,6 +57,9 @@ This Terraform code creates the following resources:
 - **Storage**
   - Filestore - For file uploads and plugin assets
 
+- **Cache**
+  - Memorystore for Redis - For caching and session storage
+
 - **Compute**
   - Managed Instance Group
   - Custom startup script to install and run Dify
@@ -104,14 +107,6 @@ graph TB
                     FS[Filestore<br/>NFS Share<br/>File Storage]
                 end
             end
-
-            subgraph Firewall["Firewall Rules"]
-                FW_LB[LB → Instance<br/>HTTP:80]
-                FW_SSH[SSH Access<br/>Port:22]
-                FW_HC[Health Check<br/>Port:80]
-            end
-
-            PSC[Private Service Connection<br/>VPC Peering]
         end
 
         subgraph GoogleManaged["Google-Managed VPC"]
@@ -119,10 +114,10 @@ graph TB
                 SQL1[Cloud SQL PostgreSQL<br/>Main DB]
                 SQL2[Cloud SQL PostgreSQL<br/>pgvector DB]
             end
-        end
 
-        subgraph IAM["IAM"]
-            SA[Service Account<br/>For Dify]
+            subgraph Cache["Memorystore"]
+                REDIS[Redis Instance<br/>Cache & Sessions]
+            end
         end
     end
 
@@ -138,20 +133,18 @@ graph TB
     HC -->|Health Check| Instance
 
     Instance -->|NFS Mount| FS
-    Instance -.->|Authentication| SA
     Instance -->|Private IP<br/>via VPC Peering| SQL1
     Instance -->|Private IP<br/>via VPC Peering| SQL2
-
-    PSC -.->|VPC Peering| Database
+    Instance -->|Private IP<br/>via VPC Peering| REDIS
 
     style User fill:#e1f5ff
     style LB fill:#fff4e6
     style VPC fill:#f0f9ff
     style MIG fill:#e8f5e9
     style Database fill:#fce4ec
+    style Cache fill:#e3f2fd
     style GoogleManaged fill:#f5f5f5
     style Storage fill:#fff9c4
-    style IAM fill:#f3e5f5
 ```
 
 ## Cost Estimation
@@ -176,6 +169,7 @@ graph TB
    gcloud services enable compute.googleapis.com
    gcloud services enable file.googleapis.com
    gcloud services enable iamcredentials.googleapis.com
+   gcloud services enable redis.googleapis.com
    gcloud services enable servicenetworking.googleapis.com
    gcloud services enable sqladmin.googleapis.com
    ```
@@ -196,7 +190,7 @@ Edit `terraform.tfvars` and set at least the following values:
 project_id = "your-gcp-project-id"
 
 # Dify version to be deployed
-dify_version = "1.11.4"
+dify_version = "1.13.0"
 
 # If you have a domain name (recommended)
 domain_name = "dify.example.com"
@@ -294,7 +288,7 @@ When Terraform is applied,
 [Check Dify Release Note](https://github.com/langgenius/dify/releases) and Update [startup-script.sh](./assets/startup-script.sh) if needed.
 
 ```hcl
-dify_version = "1.12.1"  # Specify new version tag
+dify_version = "1.13.x"  # Specify new version tag
 ```
 
 ```bash

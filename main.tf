@@ -111,6 +111,38 @@ module "cloudsql" {
 }
 
 # =============================================================================
+# Memorystore Module - Redis for caching and session storage
+# =============================================================================
+
+module "memorystore" {
+  source = "./modules/memorystore"
+
+  prefix                    = var.prefix
+  region                    = var.region
+  zone                      = var.zone
+  alternative_zone          = var.alternative_zone
+  network_id                = module.network.network_id
+  private_vpc_connection_id = module.network.private_vpc_connection_id
+
+  redis_tier              = var.redis_tier
+  redis_memory_size_gb    = var.redis_memory_size_gb
+  redis_version           = var.redis_version
+  redis_reserved_ip_range = var.redis_reserved_ip_range
+  redis_configs           = var.redis_configs
+  auth_enabled            = var.redis_auth_enabled
+
+  maintenance_policy_enabled = var.redis_maintenance_policy_enabled
+  maintenance_day            = var.redis_maintenance_day
+  maintenance_start_hour     = var.redis_maintenance_start_hour
+
+  labels = var.labels
+
+  depends_on = [
+    module.network
+  ]
+}
+
+# =============================================================================
 # Dify Application
 # =============================================================================
 
@@ -149,6 +181,9 @@ module "compute" {
     pgvector_database_user     = var.pgvector_db_user
     pgvector_database_password = module.cloudsql.pgvector_db_password
     pgvector_database_name     = var.pgvector_db_name
+    redis_host                 = module.memorystore.redis_host
+    redis_port                 = module.memorystore.redis_port
+    redis_auth_string          = module.memorystore.redis_auth_string
     filestore_ip               = module.filestore.filestore_ip
     filestore_share_name       = module.filestore.filestore_share_name
     dify_version               = var.dify_version
@@ -167,7 +202,8 @@ module "compute" {
     module.iam,
     module.network,
     module.filestore,
-    module.cloudsql
+    module.cloudsql,
+    module.memorystore
   ]
 }
 

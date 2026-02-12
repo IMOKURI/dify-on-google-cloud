@@ -80,6 +80,12 @@ sed -i "s|^PGVECTOR_POSTGRES_PASSWORD=.*|PGVECTOR_POSTGRES_PASSWORD='${pgvector_
 sed -i "s|^PGVECTOR_DATABASE=.*|PGVECTOR_DATABASE=${pgvector_database_name}|" .env
 sed -i "s|^PGVECTOR_POSTGRES_DB=.*|PGVECTOR_POSTGRES_DB=${pgvector_database_name}|" .env
 
+# Redis Configuration
+sed -i "s|^REDIS_HOST=.*|REDIS_HOST=${redis_host}|" .env
+sed -i "s|^REDIS_PORT=.*|REDIS_PORT=${redis_port}|" .env
+sed -i "s|^REDIS_PASSWORD=.*|REDIS_PASSWORD='${redis_auth_string}'|" .env
+sed -i "s|^CELERY_BROKER_URL=.*|CELERY_BROKER_URL='redis://:${redis_auth_string}@${redis_host}:${redis_port}/1'|" .env
+
 # Disable Default DB
 sed -i "s|^COMPOSE_PROFILES=.*|COMPOSE_PROFILES=|" .env
 

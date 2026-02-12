@@ -7,7 +7,7 @@ region            = "asia-northeast1"
 zone              = "asia-northeast1-a"
 
 # Dify Configuration
-dify_version = "1.11.4"
+dify_version = "1.13.0"
 
 # =============================================================================
 # Network Configuration
@@ -56,3 +56,16 @@ filestore_tier = "BASIC_HDD"
 
 # Filestore capacity in GB (minimum 1024 GB for BASIC_HDD, 2560 GB for BASIC_SSD)
 filestore_capacity_gb = 1024
+
+# =============================================================================
+# Memorystore for Redis Configuration
+# =============================================================================
+
+# Redis tier: BASIC (standalone) or STANDARD_HA (high availability)
+redis_tier = "BASIC"
+
+# Redis memory size in GB (1-300)
+redis_memory_size_gb = 10
+
+# Enable Redis AUTH (password authentication) - recommended for production
+redis_auth_enabled = true
