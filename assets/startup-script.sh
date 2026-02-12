@@ -83,6 +83,12 @@ sed -i "s|^PGVECTOR_POSTGRES_DB=.*|PGVECTOR_POSTGRES_DB=${pgvector_database_name
 # Disable Default DB
 sed -i "s|^COMPOSE_PROFILES=.*|COMPOSE_PROFILES=|" .env
 
+# Password for admin user initialization.
+sed -i "s|^INIT_PASSWORD=.*|INIT_PASSWORD='${dify_admin_password}'|" .env
+
+# Comma-separated list of file extensions blocked from upload for security reasons.
+sed -i "s|^UPLOAD_FILE_EXTENSION_BLACKLIST=.*|UPLOAD_FILE_EXTENSION_BLACKLIST=exe,bat,cmd,com,scr,vbs,ps1,msi,dll|" .env
+
 chown -R ubuntu:ubuntu /opt/dify-$DIFY_VERSION
 echo "Dify was configured." >>/var/log/startup-script.log
 

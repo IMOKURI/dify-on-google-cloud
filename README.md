@@ -225,8 +225,8 @@ terraform apply
 <a id="markdown-after-deployment" name="after-deployment"></a>
 
 ```bash
-# Check output information
-terraform output
+# Check admin password
+terraform output -raw dify_admin_password
 
 # Access via browser
 # https://<load_balancer_ip> or https://your-domain.com
