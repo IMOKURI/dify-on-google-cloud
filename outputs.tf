@@ -12,6 +12,10 @@ output "https_url" {
   value       = var.domain_name != "" ? "https://${var.domain_name}" : "https://${module.network.lb_ip_address}"
 }
 
+# =============================================================================
+# Application Outputs
+# =============================================================================
+
 output "initial_password" {
   description = "Dify initial password"
   value       = random_password.initial_password.result

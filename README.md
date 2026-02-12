@@ -17,7 +17,7 @@ It uses the Dify Community Edition with focus on the following principles:
 - [Dify on Google Cloud - Terraform Deployment](#dify-on-google-cloud---terraform-deployment)
     - [Table of Contents](#table-of-contents)
     - [Components](#components)
-    - [Architecture](#architecture)
+    - [Architecture Overview](#architecture-overview)
     - [Cost Estimation](#cost-estimation)
     - [Prerequisites](#prerequisites)
     - [Quick Start](#quick-start)
@@ -30,7 +30,7 @@ It uses the Dify Community Edition with focus on the following principles:
             - [Option 2: Self-Signed Certificate](#option-2-self-signed-certificate)
         - [Additional Sandbox Packages](#additional-sandbox-packages)
     - [Dify Deployment](#dify-deployment)
-        - [Upgrada Strategy](#upgrada-strategy)
+        - [Upgrade Strategy](#upgrade-strategy)
     - [Troubleshooting](#troubleshooting)
         - [Verify SSL Certificate Provisioning](#verify-ssl-certificate-provisioning)
         - [Check startup script log](#check-startup-script-log)
@@ -57,6 +57,9 @@ This Terraform code creates the following resources:
 - **Storage**
   - Filestore - For file uploads and plugin assets
 
+- **Cache**
+  - Memorystore for Redis - For caching and session storage
+
 - **Compute**
   - Managed Instance Group
   - Custom startup script to install and run Dify
@@ -69,8 +72,8 @@ This Terraform code creates the following resources:
   - Service account for Dify
   - Automatic granting of required permissions
 
-## Architecture
-<a id="markdown-architecture" name="architecture"></a>
+## Architecture Overview
+<a id="markdown-architecture-overview" name="architecture-overview"></a>
 
 ```mermaid
 graph TB
@@ -88,8 +91,6 @@ graph TB
         subgraph LB["Load Balancer"]
             HTTPS[HTTPS Forwarding Rule<br/>Port: 443]
             SSL[SSL Certificate<br/>Google-managed or Self-signed]
-            Proxy[HTTPS Proxy]
-            URLMap[URL Map]
             Backend[Backend Service]
             HC[Health Check<br/>/console/api/ping]
         end
@@ -101,17 +102,9 @@ graph TB
                 end
 
                 subgraph Storage["Storage"]
-                    FS[Filestore<br/>NFS Share<br/>File Storage]
+                    FS[Filestore<br/>NFS Share]
                 end
             end
-
-            subgraph Firewall["Firewall Rules"]
-                FW_LB[LB → Instance<br/>HTTP:80]
-                FW_SSH[SSH Access<br/>Port:22]
-                FW_HC[Health Check<br/>Port:80]
-            end
-
-            PSC[Private Service Connection<br/>VPC Peering]
         end
 
         subgraph GoogleManaged["Google-Managed VPC"]
@@ -119,10 +112,10 @@ graph TB
                 SQL1[Cloud SQL PostgreSQL<br/>Main DB]
                 SQL2[Cloud SQL PostgreSQL<br/>pgvector DB]
             end
-        end
 
-        subgraph IAM["IAM"]
-            SA[Service Account<br/>For Dify]
+            subgraph Cache["Memorystore"]
+                REDIS[Redis Instance<br/>Cache & Sessions]
+            end
         end
     end
 
@@ -131,27 +124,23 @@ graph TB
     User -->|HTTPS| LB_IP
     LB_IP --> HTTPS
     HTTPS --> SSL
-    SSL --> Proxy
-    Proxy --> URLMap
-    URLMap --> Backend
+    SSL --> Backend
     Backend -->|HTTP:80| MIG
     HC -->|Health Check| Instance
 
     Instance -->|NFS Mount| FS
-    Instance -.->|Authentication| SA
     Instance -->|Private IP<br/>via VPC Peering| SQL1
     Instance -->|Private IP<br/>via VPC Peering| SQL2
-
-    PSC -.->|VPC Peering| Database
+    Instance -->|Private IP<br/>via VPC Peering| REDIS
 
     style User fill:#e1f5ff
     style LB fill:#fff4e6
     style VPC fill:#f0f9ff
     style MIG fill:#e8f5e9
     style Database fill:#fce4ec
+    style Cache fill:#e3f2fd
     style GoogleManaged fill:#f5f5f5
     style Storage fill:#fff9c4
-    style IAM fill:#f3e5f5
 ```
 
 ## Cost Estimation
@@ -176,6 +165,7 @@ graph TB
    gcloud services enable compute.googleapis.com
    gcloud services enable file.googleapis.com
    gcloud services enable iamcredentials.googleapis.com
+   gcloud services enable redis.googleapis.com
    gcloud services enable servicenetworking.googleapis.com
    gcloud services enable sqladmin.googleapis.com
    ```
@@ -196,7 +186,7 @@ Edit `terraform.tfvars` and set at least the following values:
 project_id = "your-gcp-project-id"
 
 # Dify version to be deployed
-dify_version = "1.11.4"
+dify_version = "1.13.0"
 
 # If you have a domain name (recommended)
 domain_name = "dify.example.com"
@@ -288,13 +278,13 @@ When Terraform is applied,
 1. Update Dify environment variables by [startup-script.sh](./assets/startup-script.sh).
 1. Start Dify application.
 
-### Upgrada Strategy
-<a id="markdown-upgrada-strategy" name="upgrada-strategy"></a>
+### Upgrade Strategy
+<a id="markdown-upgrade-strategy" name="upgrade-strategy"></a>
 
 [Check Dify Release Note](https://github.com/langgenius/dify/releases) and Update [startup-script.sh](./assets/startup-script.sh) if needed.
 
 ```hcl
-dify_version = "1.12.1"  # Specify new version tag
+dify_version = "1.13.x"  # Specify new version tag
 ```
 
 ```bash
