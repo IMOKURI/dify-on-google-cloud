@@ -17,7 +17,7 @@ It uses the Dify Community Edition with focus on the following principles:
 - [Dify on Google Cloud - Terraform Deployment](#dify-on-google-cloud---terraform-deployment)
     - [Table of Contents](#table-of-contents)
     - [Components](#components)
-    - [Architecture](#architecture)
+    - [Architecture Overview](#architecture-overview)
     - [Cost Estimation](#cost-estimation)
     - [Prerequisites](#prerequisites)
     - [Quick Start](#quick-start)
@@ -30,7 +30,7 @@ It uses the Dify Community Edition with focus on the following principles:
             - [Option 2: Self-Signed Certificate](#option-2-self-signed-certificate)
         - [Additional Sandbox Packages](#additional-sandbox-packages)
     - [Dify Deployment](#dify-deployment)
-        - [Upgrada Strategy](#upgrada-strategy)
+        - [Upgrade Strategy](#upgrade-strategy)
     - [Troubleshooting](#troubleshooting)
         - [Verify SSL Certificate Provisioning](#verify-ssl-certificate-provisioning)
         - [Check startup script log](#check-startup-script-log)
@@ -72,8 +72,8 @@ This Terraform code creates the following resources:
   - Service account for Dify
   - Automatic granting of required permissions
 
-## Architecture
-<a id="markdown-architecture" name="architecture"></a>
+## Architecture Overview
+<a id="markdown-architecture-overview" name="architecture-overview"></a>
 
 ```mermaid
 graph TB
@@ -91,8 +91,6 @@ graph TB
         subgraph LB["Load Balancer"]
             HTTPS[HTTPS Forwarding Rule<br/>Port: 443]
             SSL[SSL Certificate<br/>Google-managed or Self-signed]
-            Proxy[HTTPS Proxy]
-            URLMap[URL Map]
             Backend[Backend Service]
             HC[Health Check<br/>/console/api/ping]
         end
@@ -104,7 +102,7 @@ graph TB
                 end
 
                 subgraph Storage["Storage"]
-                    FS[Filestore<br/>NFS Share<br/>File Storage]
+                    FS[Filestore<br/>NFS Share]
                 end
             end
         end
@@ -126,9 +124,7 @@ graph TB
     User -->|HTTPS| LB_IP
     LB_IP --> HTTPS
     HTTPS --> SSL
-    SSL --> Proxy
-    Proxy --> URLMap
-    URLMap --> Backend
+    SSL --> Backend
     Backend -->|HTTP:80| MIG
     HC -->|Health Check| Instance
 
@@ -282,8 +278,8 @@ When Terraform is applied,
 1. Update Dify environment variables by [startup-script.sh](./assets/startup-script.sh).
 1. Start Dify application.
 
-### Upgrada Strategy
-<a id="markdown-upgrada-strategy" name="upgrada-strategy"></a>
+### Upgrade Strategy
+<a id="markdown-upgrade-strategy" name="upgrade-strategy"></a>
 
 [Check Dify Release Note](https://github.com/langgenius/dify/releases) and Update [startup-script.sh](./assets/startup-script.sh) if needed.
 
