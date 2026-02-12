@@ -84,7 +84,7 @@ sed -i "s|^PGVECTOR_POSTGRES_DB=.*|PGVECTOR_POSTGRES_DB=${pgvector_database_name
 sed -i "s|^COMPOSE_PROFILES=.*|COMPOSE_PROFILES=|" .env
 
 # Password for admin user initialization.
-sed -i "s|^INIT_PASSWORD=.*|INIT_PASSWORD='${dify_admin_password}'|" .env
+sed -i "s|^INIT_PASSWORD=.*|INIT_PASSWORD='${initial_password}'|" .env
 
 # Comma-separated list of file extensions blocked from upload for security reasons.
 sed -i "s|^UPLOAD_FILE_EXTENSION_BLACKLIST=.*|UPLOAD_FILE_EXTENSION_BLACKLIST=exe,bat,cmd,com,scr,vbs,ps1,msi,dll|" .env

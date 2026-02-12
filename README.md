@@ -226,7 +226,7 @@ terraform apply
 
 ```bash
 # Check admin password
-terraform output -raw dify_admin_password
+terraform output -raw initial_password
 
 # Access via browser
 # https://<load_balancer_ip> or https://your-domain.com

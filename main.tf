@@ -115,7 +115,7 @@ module "cloudsql" {
 # =============================================================================
 
 # Random password for Dify admin init password
-resource "random_password" "dify_admin_password" {
+resource "random_password" "initial_password" {
   length  = 16
   special = false
 }
@@ -152,7 +152,7 @@ module "compute" {
     filestore_ip               = module.filestore.filestore_ip
     filestore_share_name       = module.filestore.filestore_share_name
     dify_version               = var.dify_version
-    dify_admin_password        = random_password.dify_admin_password.result
+    initial_password           = random_password.initial_password.result
   })
 
   # Sandbox python requirements file content
