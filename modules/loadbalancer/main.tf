@@ -19,6 +19,15 @@ resource "google_compute_backend_service" "dify_backend" {
     max_utilization = 0.8
   }
 
+  # Identity-Aware Proxy configuration
+  dynamic "iap" {
+    for_each = var.iap_enabled ? [1] : []
+    content {
+      oauth2_client_id     = var.iap_oauth_client_id
+      oauth2_client_secret = var.iap_oauth_client_secret
+    }
+  }
+
   timeouts {
     create = "20m"
     update = "20m"
@@ -88,5 +97,23 @@ resource "google_compute_global_forwarding_rule" "dify_https_forwarding_rule" {
 
   depends_on = [
     google_compute_target_https_proxy.dify_https_proxy
+  ]
+}
+
+# =============================================================================
+# Identity-Aware Proxy IAM Binding
+# =============================================================================
+# Grant IAP access to specified members
+
+resource "google_iap_web_backend_service_iam_binding" "iap_access" {
+  count = var.iap_enabled && length(var.iap_members) > 0 ? 1 : 0
+
+  project             = var.project_id
+  web_backend_service = google_compute_backend_service.dify_backend.name
+  role                = "roles/iap.httpsResourceAccessor"
+  members             = var.iap_members
+
+  depends_on = [
+    google_compute_backend_service.dify_backend
   ]
 }

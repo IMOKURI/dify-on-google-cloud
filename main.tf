@@ -205,6 +205,13 @@ module "loadbalancer" {
   ssl_certificate = var.ssl_certificate
   ssl_private_key = var.ssl_private_key
 
+  # Identity-Aware Proxy configuration
+  iap_enabled             = var.iap_enabled
+  iap_oauth_client_id     = var.iap_oauth_client_id
+  iap_oauth_client_secret = var.iap_oauth_client_secret
+  iap_members             = var.iap_members
+  project_id              = var.project_id
+
   labels = var.labels
 
   depends_on = [
