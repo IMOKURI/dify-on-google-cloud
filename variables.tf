@@ -381,3 +381,33 @@ variable "dify_version" {
   type        = string
   default     = "1.13.0"
 }
+
+# =============================================================================
+# Identity-Aware Proxy (IAP) Configuration
+# =============================================================================
+
+variable "iap_enabled" {
+  description = "Enable Identity-Aware Proxy for the load balancer"
+  type        = bool
+  default     = false
+}
+
+variable "iap_oauth_client_id" {
+  description = "OAuth 2.0 client ID for IAP (required if iap_enabled is true)"
+  type        = string
+  default     = ""
+  sensitive   = true
+}
+
+variable "iap_oauth_client_secret" {
+  description = "OAuth 2.0 client secret for IAP (required if iap_enabled is true)"
+  type        = string
+  default     = ""
+  sensitive   = true
+}
+
+variable "iap_members" {
+  description = "List of IAM members (users/groups) allowed to access through IAP (e.g., ['user:name@example.com', 'group:admins@example.com'])"
+  type        = list(string)
+  default     = []
+}

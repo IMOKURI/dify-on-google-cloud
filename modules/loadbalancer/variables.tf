@@ -40,3 +40,35 @@ variable "labels" {
   type        = map(string)
   default     = {}
 }
+
+variable "iap_enabled" {
+  description = "Enable Identity-Aware Proxy"
+  type        = bool
+  default     = false
+}
+
+variable "iap_oauth_client_id" {
+  description = "OAuth 2.0 client ID for IAP"
+  type        = string
+  default     = ""
+  sensitive   = true
+}
+
+variable "iap_oauth_client_secret" {
+  description = "OAuth 2.0 client secret for IAP"
+  type        = string
+  default     = ""
+  sensitive   = true
+}
+
+variable "iap_members" {
+  description = "List of IAM members allowed to access through IAP"
+  type        = list(string)
+  default     = []
+}
+
+variable "project_id" {
+  description = "GCP Project ID for IAP IAM bindings"
+  type        = string
+  default     = ""
+}

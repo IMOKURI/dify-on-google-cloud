@@ -28,6 +28,7 @@ It uses the Dify Community Edition with focus on the following principles:
         - [SSL Certificate Setup](#ssl-certificate-setup)
             - [Option 1: Google-Managed SSL Certificate Recommended](#option-1-google-managed-ssl-certificate-recommended)
             - [Option 2: Self-Signed Certificate](#option-2-self-signed-certificate)
+        - [Identity-Aware Proxy IAP Configuration](#identity-aware-proxy-iap-configuration)
         - [Additional Sandbox Packages](#additional-sandbox-packages)
     - [Dify Deployment](#dify-deployment)
         - [Upgrade Strategy](#upgrade-strategy)
@@ -168,6 +169,9 @@ graph TB
    gcloud services enable redis.googleapis.com
    gcloud services enable servicenetworking.googleapis.com
    gcloud services enable sqladmin.googleapis.com
+   
+   # Optional: Enable if using Identity-Aware Proxy
+   gcloud services enable iap.googleapis.com
    ```
 
 ## Quick Start
@@ -258,6 +262,55 @@ domain_name     = ""
 ssl_certificate = file("certificate.pem")
 ssl_private_key = file("private-key.pem")
 ```
+
+### Identity-Aware Proxy (IAP) Configuration
+<a id="markdown-identity-aware-proxy-iap-configuration" name="identity-aware-proxy-iap-configuration"></a>
+
+Identity-Aware Proxy (IAP) adds Google authentication to your application, ensuring only authorized users can access it.
+
+#### Enable IAP
+
+1. **Create OAuth 2.0 Credentials**:
+   - Go to [GCP Console > APIs & Services > Credentials](https://console.cloud.google.com/apis/credentials)
+   - Click "Create Credentials" > "OAuth client ID"
+   - Application type: "Web application"
+   - Add authorized redirect URI: `https://iap.googleapis.com/v1/oauth/clientIds/<CLIENT_ID>:handleRedirect`
+   - Save the Client ID and Client Secret
+
+2. **Enable IAP API**:
+   ```bash
+   gcloud services enable iap.googleapis.com
+   ```
+
+3. **Configure terraform.tfvars**:
+   ```hcl
+   iap_enabled              = true
+   iap_oauth_client_id      = "123456789-abc.apps.googleusercontent.com"
+   iap_oauth_client_secret  = "your-client-secret"
+   iap_members = [
+     "user:admin@example.com",
+     "group:developers@example.com",
+     "domain:example.com"
+   ]
+   ```
+
+4. **Apply Configuration**:
+   ```bash
+   terraform apply
+   ```
+
+#### IAP Member Format
+
+- Individual user: `user:email@example.com`
+- Google Group: `group:groupname@example.com`
+- Domain: `domain:example.com` (all users in the domain)
+- Service account: `serviceAccount:name@project.iam.gserviceaccount.com`
+
+#### Testing IAP
+
+After deployment, accessing your application will require users to:
+1. Sign in with their Google account
+2. Be granted access if they are in the `iap_members` list
 
 ### Additional Sandbox Packages
 <a id="markdown-additional-sandbox-packages" name="additional-sandbox-packages"></a>

@@ -66,3 +66,22 @@ redis_tier = "BASIC"
 
 # Redis memory size in GB (1-300)
 redis_memory_size_gb = 10
+
+# =============================================================================
+# Identity-Aware Proxy (IAP) Configuration
+# =============================================================================
+# Enable IAP to require Google authentication for accessing the application
+# Before enabling, you must create OAuth 2.0 credentials in GCP Console:
+# 1. Go to APIs & Services > Credentials
+# 2. Create OAuth 2.0 Client ID (Web application)
+# 3. Add authorized redirect URI: https://iap.googleapis.com/v1/oauth/clientIds/<CLIENT_ID>:handleRedirect
+# =============================================================================
+
+# iap_enabled              = true
+# iap_oauth_client_id      = "your-oauth-client-id.apps.googleusercontent.com"
+# iap_oauth_client_secret  = "your-oauth-client-secret"
+# iap_members = [
+#   "user:admin@example.com",
+#   "group:developers@example.com",
+#   "domain:example.com"
+# ]
