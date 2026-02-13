@@ -40,3 +40,21 @@ variable "labels" {
   type        = map(string)
   default     = {}
 }
+
+variable "enable_backup" {
+  description = "Enable automatic backup for Filestore instance"
+  type        = bool
+  default     = false
+}
+
+variable "backup_location" {
+  description = "Location for the Filestore backup (region)"
+  type        = string
+  default     = ""
+}
+
+variable "backup_labels" {
+  description = "Labels to apply to backup"
+  type        = map(string)
+  default     = {}
+}

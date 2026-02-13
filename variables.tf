@@ -287,6 +287,47 @@ variable "filestore_share_name" {
   default     = "dify_volumes"
 }
 
+variable "filestore_enable_backup" {
+  description = "Enable automatic backup for Filestore instance"
+  type        = bool
+  default     = false
+}
+
+variable "filestore_backup_location" {
+  description = "Location for the Filestore backup (region). Defaults to the instance location if not specified"
+  type        = string
+  default     = ""
+}
+
+variable "filestore_backup_scheduler_enabled" {
+  description = "Enable automated scheduled backups for Filestore"
+  type        = bool
+  default     = false
+}
+
+variable "filestore_backup_schedule" {
+  description = "Cron schedule for automated backups (e.g., '0 2 * * *' for daily at 2:00 AM)"
+  type        = string
+  default     = "0 2 * * *"
+}
+
+variable "filestore_backup_timezone" {
+  description = "Timezone for the backup schedule"
+  type        = string
+  default     = "Asia/Tokyo"
+}
+
+variable "filestore_backup_retention_days" {
+  description = "Number of days to retain backups (0 = keep all backups)"
+  type        = number
+  default     = 7
+
+  validation {
+    condition     = var.filestore_backup_retention_days >= 0
+    error_message = "Backup retention days must be 0 or greater."
+  }
+}
+
 # =============================================================================
 # Memorystore for Redis Configuration
 # =============================================================================

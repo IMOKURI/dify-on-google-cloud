@@ -37,11 +37,39 @@ module "filestore" {
   filestore_tier        = var.filestore_tier
   filestore_capacity_gb = var.filestore_capacity_gb
   filestore_share_name  = var.filestore_share_name
+  enable_backup         = var.filestore_enable_backup
+  backup_location       = var.filestore_backup_location
 
   labels = var.labels
 
   depends_on = [
     module.network
+  ]
+}
+
+# =============================================================================
+# Backup Scheduler Module - Automated Filestore Backups
+# =============================================================================
+
+module "backup_scheduler" {
+  source = "./modules/backup-scheduler"
+
+  prefix                  = var.prefix
+  project_id              = var.project_id
+  region                  = var.region
+  enable_backup_scheduler = var.filestore_backup_scheduler_enabled
+  backup_schedule         = var.filestore_backup_schedule
+  backup_timezone         = var.filestore_backup_timezone
+  backup_retention_days   = var.filestore_backup_retention_days
+  filestore_instance_id   = module.filestore.filestore_instance_id
+  filestore_location      = var.availability_type == "REGIONAL" ? var.region : var.zone
+  filestore_share_name    = var.filestore_share_name
+  backup_location         = var.filestore_backup_location
+
+  labels = var.labels
+
+  depends_on = [
+    module.filestore
   ]
 }
 

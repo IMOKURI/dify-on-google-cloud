@@ -29,6 +29,14 @@ It uses the Dify Community Edition with focus on the following principles:
             - [Option 1: Google-Managed SSL Certificate Recommended](#option-1-google-managed-ssl-certificate-recommended)
             - [Option 2: Self-Signed Certificate](#option-2-self-signed-certificate)
         - [Identity-Aware Proxy IAP Configuration](#identity-aware-proxy-iap-configuration)
+            - [Enable IAP](#enable-iap)
+            - [IAP Member Format](#iap-member-format)
+            - [Testing IAP](#testing-iap)
+        - [Filestore Backup Configuration](#filestore-backup-configuration)
+            - [Option 1: Manual Backup](#option-1-manual-backup)
+            - [Option 2: Automated Scheduled Backups Recommended](#option-2-automated-scheduled-backups-recommended)
+            - [Manual Trigger](#manual-trigger)
+            - [View Backup Status](#view-backup-status)
         - [Additional Sandbox Packages](#additional-sandbox-packages)
     - [Dify Deployment](#dify-deployment)
         - [Upgrade Strategy](#upgrade-strategy)
@@ -172,6 +180,11 @@ graph TB
    
    # Optional: Enable if using Identity-Aware Proxy
    gcloud services enable iap.googleapis.com
+   
+   # Optional: Enable if using Filestore automated backups
+   gcloud services enable cloudfunctions.googleapis.com
+   gcloud services enable cloudscheduler.googleapis.com
+   gcloud services enable cloudbuild.googleapis.com
    ```
 
 ## Quick Start
@@ -269,6 +282,7 @@ ssl_private_key = file("private-key.pem")
 Identity-Aware Proxy (IAP) adds Google authentication to your application, ensuring only authorized users can access it.
 
 #### Enable IAP
+<a id="markdown-enable-iap" name="enable-iap"></a>
 
 1. **Create OAuth 2.0 Credentials**:
    - Go to [GCP Console > APIs & Services > Credentials](https://console.cloud.google.com/apis/credentials)
@@ -300,6 +314,7 @@ Identity-Aware Proxy (IAP) adds Google authentication to your application, ensur
    ```
 
 #### IAP Member Format
+<a id="markdown-iap-member-format" name="iap-member-format"></a>
 
 - Individual user: `user:email@example.com`
 - Google Group: `group:groupname@example.com`
@@ -307,10 +322,122 @@ Identity-Aware Proxy (IAP) adds Google authentication to your application, ensur
 - Service account: `serviceAccount:name@project.iam.gserviceaccount.com`
 
 #### Testing IAP
+<a id="markdown-testing-iap" name="testing-iap"></a>
 
 After deployment, accessing your application will require users to:
 1. Sign in with their Google account
 2. Be granted access if they are in the `iap_members` list
+
+### Filestore Backup Configuration
+<a id="markdown-filestore-backup-configuration" name="filestore-backup-configuration"></a>
+
+You can enable backups for your Filestore instance to protect your data. Two options are available:
+
+1. **Manual Backup** - Create a one-time backup during Terraform apply
+2. **Automated Scheduled Backups** - Set up recurring backups with automatic retention management
+
+#### Option 1: Manual Backup
+<a id="markdown-option-1%3A-manual-backup" name="option-1%3A-manual-backup"></a>
+
+Configure `terraform.tfvars`:
+
+```hcl
+# Enable Filestore backup
+filestore_enable_backup = true
+
+# Optional: Specify backup location (defaults to instance location)
+filestore_backup_location = "asia-northeast1"
+```
+
+Apply configuration:
+
+```bash
+terraform apply
+```
+
+This creates a one-time backup of your Filestore instance that can be used for data recovery.
+
+#### Option 2: Automated Scheduled Backups (Recommended)
+<a id="markdown-option-2%3A-automated-scheduled-backups-recommended" name="option-2%3A-automated-scheduled-backups-recommended"></a>
+
+For production environments, automated scheduled backups are recommended. This option uses Cloud Scheduler and Cloud Functions to create backups on a regular schedule and automatically delete old backups based on retention policy.
+
+**Enable Required APIs:**
+
+```bash
+gcloud services enable cloudfunctions.googleapis.com
+gcloud services enable cloudscheduler.googleapis.com
+gcloud services enable cloudbuild.googleapis.com
+```
+
+**Configure `terraform.tfvars`:**
+
+```hcl
+# Enable automated backup scheduler
+filestore_backup_scheduler_enabled = true
+
+# Backup schedule (cron format)
+# Default: "0 2 * * *" (daily at 2:00 AM)
+filestore_backup_schedule = "0 2 * * *"
+
+# Timezone for the schedule
+filestore_backup_timezone = "Asia/Tokyo"
+
+# Retention period in days (0 = keep all backups)
+filestore_backup_retention_days = 7
+
+# Optional: Specify backup location
+filestore_backup_location = "asia-northeast1"
+```
+
+**Apply configuration:**
+
+```bash
+terraform apply
+```
+
+**Features:**
+- Automated backups based on cron schedule
+- Automatic cleanup of backups older than retention period
+- Cloud Functions handle backup creation and deletion
+- Cloud Scheduler triggers the backup function
+
+**Cron Schedule Examples:**
+
+| Schedule | Description |
+|----------|-------------|
+| `0 2 * * *` | Daily at 2:00 AM |
+| `0 */6 * * *` | Every 6 hours |
+| `0 2 * * 0` | Weekly on Sunday at 2:00 AM |
+| `0 2 1 * *` | Monthly on the 1st at 2:00 AM |
+
+See [crontab.guru](https://crontab.guru/) for help with cron syntax.
+
+#### Manual Trigger
+<a id="markdown-manual-trigger" name="manual-trigger"></a>
+
+You can manually trigger a backup by invoking the Cloud Function:
+
+```bash
+# Get the function URL
+FUNCTION_URL=$(gcloud functions describe <prefix>-filestore-backup \
+  --region=<region> --gen2 --format='value(serviceConfig.uri)')
+
+# Trigger backup
+gcloud functions call <prefix>-filestore-backup \
+  --region=<region> --gen2
+```
+
+#### View Backup Status
+<a id="markdown-view-backup-status" name="view-backup-status"></a>
+
+```bash
+# List all backups
+gcloud filestore backups list --location=<region>
+
+# View backup details
+gcloud filestore backups describe <backup-name> --location=<region>
+```
 
 ### Additional Sandbox Packages
 <a id="markdown-additional-sandbox-packages" name="additional-sandbox-packages"></a>

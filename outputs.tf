@@ -26,3 +26,17 @@ output "dify_version" {
   description = "Deployed Dify version"
   value       = var.dify_version
 }
+
+# =============================================================================
+# Backup Scheduler Outputs
+# =============================================================================
+
+output "backup_scheduler_job_name" {
+  description = "Name of the Cloud Scheduler job for automated backups"
+  value       = module.backup_scheduler.scheduler_job_name
+}
+
+output "backup_function_name" {
+  description = "Name of the Cloud Function for creating backups"
+  value       = module.backup_scheduler.function_name
+}

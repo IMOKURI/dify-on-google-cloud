@@ -57,6 +57,31 @@ filestore_tier = "BASIC_HDD"
 # Filestore capacity in GB (minimum 1024 GB for BASIC_HDD, 2560 GB for BASIC_SSD)
 filestore_capacity_gb = 1024
 
+# Enable Filestore backup (creates a manual backup)
+# filestore_enable_backup = true
+
+# Backup location (defaults to instance location if not specified)
+# filestore_backup_location = "asia-northeast1"
+
+# =============================================================================
+# Filestore Automated Backup Scheduler (Optional)
+# =============================================================================
+# Enable automated scheduled backups with Cloud Scheduler and Cloud Functions
+# =============================================================================
+
+# Enable automated backup scheduler
+# filestore_backup_scheduler_enabled = true
+
+# Cron schedule for backups (default: daily at 2:00 AM)
+# See: https://crontab.guru/ for cron syntax
+# filestore_backup_schedule = "0 2 * * *"
+
+# Timezone for backup schedule
+# filestore_backup_timezone = "Asia/Tokyo"
+
+# Number of days to retain backups (0 = keep all backups)
+# filestore_backup_retention_days = 7
+
 # =============================================================================
 # Memorystore for Redis Configuration
 # =============================================================================
