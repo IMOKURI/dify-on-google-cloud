@@ -21,3 +21,8 @@ output "initial_password" {
   value       = random_password.initial_password.result
   sensitive   = true
 }
+
+output "dify_version" {
+  description = "Deployed Dify version"
+  value       = var.dify_version
+}
