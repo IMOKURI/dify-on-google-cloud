@@ -152,6 +152,7 @@ graph TB
    gcloud services enable redis.googleapis.com
    gcloud services enable servicenetworking.googleapis.com
    gcloud services enable sqladmin.googleapis.com
+   gcloud services enable certificatemanager.googleapis.com
    
    # Optional: Enable if using Identity-Aware Proxy🛡️
    gcloud services enable iap.googleapis.com
