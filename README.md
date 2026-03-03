@@ -1,83 +1,63 @@
-# Dify on Google Cloud - Terraform Deployment
-<a id="markdown-dify-on-google-cloud---terraform-deployment" name="dify-on-google-cloud---terraform-deployment"></a>
+# 🚀 Dify on Google Cloud — Terraform Deployment
+<a id="markdown-%F0%9F%9A%80-dify-on-google-cloud-%E2%80%94-terraform-deployment" name="%F0%9F%9A%80-dify-on-google-cloud-%E2%80%94-terraform-deployment"></a>
 
-This Terraform code deploys Dify on Google Cloud Platform (GCP).
+This Terraform code deploys [Dify](https://github.com/langgenius/dify) on Google Cloud Platform (GCP) using the Community Edition, with the following design principles:
 
-It uses the Dify Community Edition with focus on the following principles:
+- 🔄 **Stay up-to-date** — Follow Dify Community Edition upgrades seamlessly.
+- ✂️ **Minimal changes** — No patching of the Dify codebase.
+- ☁️ **Fully managed** — Leverage GCP managed services for database, file storage, and cache.
 
-- Follow Dify Community Edition upgrades.
-- Minimize modifications to the Dify Community Edition codebase.
-- Use managed services for database, file storage and cache.
-
-## Table of Contents
-<a id="markdown-table-of-contents" name="table-of-contents"></a>
+## 📋 Table of Contents
+<a id="markdown-%F0%9F%93%8B-table-of-contents" name="%F0%9F%93%8B-table-of-contents"></a>
 
 <!-- TOC -->
 
-- [Dify on Google Cloud - Terraform Deployment](#dify-on-google-cloud---terraform-deployment)
-    - [Table of Contents](#table-of-contents)
-    - [Components](#components)
-    - [Architecture Overview](#architecture-overview)
-    - [Cost Estimation](#cost-estimation)
-    - [Prerequisites](#prerequisites)
-    - [Quick Start](#quick-start)
-        - [Prepare Variables File](#prepare-variables-file)
-        - [Deploy](#deploy)
-        - [After Deployment](#after-deployment)
-    - [Detailed Configuration](#detailed-configuration)
-        - [SSL Certificate Setup](#ssl-certificate-setup)
-            - [Option 1: Google-Managed SSL Certificate Recommended](#option-1-google-managed-ssl-certificate-recommended)
-            - [Option 2: Self-Signed Certificate](#option-2-self-signed-certificate)
-        - [Identity-Aware Proxy IAP Configuration](#identity-aware-proxy-iap-configuration)
-            - [Enable IAP](#enable-iap)
-            - [IAP Member Format](#iap-member-format)
-            - [Testing IAP](#testing-iap)
-        - [Additional Sandbox Packages](#additional-sandbox-packages)
-    - [Dify Deployment](#dify-deployment)
-        - [Upgrade Strategy](#upgrade-strategy)
-    - [Troubleshooting](#troubleshooting)
-        - [Verify SSL Certificate Provisioning](#verify-ssl-certificate-provisioning)
-        - [Check startup script log](#check-startup-script-log)
-        - [Check Dify logs](#check-dify-logs)
-    - [Resource Cleanup](#resource-cleanup)
+- [🚀 Dify on Google Cloud — Terraform Deployment](#-dify-on-google-cloud--terraform-deployment)
+    - [📋 Table of Contents](#-table-of-contents)
+    - [🧩 Components](#-components)
+    - [🏗️ Architecture Overview](#-architecture-overview)
+    - [💰 Cost Estimation](#-cost-estimation)
+    - [✅ Prerequisites](#-prerequisites)
+    - [⚡ Quick Start](#-quick-start)
+        - [📝 Prepare Variables File](#-prepare-variables-file)
+        - [🚀 Deploy](#-deploy)
+        - [🎉 After Deployment](#-after-deployment)
+    - [⚙️ Detailed Configuration](#-detailed-configuration)
+        - [🔒 SSL Certificate Setup](#-ssl-certificate-setup)
+            - [✨ Option 1: Google-Managed SSL Certificate Recommended](#-option-1-google-managed-ssl-certificate-recommended)
+            - [🔧 Option 2: Self-Signed Certificate](#-option-2-self-signed-certificate)
+        - [🛡️ Identity-Aware Proxy IAP Configuration](#-identity-aware-proxy-iap-configuration)
+            - [🔑 Enable IAP](#-enable-iap)
+            - [👥 IAP Member Format](#-iap-member-format)
+            - [🧪 Testing IAP](#-testing-iap)
+        - [📦 Additional Sandbox Packages](#-additional-sandbox-packages)
+    - [🚢 Dify Deployment](#-dify-deployment)
+        - [⬆️ Upgrade Strategy](#-upgrade-strategy)
+    - [🔧 Troubleshooting](#-troubleshooting)
+        - [🔐 Verify SSL Certificate Provisioning](#-verify-ssl-certificate-provisioning)
+        - [📄 Check Startup Script Log](#-check-startup-script-log)
+        - [🐳 Check Dify Logs](#-check-dify-logs)
+    - [🗑️ Resource Cleanup](#-resource-cleanup)
 
 <!-- /TOC -->
 
-## Components
-<a id="markdown-components" name="components"></a>
+## 🧩 Components
+<a id="markdown-%F0%9F%A7%A9-components" name="%F0%9F%A7%A9-components"></a>
 
-This Terraform code creates the following resources:
+This Terraform code creates the following GCP resources:
 
-- **Network**
-  - VPC network and subnet
-  - Private Service Access (for Cloud SQL)
-  - Firewall rules
-  - Static external IP address (for Load Balancer)
+| Category | Resources |
+|---|---|
+| 🌐 **Network** | VPC network & subnet, Private Service Access, Firewall rules, Static external IP |
+| 🗄️ **Database** | Cloud SQL (PostgreSQL) — Main DB, Cloud SQL (PostgreSQL + pgvector) — Vector DB |
+| 💾 **Storage** | Filestore — File uploads & plugin assets |
+| ⚡ **Cache** | Memorystore for Redis — Caching & session storage |
+| 🖥️ **Compute** | Managed Instance Group, Custom startup script |
+| ⚖️ **Load Balancer** | HTTPS Load Balancer, SSL certificates (managed or self-signed) |
+| 🔑 **IAM** | Service account for Dify, Auto-assigned required permissions |
 
-- **Database**
-  - Cloud SQL (PostgreSQL) - Main database
-  - Cloud SQL (PostgreSQL with pgvector) - Vector database
-
-- **Storage**
-  - Filestore - For file uploads and plugin assets
-
-- **Cache**
-  - Memorystore for Redis - For caching and session storage
-
-- **Compute**
-  - Managed Instance Group
-  - Custom startup script to install and run Dify
-
-- **Load Balancer**
-  - HTTPS Load Balancer
-  - SSL certificates (managed or self-signed)
-
-- **IAM**
-  - Service account for Dify
-  - Automatic granting of required permissions
-
-## Architecture Overview
-<a id="markdown-architecture-overview" name="architecture-overview"></a>
+## 🏗️ Architecture Overview
+<a id="markdown-%F0%9F%8F%97%EF%B8%8F-architecture-overview" name="%F0%9F%8F%97%EF%B8%8F-architecture-overview"></a>
 
 ```mermaid
 graph TB
@@ -147,23 +127,23 @@ graph TB
     style Storage fill:#fff9c4
 ```
 
-## Cost Estimation
-<a id="markdown-cost-estimation" name="cost-estimation"></a>
+## 💰 Cost Estimation
+<a id="markdown-%F0%9F%92%B0-cost-estimation" name="%F0%9F%92%B0-cost-estimation"></a>
 
 [![infracost](https://img.shields.io/endpoint?url=https://dashboard.api.infracost.io/shields/json/e913e414-683b-497a-b278-fa6c85782d47/repos/d8e48f68-1e25-418e-9539-39a0e8ad0119/branch/c09e32bc-f447-4b24-a4d6-4903aa975fab)](https://dashboard.infracost.io/org/nenegi01mo/repos/d8e48f68-1e25-418e-9539-39a0e8ad0119?tab=branches)
 
-## Prerequisites
-<a id="markdown-prerequisites" name="prerequisites"></a>
+## ✅ Prerequisites
+<a id="markdown-%E2%9C%85-prerequisites" name="%E2%9C%85-prerequisites"></a>
 
-1. **Google Cloud SDK**: `gcloud` command installed
-2. **Terraform**: Version 1.0 or higher
-3. **GCP Project**: Active GCP project
-4. **Authentication Setup**:
+1. ☁️ **Google Cloud SDK**: `gcloud` command installed
+2. 🏗️ **Terraform**: Version 1.0 or higher
+3. 📁 **GCP Project**: Active GCP project
+4. 🔐 **Authentication Setup**:
    ```bash
    gcloud init
    gcloud auth application-default login
    ```
-5. **Enable Required APIs**:
+5. 🔧 **Enable Required APIs**:
    ```bash
    gcloud services enable cloudresourcemanager.googleapis.com
    gcloud services enable compute.googleapis.com
@@ -173,21 +153,21 @@ graph TB
    gcloud services enable servicenetworking.googleapis.com
    gcloud services enable sqladmin.googleapis.com
    
-   # Optional: Enable if using Identity-Aware Proxy
+   # Optional: Enable if using Identity-Aware Proxy🛡️
    gcloud services enable iap.googleapis.com
    ```
 
-## Quick Start
-<a id="markdown-quick-start" name="quick-start"></a>
+## ⚡ Quick Start
+<a id="markdown-%E2%9A%A1-quick-start" name="%E2%9A%A1-quick-start"></a>
 
-### Prepare Variables File
-<a id="markdown-prepare-variables-file" name="prepare-variables-file"></a>
+### 📝 Prepare Variables File
+<a id="markdown-%F0%9F%93%9D-prepare-variables-file" name="%F0%9F%93%9D-prepare-variables-file"></a>
 
 ```bash
 cp terraform.tfvars.example terraform.tfvars
 ```
 
-Edit `terraform.tfvars` and set at least the following values:
+Edit `terraform.tfvars` and set **at least** the following values:
 
 ```hcl
 project_id = "your-gcp-project-id"
@@ -204,8 +184,8 @@ domain_name = "dify.example.com"
 # ssl_private_key = file("private-key.pem")
 ```
 
-### Deploy
-<a id="markdown-deploy" name="deploy"></a>
+### 🚀 Deploy
+<a id="markdown-%F0%9F%9A%80-deploy" name="%F0%9F%9A%80-deploy"></a>
 
 ```bash
 # Initialize
@@ -218,8 +198,8 @@ terraform plan
 terraform apply
 ```
 
-### After Deployment
-<a id="markdown-after-deployment" name="after-deployment"></a>
+### 🎉 After Deployment
+<a id="markdown-%F0%9F%8E%89-after-deployment" name="%F0%9F%8E%89-after-deployment"></a>
 
 ```bash
 # Check admin password
@@ -229,14 +209,14 @@ terraform output -raw initial_password
 # https://<load_balancer_ip> or https://your-domain.com
 ```
 
-## Detailed Configuration
-<a id="markdown-detailed-configuration" name="detailed-configuration"></a>
+## ⚙️ Detailed Configuration
+<a id="markdown-%E2%9A%99%EF%B8%8F-detailed-configuration" name="%E2%9A%99%EF%B8%8F-detailed-configuration"></a>
 
-### SSL Certificate Setup
-<a id="markdown-ssl-certificate-setup" name="ssl-certificate-setup"></a>
+### 🔒 SSL Certificate Setup
+<a id="markdown-%F0%9F%94%92-ssl-certificate-setup" name="%F0%9F%94%92-ssl-certificate-setup"></a>
 
-#### Option 1: Google-Managed SSL Certificate (Recommended)
-<a id="markdown-option-1%3A-google-managed-ssl-certificate-recommended" name="option-1%3A-google-managed-ssl-certificate-recommended"></a>
+#### ✨ Option 1: Google-Managed SSL Certificate (Recommended)
+<a id="markdown-%E2%9C%A8-option-1%3A-google-managed-ssl-certificate-recommended" name="%E2%9C%A8-option-1%3A-google-managed-ssl-certificate-recommended"></a>
 
 ```hcl
 domain_name = "dify.example.com"
@@ -250,8 +230,8 @@ A    dify.example.com    <LOAD_BALANCER_IP>
 
 Certificate provisioning can take up to 15 minutes.
 
-#### Option 2: Self-Signed Certificate
-<a id="markdown-option-2%3A-self-signed-certificate" name="option-2%3A-self-signed-certificate"></a>
+#### 🔧 Option 2: Self-Signed Certificate
+<a id="markdown-%F0%9F%94%A7-option-2%3A-self-signed-certificate" name="%F0%9F%94%A7-option-2%3A-self-signed-certificate"></a>
 
 ```bash
 # Generate certificate
@@ -266,13 +246,13 @@ ssl_certificate = file("certificate.pem")
 ssl_private_key = file("private-key.pem")
 ```
 
-### Identity-Aware Proxy (IAP) Configuration
-<a id="markdown-identity-aware-proxy-iap-configuration" name="identity-aware-proxy-iap-configuration"></a>
+### 🛡️ Identity-Aware Proxy (IAP) Configuration
+<a id="markdown-%F0%9F%9B%A1%EF%B8%8F-identity-aware-proxy-iap-configuration" name="%F0%9F%9B%A1%EF%B8%8F-identity-aware-proxy-iap-configuration"></a>
 
 Identity-Aware Proxy (IAP) adds Google authentication to your application, ensuring only authorized users can access it.
 
-#### Enable IAP
-<a id="markdown-enable-iap" name="enable-iap"></a>
+#### 🔑 Enable IAP
+<a id="markdown-%F0%9F%94%91-enable-iap" name="%F0%9F%94%91-enable-iap"></a>
 
 1. **Create OAuth 2.0 Credentials**:
    - Go to [GCP Console > APIs & Services > Credentials](https://console.cloud.google.com/apis/credentials)
@@ -303,23 +283,25 @@ Identity-Aware Proxy (IAP) adds Google authentication to your application, ensur
    terraform apply
    ```
 
-#### IAP Member Format
-<a id="markdown-iap-member-format" name="iap-member-format"></a>
+#### 👥 IAP Member Format
+<a id="markdown-%F0%9F%91%A5-iap-member-format" name="%F0%9F%91%A5-iap-member-format"></a>
 
-- Individual user: `user:email@example.com`
-- Google Group: `group:groupname@example.com`
-- Domain: `domain:example.com` (all users in the domain)
-- Service account: `serviceAccount:name@project.iam.gserviceaccount.com`
+| Type | Format |
+|---|---|
+| 👤 Individual user | `user:email@example.com` |
+| 👥 Google Group | `group:groupname@example.com` |
+| 🏢 Domain | `domain:example.com` |
+| 🤖 Service account | `serviceAccount:name@project.iam.gserviceaccount.com` |
 
-#### Testing IAP
-<a id="markdown-testing-iap" name="testing-iap"></a>
+#### 🧪 Testing IAP
+<a id="markdown-%F0%9F%A7%AA-testing-iap" name="%F0%9F%A7%AA-testing-iap"></a>
 
 After deployment, accessing your application will require users to:
-1. Sign in with their Google account
-2. Be granted access if they are in the `iap_members` list
+1. 🔐 Sign in with their Google account
+2. ✅ Be granted access if they are in the `iap_members` list
 
-### Additional Sandbox Packages
-<a id="markdown-additional-sandbox-packages" name="additional-sandbox-packages"></a>
+### 📦 Additional Sandbox Packages
+<a id="markdown-%F0%9F%93%A6-additional-sandbox-packages" name="%F0%9F%93%A6-additional-sandbox-packages"></a>
 
 If you want to add packages to sandbox, write packages into [python-requirements.txt](./assets/sandbox/python-requirements.txt).
 
@@ -328,19 +310,19 @@ If you want to add packages to sandbox, write packages into [python-requirements
 > When you add packages into requirements.txt, all system calls are enabled by [`./assets/sandbox/config.yaml`](./assets/sandbox/config.yaml).
 > Please refer to [this document](https://github.com/langgenius/dify-sandbox/blob/2d0ad28fcfa7e3958311c8622d2e0c7b939feb24/FAQ.md?plain=1#L51).
 
-## Dify Deployment
-<a id="markdown-dify-deployment" name="dify-deployment"></a>
+## 🚢 Dify Deployment
+<a id="markdown-%F0%9F%9A%A2-dify-deployment" name="%F0%9F%9A%A2-dify-deployment"></a>
 
-When Terraform is applied,
+When Terraform is applied:
 
-1. Dify source code (of the specified version) is automatically downloaded to `/opt/dify-<version>`.
-1. Update Dify environment variables by [startup-script.sh](./assets/startup-script.sh).
-1. Start Dify application.
+1. 📥 Dify source code (of the specified version) is automatically downloaded to `/opt/dify-<version>`.
+2. ✏️ Update Dify environment variables via [startup-script.sh](./assets/startup-script.sh).
+3. ▶️ Start the Dify application.
 
-### Upgrade Strategy
-<a id="markdown-upgrade-strategy" name="upgrade-strategy"></a>
+### ⬆️ Upgrade Strategy
+<a id="markdown-%E2%AC%86%EF%B8%8F-upgrade-strategy" name="%E2%AC%86%EF%B8%8F-upgrade-strategy"></a>
 
-[Check Dify Release Note](https://github.com/langgenius/dify/releases) and Update [startup-script.sh](./assets/startup-script.sh) if needed.
+[Check Dify Release Notes](https://github.com/langgenius/dify/releases) and update [startup-script.sh](./assets/startup-script.sh) if needed.
 
 ```hcl
 dify_version = "1.13.x"  # Specify new version tag
@@ -350,18 +332,18 @@ dify_version = "1.13.x"  # Specify new version tag
 terraform apply  # Apply upgrade
 ```
 
-When Terraform is applied,
+When Terraform is applied:
 
-1. Remove the old VM first. So the service will be temporarily unavailable during the upgrade.
-1. Deploy the new VM with the migration process.
+1. 🔴 The old VM is removed first — the service will be **temporarily unavailable** during the upgrade.
+2. 🟢 A new VM is deployed with the migration process.
 
-Upgrade can take up to 15 minutes.
+> ⏱️ Upgrade can take up to **15 minutes**.
 
-## Troubleshooting
-<a id="markdown-troubleshooting" name="troubleshooting"></a>
+## 🔧 Troubleshooting
+<a id="markdown-%F0%9F%94%A7-troubleshooting" name="%F0%9F%94%A7-troubleshooting"></a>
 
-### Verify SSL Certificate Provisioning
-<a id="markdown-verify-ssl-certificate-provisioning" name="verify-ssl-certificate-provisioning"></a>
+### 🔐 Verify SSL Certificate Provisioning
+<a id="markdown-%F0%9F%94%90-verify-ssl-certificate-provisioning" name="%F0%9F%94%90-verify-ssl-certificate-provisioning"></a>
 
 ```bash
 # Check certificate status
@@ -369,19 +351,19 @@ gcloud compute ssl-certificates list
 gcloud compute ssl-certificates describe dify-ssl-cert --global
 ```
 
-### Check startup script log
-<a id="markdown-check-startup-script-log" name="check-startup-script-log"></a>
+### 📄 Check Startup Script Log
+<a id="markdown-%F0%9F%93%84-check-startup-script-log" name="%F0%9F%93%84-check-startup-script-log"></a>
 
-Access VM via ssh and check logs.
+Access the VM via SSH and check logs:
 
 ```bash
 tail -f /var/log/startup-script.log
 ```
 
-### Check Dify logs
-<a id="markdown-check-dify-logs" name="check-dify-logs"></a>
+### 🐳 Check Dify Logs
+<a id="markdown-%F0%9F%90%B3-check-dify-logs" name="%F0%9F%90%B3-check-dify-logs"></a>
 
-Access VM via ssh and check logs.
+Access the VM via SSH and check logs:
 
 ```bash
 sudo su - ubuntu
@@ -390,15 +372,16 @@ docker compose ps
 docker compose logs -f
 ```
 
-## Resource Cleanup
-<a id="markdown-resource-cleanup" name="resource-cleanup"></a>
+## 🗑️ Resource Cleanup
+<a id="markdown-%F0%9F%97%91%EF%B8%8F-resource-cleanup" name="%F0%9F%97%91%EF%B8%8F-resource-cleanup"></a>
+
+> ⚠️ **Warning**: This will permanently delete all provisioned resources.
 
 ```bash
 # Delete all resources
 terraform destroy
 
-# If you get errors due to deletion protection, delete from the console
-
-# Delete all resources
+# If you get errors due to deletion protection, remove them from the GCP Console first,
+# then run destroy again
 terraform destroy
 ```
