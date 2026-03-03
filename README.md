@@ -29,6 +29,9 @@ It uses the Dify Community Edition with focus on the following principles:
             - [Option 1: Google-Managed SSL Certificate Recommended](#option-1-google-managed-ssl-certificate-recommended)
             - [Option 2: Self-Signed Certificate](#option-2-self-signed-certificate)
         - [Identity-Aware Proxy IAP Configuration](#identity-aware-proxy-iap-configuration)
+            - [Enable IAP](#enable-iap)
+            - [IAP Member Format](#iap-member-format)
+            - [Testing IAP](#testing-iap)
         - [Additional Sandbox Packages](#additional-sandbox-packages)
     - [Dify Deployment](#dify-deployment)
         - [Upgrade Strategy](#upgrade-strategy)
@@ -269,13 +272,14 @@ ssl_private_key = file("private-key.pem")
 Identity-Aware Proxy (IAP) adds Google authentication to your application, ensuring only authorized users can access it.
 
 #### Enable IAP
+<a id="markdown-enable-iap" name="enable-iap"></a>
 
 1. **Create OAuth 2.0 Credentials**:
    - Go to [GCP Console > APIs & Services > Credentials](https://console.cloud.google.com/apis/credentials)
    - Click "Create Credentials" > "OAuth client ID"
    - Application type: "Web application"
+   - Create and save the Client ID and Client Secret
    - Add authorized redirect URI: `https://iap.googleapis.com/v1/oauth/clientIds/<CLIENT_ID>:handleRedirect`
-   - Save the Client ID and Client Secret
 
 2. **Enable IAP API**:
    ```bash
@@ -300,6 +304,7 @@ Identity-Aware Proxy (IAP) adds Google authentication to your application, ensur
    ```
 
 #### IAP Member Format
+<a id="markdown-iap-member-format" name="iap-member-format"></a>
 
 - Individual user: `user:email@example.com`
 - Google Group: `group:groupname@example.com`
@@ -307,6 +312,7 @@ Identity-Aware Proxy (IAP) adds Google authentication to your application, ensur
 - Service account: `serviceAccount:name@project.iam.gserviceaccount.com`
 
 #### Testing IAP
+<a id="markdown-testing-iap" name="testing-iap"></a>
 
 After deployment, accessing your application will require users to:
 1. Sign in with their Google account
