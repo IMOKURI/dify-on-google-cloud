@@ -168,6 +168,7 @@ graph TB
    | `roles/redis.admin` | Create and manage Memorystore for Redis |
    | `roles/file.editor` | Create and manage Filestore instances |
    | `roles/servicenetworking.networksAdmin` | Create private VPC connections for Cloud SQL and Redis |
+   | `roles/iap.admin` | *(Optional)* Configure Identity-Aware Proxy (IAP) |
 
 ## ⚡ Quick Start
 <a id="markdown-%E2%9A%A1-quick-start" name="%E2%9A%A1-quick-start"></a>
