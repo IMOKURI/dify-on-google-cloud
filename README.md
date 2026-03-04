@@ -138,12 +138,24 @@ graph TB
 1. ☁️ **Google Cloud SDK**: `gcloud` command installed
 2. 🏗️ **Terraform**: Version 1.0 or higher
 3. 📁 **GCP Project**: Active GCP project
-4. 🔐 **Authentication Setup**:
+4. 🔑 **Required IAM Roles**: The account running Terraform must have the following roles on the target GCP project:
+   | Role | Purpose |
+   |---|---|
+   | `roles/compute.admin` | VPC, subnets, firewalls, instance templates, MIG, load balancer, SSL certificates |
+   | `roles/iam.serviceAccountAdmin` | Create the Dify service account |
+   | `roles/iam.serviceAccountUser` | Attach the service account to VM instances |
+   | `roles/resourcemanager.projectIamAdmin` | Grant IAM roles to the Dify service account |
+   | `roles/cloudsql.admin` | Create and manage Cloud SQL (PostgreSQL) instances |
+   | `roles/redis.admin` | Create and manage Memorystore for Redis |
+   | `roles/file.editor` | Create and manage Filestore instances |
+   | `roles/servicenetworking.networksAdmin` | Create private VPC connections for Cloud SQL and Redis |
+   | `roles/iap.admin` | *(Optional)* Configure Identity-Aware Proxy (IAP) |
+5. 🔐 **Authentication Setup**:
    ```bash
    gcloud init
    gcloud auth application-default login
    ```
-5. 🔧 **Enable Required APIs**:
+6. 🔧 **Enable Required APIs**:
    ```bash
    gcloud services enable cloudresourcemanager.googleapis.com
    gcloud services enable compute.googleapis.com
@@ -157,18 +169,6 @@ graph TB
    # Optional: Enable if using Identity-Aware Proxy🛡️
    gcloud services enable iap.googleapis.com
    ```
-6. 🔑 **Required IAM Roles**: The account running Terraform must have the following roles on the target GCP project:
-   | Role | Purpose |
-   |---|---|
-   | `roles/compute.admin` | VPC, subnets, firewalls, instance templates, MIG, load balancer, SSL certificates |
-   | `roles/iam.serviceAccountAdmin` | Create the Dify service account |
-   | `roles/iam.serviceAccountUser` | Attach the service account to VM instances |
-   | `roles/resourcemanager.projectIamAdmin` | Grant IAM roles to the Dify service account |
-   | `roles/cloudsql.admin` | Create and manage Cloud SQL (PostgreSQL) instances |
-   | `roles/redis.admin` | Create and manage Memorystore for Redis |
-   | `roles/file.editor` | Create and manage Filestore instances |
-   | `roles/servicenetworking.networksAdmin` | Create private VPC connections for Cloud SQL and Redis |
-   | `roles/iap.admin` | *(Optional)* Configure Identity-Aware Proxy (IAP) |
 
 ## ⚡ Quick Start
 <a id="markdown-%E2%9A%A1-quick-start" name="%E2%9A%A1-quick-start"></a>
