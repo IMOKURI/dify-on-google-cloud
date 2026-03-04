@@ -157,9 +157,7 @@ graph TB
    # Optional: Enable if using Identity-Aware Proxy🛡️
    gcloud services enable iap.googleapis.com
    ```
-
 6. 🔑 **Required IAM Roles**: The account running Terraform must have the following roles on the target GCP project:
-
    | Role | Purpose |
    |---|---|
    | `roles/compute.admin` | VPC, subnets, firewalls, instance templates, MIG, load balancer, SSL certificates |
@@ -170,36 +168,6 @@ graph TB
    | `roles/redis.admin` | Create and manage Memorystore for Redis |
    | `roles/file.editor` | Create and manage Filestore instances |
    | `roles/servicenetworking.networksAdmin` | Create private VPC connections for Cloud SQL and Redis |
-
-   <details>
-   <summary>gcloud commands to add permissions</summary>
-
-   ```bash
-   # Replace with your project ID and the account to grant roles to
-   PROJECT_ID="your-gcp-project-id"
-   MEMBER="user:your-account@example.com"  # or serviceAccount:...
-
-   for ROLE in \
-     roles/compute.admin \
-     roles/iam.serviceAccountAdmin \
-     roles/iam.serviceAccountUser \
-     roles/resourcemanager.projectIamAdmin \
-     roles/cloudsql.admin \
-     roles/redis.admin \
-     roles/file.editor \
-     roles/servicenetworking.networksAdmin; do
-     gcloud projects add-iam-policy-binding "$PROJECT_ID" \
-       --member="$MEMBER" \
-       --role="$ROLE"
-   done
-
-   # Optional: Required only if enabling Identity-Aware Proxy (IAP) 🛡️
-   gcloud projects add-iam-policy-binding "$PROJECT_ID" \
-     --member="$MEMBER" \
-     --role="roles/iap.admin"
-   ```
-
-   </details>
 
 ## ⚡ Quick Start
 <a id="markdown-%E2%9A%A1-quick-start" name="%E2%9A%A1-quick-start"></a>
