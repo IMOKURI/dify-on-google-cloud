@@ -217,7 +217,7 @@ terraform apply
 <a id="markdown-%F0%9F%8E%89-after-deployment" name="%F0%9F%8E%89-after-deployment"></a>
 
 ```bash
-# Check admin password
+# Check initial password
 terraform output -raw initial_password
 
 # Access via browser

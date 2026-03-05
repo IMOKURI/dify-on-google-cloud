@@ -5,9 +5,10 @@
 module "iam" {
   source = "./modules/iam"
 
-  prefix     = var.prefix
-  project_id = var.project_id
-  labels     = var.labels
+  prefix      = var.prefix
+  project_id  = var.project_id
+  labels      = var.labels
+  iap_members = var.iap_members
 }
 
 # =============================================================================

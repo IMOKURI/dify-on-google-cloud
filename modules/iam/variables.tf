@@ -13,3 +13,9 @@ variable "labels" {
   type        = map(string)
   default     = {}
 }
+
+variable "iap_members" {
+  description = "List of principals to grant the IAP-secured Tunnel User role for SSH via Cloud IAP"
+  type        = list(string)
+  default     = []
+}
