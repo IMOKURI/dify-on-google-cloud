@@ -270,10 +270,13 @@ Identity-Aware Proxy (IAP) adds Google authentication to your application, ensur
 <a id="markdown-%F0%9F%94%91-enable-iap" name="%F0%9F%94%91-enable-iap"></a>
 
 1. **Create OAuth 2.0 Credentials**:
-   - Go to [GCP Console > APIs & Services > Credentials](https://console.cloud.google.com/apis/credentials)
-     > [!note]
-     > If this is your first time, you may see the message: *"Remember to configure the OAuth consent screen with information about your application."*
-     > In that case, click "Configure consent screen" and complete the OAuth consent screen setup before proceeding.
+
+   Go to [GCP Console > APIs & Services > Credentials](https://console.cloud.google.com/apis/credentials)
+
+   > [!note]
+   > If this is your first time, you may see the message: *"Remember to configure the OAuth consent screen with information about your application."*
+   > In that case, click "Configure consent screen" and complete the OAuth consent screen setup before proceeding.
+
    - Click "Create Credentials" > "OAuth client ID"
    - Application type: "Web application"
    - Create and save the Client ID and Client Secret
