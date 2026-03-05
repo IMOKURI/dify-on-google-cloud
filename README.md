@@ -150,7 +150,8 @@ graph TB
    | `roles/file.editor` | Create and manage Filestore instances |
    | `roles/servicenetworking.networksAdmin` | Create private VPC connections for Cloud SQL and Redis |
    | `roles/serviceusage.serviceUsageAdmin` | Enable required GCP APIs |
-   | `roles/iap.admin` | *(Optional)* Configure Identity-Aware Proxy (IAP) |
+   | `roles/iap.admin` | *(Optional)* Configure Identity-Aware Proxy (IAP) settings and IAM bindings |
+   | `roles/oauthconfig.editor` | *(Optional)* Create OAuth 2.0 credentials for IAP |
 5. 🔐 **Authentication Setup**:
    ```bash
    gcloud init
@@ -270,6 +271,9 @@ Identity-Aware Proxy (IAP) adds Google authentication to your application, ensur
 
 1. **Create OAuth 2.0 Credentials**:
    - Go to [GCP Console > APIs & Services > Credentials](https://console.cloud.google.com/apis/credentials)
+     > [!note]
+     > If this is your first time, you may see the message: *"Remember to configure the OAuth consent screen with information about your application."*
+     > In that case, click "Configure consent screen" and complete the OAuth consent screen setup before proceeding.
    - Click "Create Credentials" > "OAuth client ID"
    - Application type: "Web application"
    - Create and save the Client ID and Client Secret
