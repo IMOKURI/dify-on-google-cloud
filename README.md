@@ -82,7 +82,7 @@ graph TB
         subgraph VPC["VPC Network"]
             subgraph Subnet["Subnet"]
                 subgraph MIG["Managed Instance Group"]
-                    Instance[Compute Instance<br/>Ubuntu 22.04<br/>Docker + Dify]
+                    Instance[Compute Instance<br/>Ubuntu 24.04<br/>Docker + Dify]
                 end
 
                 subgraph Storage["Storage"]
@@ -138,12 +138,26 @@ graph TB
 1. ☁️ **Google Cloud SDK**: `gcloud` command installed
 2. 🏗️ **Terraform**: Version 1.0 or higher
 3. 📁 **GCP Project**: Active GCP project
-4. 🔐 **Authentication Setup**:
+4. 🔑 **Required IAM Roles**: The account running Terraform must have the following roles on the target GCP project:
+   | Role | Purpose |
+   |---|---|
+   | `roles/compute.admin` | VPC, subnets, firewalls, instance templates, MIG, load balancer, SSL certificates |
+   | `roles/iam.serviceAccountAdmin` | Create the Dify service account |
+   | `roles/iam.serviceAccountUser` | Attach the service account to VM instances |
+   | `roles/resourcemanager.projectIamAdmin` | Grant IAM roles to the Dify service account |
+   | `roles/cloudsql.admin` | Create and manage Cloud SQL (PostgreSQL) instances |
+   | `roles/redis.admin` | Create and manage Memorystore for Redis |
+   | `roles/file.editor` | Create and manage Filestore instances |
+   | `roles/servicenetworking.networksAdmin` | Create private VPC connections for Cloud SQL and Redis |
+   | `roles/serviceusage.serviceUsageAdmin` | Enable required GCP APIs |
+   | `roles/iap.admin` | *(Optional)* Configure Identity-Aware Proxy (IAP) settings and IAM bindings |
+   | `roles/oauthconfig.editor` | *(Optional)* Create OAuth 2.0 credentials for IAP |
+5. 🔐 **Authentication Setup**:
    ```bash
    gcloud init
    gcloud auth application-default login
    ```
-5. 🔧 **Enable Required APIs**:
+6. 🔧 **Enable Required APIs**:
    ```bash
    gcloud services enable cloudresourcemanager.googleapis.com
    gcloud services enable compute.googleapis.com
@@ -203,7 +217,7 @@ terraform apply
 <a id="markdown-%F0%9F%8E%89-after-deployment" name="%F0%9F%8E%89-after-deployment"></a>
 
 ```bash
-# Check admin password
+# Check initial password
 terraform output -raw initial_password
 
 # Access via browser
@@ -256,7 +270,13 @@ Identity-Aware Proxy (IAP) adds Google authentication to your application, ensur
 <a id="markdown-%F0%9F%94%91-enable-iap" name="%F0%9F%94%91-enable-iap"></a>
 
 1. **Create OAuth 2.0 Credentials**:
-   - Go to [GCP Console > APIs & Services > Credentials](https://console.cloud.google.com/apis/credentials)
+
+   Go to [GCP Console > APIs & Services > Credentials](https://console.cloud.google.com/apis/credentials)
+
+   > [!note]
+   > If this is your first time, you may see the message: *"Remember to configure the OAuth consent screen with information about your application."*
+   > In that case, click "Configure consent screen" and complete the OAuth consent screen setup before proceeding.
+
    - Click "Create Credentials" > "OAuth client ID"
    - Application type: "Web application"
    - Create and save the Client ID and Client Secret

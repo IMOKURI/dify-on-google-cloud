@@ -28,3 +28,12 @@ resource "google_project_iam_member" "dify_sa_metric_writer" {
     google_service_account.dify_sa
   ]
 }
+
+# IAP Tunnel User role - allows SSH to VM instances via Cloud IAP
+resource "google_project_iam_member" "iap_tunnel_user" {
+  for_each = toset(var.iap_members)
+
+  project = var.project_id
+  role    = "roles/iap.tunnelResourceAccessor"
+  member  = each.value
+}

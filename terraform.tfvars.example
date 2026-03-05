@@ -33,7 +33,7 @@ disk_size_gb = 50
 # =============================================================================
 
 # Cloud SQL Configuration
-cloudsql_tier      = "db-custom-4-16384"
+cloudsql_tier      = "db-custom-2-8192"
 cloudsql_disk_size = 50
 
 # =============================================================================
@@ -41,7 +41,7 @@ cloudsql_disk_size = 50
 # =============================================================================
 
 # Cloud SQL Configuration
-pgvector_tier      = "db-custom-4-16384"
+pgvector_tier      = "db-custom-2-8192"
 pgvector_disk_size = 100
 
 # =============================================================================
