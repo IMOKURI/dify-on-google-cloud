@@ -149,6 +149,7 @@ graph TB
    | `roles/redis.admin` | Create and manage Memorystore for Redis |
    | `roles/file.editor` | Create and manage Filestore instances |
    | `roles/servicenetworking.networksAdmin` | Create private VPC connections for Cloud SQL and Redis |
+   | `roles/serviceusage.serviceUsageAdmin` | Enable required GCP APIs |
    | `roles/iap.admin` | *(Optional)* Configure Identity-Aware Proxy (IAP) |
 5. 🔐 **Authentication Setup**:
    ```bash
