@@ -136,7 +136,7 @@ variable "disk_size_gb" {
 variable "cloudsql_tier" {
   description = "Cloud SQL instance tier"
   type        = string
-  default     = "db-custom-4-16384" # 4 vCPU, 16GB RAM
+  default     = "db-custom-2-8192"
 }
 
 variable "cloudsql_disk_size" {
@@ -215,7 +215,7 @@ variable "pgvector_database_version" {
 variable "pgvector_tier" {
   description = "Cloud SQL instance tier for pgvector instance"
   type        = string
-  default     = "db-custom-4-16384" # 4 vCPU, 16GB RAM - recommended for vector operations
+  default     = "db-custom-2-8192"
 }
 
 variable "pgvector_disk_size" {
