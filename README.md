@@ -82,7 +82,7 @@ graph TB
         subgraph VPC["VPC Network"]
             subgraph Subnet["Subnet"]
                 subgraph MIG["Managed Instance Group"]
-                    Instance[Compute Instance<br/>Ubuntu 22.04<br/>Docker + Dify]
+                    Instance[Compute Instance<br/>Ubuntu 24.04<br/>Docker + Dify]
                 end
 
                 subgraph Storage["Storage"]
