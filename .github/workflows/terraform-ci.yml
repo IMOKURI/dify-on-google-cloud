@@ -11,10 +11,10 @@ jobs:
     
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
+        uses: hashicorp/setup-terraform@v4
         with:
           terraform_version: latest
 
@@ -38,32 +38,32 @@ jobs:
           exit 1
 
   packer-check:
-    name: Run Packer
+    name: Packer Format and Validate
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v6
 
       - name: Setup Packer
         uses: hashicorp/setup-packer@main
         id: setup
         with:
-          version: "latest"
+          version: latest
 
-      - name: Run Packer Format
+      - name: Packer Format Check
         id: fmt
-        run: "packer fmt -check dify-golden-image.pkr.hcl"
+        run: packer fmt -check dify-golden-image.pkr.hcl
         continue-on-error: true
 
-      - name: Run Packer Init
+      - name: Packer Init
         id: init
-        run: "packer init dify-golden-image.pkr.hcl"
+        run: packer init dify-golden-image.pkr.hcl
 
-      - name: Run Packer Validate
+      - name: Packer Validate
         id: validate
-        run: "packer validate dify-golden-image.pkr.hcl"
+        run: packer validate dify-golden-image.pkr.hcl
 
-      - name: Check Packer Format Results
+      - name: Check Results
         if: steps.fmt.outcome == 'failure'
         run: |
           echo "::error::Packer formatting check failed. Please run 'packer fmt dify-golden-image.pkr.hcl' locally."
