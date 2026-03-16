@@ -32,6 +32,7 @@ This Terraform code deploys [Dify](https://github.com/langgenius/dify) on Google
             - [👥 IAP Member Format](#-iap-member-format)
             - [🧪 Testing IAP](#-testing-iap)
         - [📦 Additional Sandbox Packages](#-additional-sandbox-packages)
+        - [📄 Unstructured API](#-unstructured-api)
     - [🚢 Dify Deployment](#-dify-deployment)
         - [⬆️ Upgrade Strategy](#-upgrade-strategy)
     - [🔧 Troubleshooting](#-troubleshooting)
@@ -347,6 +348,15 @@ If you want to add packages to sandbox, write packages into [python-requirements
 > dify-sandbox restricts system calls by default.
 > When you add packages into requirements.txt, all system calls are enabled by [`./assets/sandbox/config.yaml`](./assets/sandbox/config.yaml).
 > Please refer to [this document](https://github.com/langgenius/dify-sandbox/blob/2d0ad28fcfa7e3958311c8622d2e0c7b939feb24/FAQ.md?plain=1#L51).
+
+### 📄 Unstructured API
+<a id="markdown-%F0%9F%93%84-unstructured-api" name="%F0%9F%93%84-unstructured-api"></a>
+
+To switch Dify's ETL implementation from the default `dify` mode to `Unstructured`, enable the Terraform flag below:
+
+```hcl
+enable_unstructured_api = true
+```
 
 ## 🚢 Dify Deployment
 <a id="markdown-%F0%9F%9A%A2-dify-deployment" name="%F0%9F%9A%A2-dify-deployment"></a>

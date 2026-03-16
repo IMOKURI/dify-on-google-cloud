@@ -37,7 +37,14 @@ sed -i "s|^REDIS_PASSWORD=.*|REDIS_PASSWORD='${redis_auth_string}'|" .env
 sed -i "s|^CELERY_BROKER_URL=.*|CELERY_BROKER_URL='redis://:${redis_auth_string}@${redis_host}:${redis_port}/1'|" .env
 
 # Disable Default DB
-sed -i "s|^COMPOSE_PROFILES=.*|COMPOSE_PROFILES=|" .env
+# ETL / Unstructured Configuration
+if [ "${enable_unstructured_api}" = "true" ]; then
+    sed -i "s|^COMPOSE_PROFILES=.*|COMPOSE_PROFILES=unstructured|" .env
+    sed -i "s|^ETL_TYPE=.*|ETL_TYPE=Unstructured|" .env
+    sed -i "s|^UNSTRUCTURED_API_URL=.*|UNSTRUCTURED_API_URL=http://unstructured:8000/general/v0/general|" .env
+else
+    sed -i "s|^COMPOSE_PROFILES=.*|COMPOSE_PROFILES=|" .env
+fi
 
 # Password for admin user initialization.
 sed -i "s|^INIT_PASSWORD=.*|INIT_PASSWORD='${initial_password}'|" .env

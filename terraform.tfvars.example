@@ -9,6 +9,9 @@ zone              = "asia-northeast1-a"
 # Dify Configuration
 dify_version = "1.13.0"
 
+# Enable Unstructured API integration when you want Dify to use Unstructured.io
+# enable_unstructured_api = true
+
 # =============================================================================
 # Network Configuration
 # =============================================================================

@@ -388,6 +388,12 @@ variable "dify_version" {
   default     = "1.13.0"
 }
 
+variable "enable_unstructured_api" {
+  description = "Enable Unstructured API integration and start the unstructured Docker Compose profile"
+  type        = bool
+  default     = false
+}
+
 # =============================================================================
 # Identity-Aware Proxy (IAP) Configuration
 # =============================================================================
