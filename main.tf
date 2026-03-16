@@ -171,7 +171,6 @@ module "compute" {
     filestore_share_name       = module.filestore.filestore_share_name
     dify_version               = var.dify_version
     initial_password           = random_password.initial_password.result
-    use_golden_image           = var.image_name != ""
   })
 
   # Sandbox python requirements file content
