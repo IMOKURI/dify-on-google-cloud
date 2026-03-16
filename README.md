@@ -290,10 +290,9 @@ Your golden image must therefore already contain the packages and assets require
 
 The following flow creates a reusable VM image with Docker and the Dify container images.
 
-1. Install Packer and authenticate with Google Cloud.
-2. Create a Packer template file such as `dify-golden-image.pkr.hcl`.
-3. Build the image and capture the resulting image name.
-4. Set `custom_image_self_link` in `terraform.tfvars` and run `terraform apply`.
+1. Install Packer.
+2. Build the image and capture the resulting image name.
+3. Set `custom_image_self_link` in `terraform.tfvars` and run `terraform apply`.
 
 Build the image:
 

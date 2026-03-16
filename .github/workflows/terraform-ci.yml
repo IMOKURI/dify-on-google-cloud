@@ -36,3 +36,35 @@ jobs:
         run: |
           echo "::error::Terraform formatting check failed. Please run 'terraform fmt -recursive' locally."
           exit 1
+
+  packer-check:
+    name: Run Packer
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Packer
+        uses: hashicorp/setup-packer@main
+        id: setup
+        with:
+          version: "latest"
+
+      - name: Run Packer Format
+        id: fmt
+        run: "packer fmt -check dify-golden-image.pkr.hcl"
+        continue-on-error: true
+
+      - name: Run Packer Init
+        id: init
+        run: "packer init dify-golden-image.pkr.hcl"
+
+      - name: Run Packer Validate
+        id: validate
+        run: "packer validate dify-golden-image.pkr.hcl"
+
+      - name: Check Packer Format Results
+        if: steps.fmt.outcome == 'failure'
+        run: |
+          echo "::error::Packer formatting check failed. Please run 'packer fmt dify-golden-image.pkr.hcl' locally."
+          exit 1
