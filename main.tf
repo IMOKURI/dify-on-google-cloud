@@ -148,9 +148,10 @@ module "compute" {
   subnet_name       = module.network.subnet_name
 
   # Instance configuration
-  machine_type          = var.machine_type
-  disk_size_gb          = var.disk_size_gb
-  service_account_email = module.iam.service_account_email
+  machine_type           = var.machine_type
+  disk_size_gb           = var.disk_size_gb
+  custom_image_self_link = var.custom_image_self_link
+  service_account_email  = module.iam.service_account_email
 
   # Startup script with all service configurations
   startup_script = templatefile("${path.module}/assets/startup-script.sh", {

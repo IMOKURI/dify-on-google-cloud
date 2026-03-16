@@ -38,6 +38,12 @@ variable "disk_size_gb" {
   type        = number
 }
 
+variable "custom_image_self_link" {
+  description = "Optional self_link of a custom VM image for the boot disk"
+  type        = string
+  default     = ""
+}
+
 variable "startup_script" {
   description = "Startup script content"
   type        = string

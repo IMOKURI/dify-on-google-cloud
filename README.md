@@ -26,6 +26,8 @@ This Terraform code deploys [Dify](https://github.com/langgenius/dify) on Google
         - [🔒 SSL Certificate Setup](#-ssl-certificate-setup)
             - [✨ Option 1: Google-Managed SSL Certificate Recommended](#-option-1-google-managed-ssl-certificate-recommended)
             - [🔧 Option 2: Self-Signed Certificate](#-option-2-self-signed-certificate)
+        - [🐳 Custom VM Image for Faster Startup](#-custom-vm-image-for-faster-startup)
+            - [🧱 Build a Golden Image with Packer](#-build-a-golden-image-with-packer)
         - [🛡️ Identity-Aware Proxy IAP Configuration](#-identity-aware-proxy-iap-configuration)
             - [🔑 Enable IAP](#-enable-iap)
             - [👥 IAP Member Format](#-iap-member-format)
@@ -190,6 +192,9 @@ project_id = "your-gcp-project-id"
 # Dify version to be deployed
 dify_version = "1.13.0"
 
+# Optional: custom VM image with pre-pulled Docker images
+# custom_image_self_link = "projects/your-gcp-project-id/global/images/dify-golden-1-13-0-20260316"
+
 # If you have a domain name (recommended)
 domain_name = "dify.example.com"
 
@@ -260,6 +265,53 @@ domain_name     = ""
 ssl_certificate = file("certificate.pem")
 ssl_private_key = file("private-key.pem")
 ```
+
+### 🐳 Custom VM Image for Faster Startup
+<a id="markdown-%F0%9F%90%B3-custom-vm-image-for-faster-startup" name="%F0%9F%90%B3-custom-vm-image-for-faster-startup"></a>
+
+By default, the Managed Instance Group uses the Ubuntu public image and pulls Docker images during startup. If you want faster instance replacement and shorter upgrade time, build a golden image with Dify's container images already pulled and set `custom_image_self_link`.
+
+```hcl
+custom_image_self_link = "projects/your-gcp-project-id/global/images/dify-golden-1-13-0-20260316"
+```
+
+Leave `custom_image_self_link` empty to keep using the default image:
+
+```hcl
+custom_image_self_link = ""
+```
+
+Terraform uses the custom image only for the boot disk. The existing startup script still configures environment variables, mounts Filestore, and starts Docker Compose.
+
+#### 🧱 Build a Golden Image with Packer
+<a id="markdown-%F0%9F%A7%B1-build-a-golden-image-with-packer" name="%F0%9F%A7%B1-build-a-golden-image-with-packer"></a>
+
+The following flow creates a reusable VM image with Docker and the Dify container images.
+
+1. Install Packer and authenticate with Google Cloud.
+2. Create a Packer template file such as `dify-golden-image.pkr.hcl`.
+3. Build the image and capture the resulting image name.
+4. Set `custom_image_self_link` in `terraform.tfvars` and run `terraform apply`.
+
+Build the image:
+
+```bash
+packer init dify-golden-image.pkr.hcl
+packer build \
+    -var "project_id=your-gcp-project-id" \
+    -var "zone=asia-northeast1-a" \
+    -var "dify_version=1.13.0" \
+    -var "image_name=dify-golden-1-13-0-20260316" \
+    dify-golden-image.pkr.hcl
+```
+
+Then use the image in `terraform.tfvars`:
+
+```hcl
+custom_image_self_link = "projects/your-gcp-project-id/global/images/dify-golden-1-13-0-20260316"
+```
+
+When you upgrade Dify, rebuild the golden image with the new `dify_version`, update `custom_image_self_link`, and run `terraform apply`.
 
 ### 🛡️ Identity-Aware Proxy (IAP) Configuration
 <a id="markdown-%F0%9F%9B%A1%EF%B8%8F-identity-aware-proxy-iap-configuration" name="%F0%9F%9B%A1%EF%B8%8F-identity-aware-proxy-iap-configuration"></a>
