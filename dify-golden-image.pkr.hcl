@@ -50,12 +50,14 @@ build {
             "echo \"deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo $VERSION_CODENAME) stable\" | sudo tee /etc/apt/sources.list.d/docker.list >/dev/null",
             "sudo apt-get update",
             "sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin",
+            "sudo usermod -aG docker ubuntu",
             "sudo systemctl enable docker",
             "sudo systemctl start docker",
             "curl -L https://github.com/langgenius/dify/archive/refs/tags/${var.dify_version}.tar.gz -o /tmp/dify.tar.gz",
             "sudo mkdir -p /opt",
             "sudo tar -xzf /tmp/dify.tar.gz -C /opt",
             "cd /opt/dify-${var.dify_version}/docker && sudo docker compose pull",
+            "sudo docker pull downloads.unstructured.io/unstructured-io/unstructured-api:latest",
             "sudo docker image prune -f"
         ]
     }
