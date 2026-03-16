@@ -13,12 +13,10 @@ variable "project_id" {
 
 variable "zone" {
     type    = string
-    default = "asia-northeast1-a"
 }
 
 variable "dify_version" {
     type    = string
-    default = "1.13.0"
 }
 
 variable "image_name" {
