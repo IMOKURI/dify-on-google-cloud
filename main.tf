@@ -151,7 +151,7 @@ module "compute" {
   # Instance configuration
   machine_type          = var.machine_type
   disk_size_gb          = var.disk_size_gb
-  image_name      = var.image_name
+  image_name            = var.image_name
   service_account_email = module.iam.service_account_email
 
   # Startup script with all service configurations
