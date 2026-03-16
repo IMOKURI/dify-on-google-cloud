@@ -91,13 +91,13 @@ fi
 
 # Get python-requirements.txt from metadata and save to sandbox volume
 curl -s "http://metadata.google.internal/computeMetadata/v1/instance/attributes/python-requirements" \
-    -H "Metadata-Flavor: Google" > "$TEMP_MOUNT/sandbox/dependencies/python-requirements.txt"
+    -H "Metadata-Flavor: Google" >"$TEMP_MOUNT/sandbox/dependencies/python-requirements.txt"
 echo "Python requirements copied to sandbox volume" >>/var/log/startup-script.log
 
 # Get sandbox config from metadata and save to sandbox volume only if python-requirements.txt is not empty
 if [ -s "$TEMP_MOUNT/sandbox/dependencies/python-requirements.txt" ]; then
     curl -s "http://metadata.google.internal/computeMetadata/v1/instance/attributes/sandbox-config" \
-        -H "Metadata-Flavor: Google" > "$TEMP_MOUNT/sandbox/conf/config.yaml"
+        -H "Metadata-Flavor: Google" >"$TEMP_MOUNT/sandbox/conf/config.yaml"
     echo "Sandbox config copied to sandbox volume" >>/var/log/startup-script.log
 else
     echo "Python requirements is empty. Skipping sandbox config." >>/var/log/startup-script.log
