@@ -281,7 +281,9 @@ Leave `custom_image_self_link` empty to keep using the default image:
 custom_image_self_link = ""
 ```
 
-Terraform uses the custom image only for the boot disk. The existing startup script still configures environment variables, mounts Filestore, and starts Docker Compose.
+Terraform uses the custom image only for the boot disk. When `custom_image_self_link` is set, the startup script skips the system upgrade, Docker setup, and Dify download steps, then continues with environment configuration, Filestore mounting, and `docker compose up -d`.
+
+Your golden image must therefore already contain the packages and assets required by those skipped steps, especially Docker, `nfs-common`, and the extracted Dify directory under `/opt/dify-<version>`.
 
 #### 🧱 Build a Golden Image with Packer
 <a id="markdown-%F0%9F%A7%B1-build-a-golden-image-with-packer" name="%F0%9F%A7%B1-build-a-golden-image-with-packer"></a>

@@ -43,7 +43,7 @@ build {
     provisioner "shell" {
         inline = [
             "sudo apt-get update",
-            "sudo apt-get install -y ca-certificates curl",
+            "sudo apt-get install -y git curl ca-certificates wget vim nano htop nfs-common",
             "sudo install -m 0755 -d /etc/apt/keyrings",
             "curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo tee /etc/apt/keyrings/docker.asc >/dev/null",
             "sudo chmod a+r /etc/apt/keyrings/docker.asc",
