@@ -3,57 +3,7 @@ set -e
 
 echo "Setup started." >/var/log/startup-script.log
 
-# =============================================================================
-# System Upgrade
-# =============================================================================
-
-# Update system
-apt-get update
-apt-get upgrade -y
-
-# Install additional tools
-apt-get install -y git curl ca-certificates wget vim nano htop nfs-common
-
-echo "System upgraded." >>/var/log/startup-script.log
-
-# =============================================================================
-# Docker Setup
-# =============================================================================
-
-# Add Docker's official GPG key
-install -m 0755 -d /etc/apt/keyrings
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
-chmod a+r /etc/apt/keyrings/docker.asc
-
-# Add the repository to Apt sources
-echo \
-  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
-  $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
-  tee /etc/apt/sources.list.d/docker.list > /dev/null
-
-# Update apt package index
-apt-get update
-
-# Install Docker Engine, CLI, containerd, and Docker Compose plugin
-apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
-
-# Add ubuntu user to docker group
-usermod -aG docker ubuntu
-
-# Enable Docker service
-systemctl enable docker
-systemctl start docker
-echo "Docker service started." >>/var/log/startup-script.log
-
-# =============================================================================
-# Download Dify
-# =============================================================================
-
-# Download and extract Dify
 DIFY_VERSION="${dify_version}"
-curl -L "https://github.com/langgenius/dify/archive/refs/tags/$DIFY_VERSION.tar.gz" -o /tmp/dify-$DIFY_VERSION.tar.gz
-mkdir -p /opt
-tar -xzf /tmp/dify-$DIFY_VERSION.tar.gz -C /opt/
 
 # =============================================================================
 # Configure Dify

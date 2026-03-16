@@ -19,6 +19,7 @@ This Terraform code deploys [Dify](https://github.com/langgenius/dify) on Google
     - [💰 Cost Estimation](#-cost-estimation)
     - [✅ Prerequisites](#-prerequisites)
     - [⚡ Quick Start](#-quick-start)
+        - [🧱 Build a Golden Image with Packer](#-build-a-golden-image-with-packer)
         - [📝 Prepare Variables File](#-prepare-variables-file)
         - [🚀 Deploy](#-deploy)
         - [🎉 After Deployment](#-after-deployment)
@@ -136,7 +137,7 @@ graph TB
 <a id="markdown-%E2%9C%85-prerequisites" name="%E2%9C%85-prerequisites"></a>
 
 1. ☁️ **Google Cloud SDK**: `gcloud` command installed
-2. 🏗️ **Terraform**: Version 1.0 or higher
+2. 🏗️ **Terraform and Packer**: Version 1.0 or higher
 3. 📁 **GCP Project**: Active GCP project
 4. 🔑 **Required IAM Roles**: The account running Terraform must have the following roles on the target GCP project:
    | Role | Purpose |
@@ -175,6 +176,19 @@ graph TB
 ## ⚡ Quick Start
 <a id="markdown-%E2%9A%A1-quick-start" name="%E2%9A%A1-quick-start"></a>
 
+### 🧱 Build a Golden Image with Packer
+<a id="markdown-%F0%9F%A7%B1-build-a-golden-image-with-packer" name="%F0%9F%A7%B1-build-a-golden-image-with-packer"></a>
+
+```bash
+packer init dify-golden-image.pkr.hcl
+packer build \
+    -var "project_id=your-gcp-project-id" \
+    -var "zone=asia-northeast1-a" \
+    -var "dify_version=1.13.0" \
+    -var "image_name=dify-golden-1-13-0-20260316" \
+    dify-golden-image.pkr.hcl
+```
+
 ### 📝 Prepare Variables File
 <a id="markdown-%F0%9F%93%9D-prepare-variables-file" name="%F0%9F%93%9D-prepare-variables-file"></a>
 
@@ -189,6 +203,9 @@ project_id = "your-gcp-project-id"
 
 # Dify version to be deployed
 dify_version = "1.13.0"
+
+# Custom VM image with pre-pulled Docker images
+image_name = "dify-golden-1-13-0-20260316"
 
 # If you have a domain name (recommended)
 domain_name = "dify.example.com"
@@ -336,17 +353,20 @@ If you want to add packages to sandbox, write packages into [python-requirements
 
 When Terraform is applied:
 
-1. 📥 Dify source code (of the specified version) is automatically downloaded to `/opt/dify-<version>`.
-2. ✏️ Update Dify environment variables via [startup-script.sh](./assets/startup-script.sh).
-3. ▶️ Start the Dify application.
+1. ✏️ Update Dify environment variables via [startup-script.sh](./assets/startup-script.sh).
+2. ▶️ Start the Dify application.
 
 ### ⬆️ Upgrade Strategy
 <a id="markdown-%E2%AC%86%EF%B8%8F-upgrade-strategy" name="%E2%AC%86%EF%B8%8F-upgrade-strategy"></a>
 
-[Check Dify Release Notes](https://github.com/langgenius/dify/releases) and update [startup-script.sh](./assets/startup-script.sh) if needed.
+- [Check Dify Release Notes](https://github.com/langgenius/dify/releases) and update [startup-script.sh](./assets/startup-script.sh) if needed.
+- Rebuild a golden image for new version.
+- Update `terraform.tfvars` as follows.
 
 ```hcl
-dify_version = "1.13.x"  # Specify new version tag
+# Specify new version tag
+dify_version = "1.13.x"
+image_name = "dify-golden-1-13-0-20260316-01"
 ```
 
 ```bash
@@ -358,7 +378,7 @@ When Terraform is applied:
 1. 🔴 The old VM is removed first — the service will be **temporarily unavailable** during the upgrade.
 2. 🟢 A new VM is deployed with the migration process.
 
-> ⏱️ Upgrade can take up to **15 minutes**.
+> ⏱️ Upgrade can take up to **10 minutes**.
 
 ## 🔧 Troubleshooting
 <a id="markdown-%F0%9F%94%A7-troubleshooting" name="%F0%9F%94%A7-troubleshooting"></a>

@@ -1,3 +1,8 @@
+variable "project_id" {
+  description = "GCP Project ID"
+  type        = string
+}
+
 variable "prefix" {
   description = "Prefix for resource names"
   type        = string
@@ -36,6 +41,12 @@ variable "machine_type" {
 variable "disk_size_gb" {
   description = "Boot disk size in GB"
   type        = number
+}
+
+variable "image_name" {
+  description = "Custom VM image name for the MIG boot disk"
+  type        = string
+  default     = ""
 }
 
 variable "startup_script" {

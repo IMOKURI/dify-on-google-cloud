@@ -24,7 +24,7 @@ resource "google_compute_instance_template" "dify_template" {
   labels       = var.labels
 
   disk {
-    source_image = "ubuntu-os-cloud/ubuntu-2404-lts-amd64"
+    source_image = "projects/${var.project_id}/global/images/${var.image_name}"
     auto_delete  = true
     boot         = true
     disk_size_gb = var.disk_size_gb

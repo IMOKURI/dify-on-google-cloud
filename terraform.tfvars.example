@@ -25,6 +25,7 @@ domain_name = "dify.example.com"
 # VM Instance Configuration
 # =============================================================================
 
+image_name = "dify-golden-1-13-0-20260316"
 machine_type = "e2-standard-8"
 disk_size_gb = 50
 

@@ -129,6 +129,12 @@ variable "disk_size_gb" {
   }
 }
 
+variable "image_name" {
+  description = "Custom VM image name for the MIG boot disk"
+  type        = string
+  default     = ""
+}
+
 # =============================================================================
 # Cloud SQL - Main PostgreSQL Configuration
 # =============================================================================
