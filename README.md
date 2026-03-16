@@ -19,6 +19,7 @@ This Terraform code deploys [Dify](https://github.com/langgenius/dify) on Google
     - [💰 Cost Estimation](#-cost-estimation)
     - [✅ Prerequisites](#-prerequisites)
     - [⚡ Quick Start](#-quick-start)
+        - [🧱 Build a Golden Image with Packer](#-build-a-golden-image-with-packer)
         - [📝 Prepare Variables File](#-prepare-variables-file)
         - [🚀 Deploy](#-deploy)
         - [🎉 After Deployment](#-after-deployment)
@@ -26,8 +27,6 @@ This Terraform code deploys [Dify](https://github.com/langgenius/dify) on Google
         - [🔒 SSL Certificate Setup](#-ssl-certificate-setup)
             - [✨ Option 1: Google-Managed SSL Certificate Recommended](#-option-1-google-managed-ssl-certificate-recommended)
             - [🔧 Option 2: Self-Signed Certificate](#-option-2-self-signed-certificate)
-        - [🐳 Custom VM Image for Faster Startup](#-custom-vm-image-for-faster-startup)
-            - [🧱 Build a Golden Image with Packer](#-build-a-golden-image-with-packer)
         - [🛡️ Identity-Aware Proxy IAP Configuration](#-identity-aware-proxy-iap-configuration)
             - [🔑 Enable IAP](#-enable-iap)
             - [👥 IAP Member Format](#-iap-member-format)
@@ -138,7 +137,7 @@ graph TB
 <a id="markdown-%E2%9C%85-prerequisites" name="%E2%9C%85-prerequisites"></a>
 
 1. ☁️ **Google Cloud SDK**: `gcloud` command installed
-2. 🏗️ **Terraform**: Version 1.0 or higher
+2. 🏗️ **Terraform and Packer**: Version 1.0 or higher
 3. 📁 **GCP Project**: Active GCP project
 4. 🔑 **Required IAM Roles**: The account running Terraform must have the following roles on the target GCP project:
    | Role | Purpose |
@@ -177,6 +176,19 @@ graph TB
 ## ⚡ Quick Start
 <a id="markdown-%E2%9A%A1-quick-start" name="%E2%9A%A1-quick-start"></a>
 
+### 🧱 Build a Golden Image with Packer
+<a id="markdown-%F0%9F%A7%B1-build-a-golden-image-with-packer" name="%F0%9F%A7%B1-build-a-golden-image-with-packer"></a>
+
+```bash
+packer init dify-golden-image.pkr.hcl
+packer build \
+    -var "project_id=your-gcp-project-id" \
+    -var "zone=asia-northeast1-a" \
+    -var "dify_version=1.13.0" \
+    -var "image_name=dify-golden-1-13-0-20260316" \
+    dify-golden-image.pkr.hcl
+```
+
 ### 📝 Prepare Variables File
 <a id="markdown-%F0%9F%93%9D-prepare-variables-file" name="%F0%9F%93%9D-prepare-variables-file"></a>
 
@@ -192,8 +204,8 @@ project_id = "your-gcp-project-id"
 # Dify version to be deployed
 dify_version = "1.13.0"
 
-# Optional: custom VM image with pre-pulled Docker images
-# custom_image_self_link = "projects/your-gcp-project-id/global/images/dify-golden-1-13-0-20260316"
+# Custom VM image with pre-pulled Docker images
+custom_image_tag = "dify-golden-1-13-0-20260316"
 
 # If you have a domain name (recommended)
 domain_name = "dify.example.com"
@@ -265,54 +277,6 @@ domain_name     = ""
 ssl_certificate = file("certificate.pem")
 ssl_private_key = file("private-key.pem")
 ```
-
-### 🐳 Custom VM Image for Faster Startup
-<a id="markdown-%F0%9F%90%B3-custom-vm-image-for-faster-startup" name="%F0%9F%90%B3-custom-vm-image-for-faster-startup"></a>
-
-By default, the Managed Instance Group uses the Ubuntu public image and pulls Docker images during startup. If you want faster instance replacement and shorter upgrade time, build a golden image with Dify's container images already pulled and set `custom_image_self_link`.
-
-```hcl
-custom_image_self_link = "projects/your-gcp-project-id/global/images/dify-golden-1-13-0-20260316"
-```
-
-Leave `custom_image_self_link` empty to keep using the default image:
-
-```hcl
-custom_image_self_link = ""
-```
-
-Terraform uses the custom image only for the boot disk. When `custom_image_self_link` is set, the startup script skips the system upgrade, Docker setup, and Dify download steps, then continues with environment configuration, Filestore mounting, and `docker compose up -d`.
-
-Your golden image must therefore already contain the packages and assets required by those skipped steps, especially Docker, `nfs-common`, and the extracted Dify directory under `/opt/dify-<version>`.
-
-#### 🧱 Build a Golden Image with Packer
-<a id="markdown-%F0%9F%A7%B1-build-a-golden-image-with-packer" name="%F0%9F%A7%B1-build-a-golden-image-with-packer"></a>
-
-The following flow creates a reusable VM image with Docker and the Dify container images.
-
-1. Install Packer.
-2. Build the image and capture the resulting image name.
-3. Set `custom_image_self_link` in `terraform.tfvars` and run `terraform apply`.
-
-Build the image:
-
-```bash
-packer init dify-golden-image.pkr.hcl
-packer build \
-    -var "project_id=your-gcp-project-id" \
-    -var "zone=asia-northeast1-a" \
-    -var "dify_version=1.13.0" \
-    -var "image_name=dify-golden-1-13-0-20260316" \
-    dify-golden-image.pkr.hcl
-```
-
-Then use the image in `terraform.tfvars`:
-
-```hcl
-custom_image_self_link = "projects/your-gcp-project-id/global/images/dify-golden-1-13-0-20260316"
-```
-
-When you upgrade Dify, rebuild the golden image with the new `dify_version`, update `custom_image_self_link`, and run `terraform apply`.
 
 ### 🛡️ Identity-Aware Proxy (IAP) Configuration
 <a id="markdown-%F0%9F%9B%A1%EF%B8%8F-identity-aware-proxy-iap-configuration" name="%F0%9F%9B%A1%EF%B8%8F-identity-aware-proxy-iap-configuration"></a>
@@ -389,17 +353,20 @@ If you want to add packages to sandbox, write packages into [python-requirements
 
 When Terraform is applied:
 
-1. 📥 Dify source code (of the specified version) is automatically downloaded to `/opt/dify-<version>`.
-2. ✏️ Update Dify environment variables via [startup-script.sh](./assets/startup-script.sh).
-3. ▶️ Start the Dify application.
+1. ✏️ Update Dify environment variables via [startup-script.sh](./assets/startup-script.sh).
+2. ▶️ Start the Dify application.
 
 ### ⬆️ Upgrade Strategy
 <a id="markdown-%E2%AC%86%EF%B8%8F-upgrade-strategy" name="%E2%AC%86%EF%B8%8F-upgrade-strategy"></a>
 
-[Check Dify Release Notes](https://github.com/langgenius/dify/releases) and update [startup-script.sh](./assets/startup-script.sh) if needed.
+- [Check Dify Release Notes](https://github.com/langgenius/dify/releases) and update [startup-script.sh](./assets/startup-script.sh) if needed.
+- Rebuild a golden image for new version.
+- Update `terraform.tfvars` as follows.
 
 ```hcl
-dify_version = "1.13.x"  # Specify new version tag
+# Specify new version tag
+dify_version = "1.13.x"
+custom_image_tag = "dify-golden-1-13-0-20260316-01"
 ```
 
 ```bash
@@ -411,7 +378,7 @@ When Terraform is applied:
 1. 🔴 The old VM is removed first — the service will be **temporarily unavailable** during the upgrade.
 2. 🟢 A new VM is deployed with the migration process.
 
-> ⏱️ Upgrade can take up to **15 minutes**.
+> ⏱️ Upgrade can take up to **10 minutes**.
 
 ## 🔧 Troubleshooting
 <a id="markdown-%F0%9F%94%A7-troubleshooting" name="%F0%9F%94%A7-troubleshooting"></a>

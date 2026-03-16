@@ -140,6 +140,7 @@ resource "random_password" "initial_password" {
 module "compute" {
   source = "./modules/compute"
 
+  project_id        = var.project_id
   prefix            = var.prefix
   region            = var.region
   zone              = var.zone
@@ -148,10 +149,10 @@ module "compute" {
   subnet_name       = module.network.subnet_name
 
   # Instance configuration
-  machine_type           = var.machine_type
-  disk_size_gb           = var.disk_size_gb
-  custom_image_self_link = var.custom_image_self_link
-  service_account_email  = module.iam.service_account_email
+  machine_type          = var.machine_type
+  disk_size_gb          = var.disk_size_gb
+  custom_image_tag      = var.custom_image_tag
+  service_account_email = module.iam.service_account_email
 
   # Startup script with all service configurations
   startup_script = templatefile("${path.module}/assets/startup-script.sh", {
@@ -170,7 +171,7 @@ module "compute" {
     filestore_share_name       = module.filestore.filestore_share_name
     dify_version               = var.dify_version
     initial_password           = random_password.initial_password.result
-    use_golden_image           = var.custom_image_self_link != ""
+    use_golden_image           = var.custom_image_tag != ""
   })
 
   # Sandbox python requirements file content

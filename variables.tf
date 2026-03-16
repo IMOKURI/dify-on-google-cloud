@@ -129,8 +129,8 @@ variable "disk_size_gb" {
   }
 }
 
-variable "custom_image_self_link" {
-  description = "Optional self_link of a custom VM image for the MIG boot disk. Leave empty to use Ubuntu 24.04 LTS."
+variable "custom_image_tag" {
+  description = "Image tag of a custom VM image for the MIG boot disk. Leave empty to use Ubuntu 24.04 LTS."
   type        = string
   default     = ""
 }

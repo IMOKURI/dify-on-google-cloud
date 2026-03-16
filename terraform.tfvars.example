@@ -28,8 +28,7 @@ domain_name = "dify.example.com"
 machine_type = "e2-standard-8"
 disk_size_gb = 50
 
-# Optional: custom VM image with pre-pulled Docker images for faster MIG startup
-# custom_image_self_link = "projects/your-gcp-project-id/global/images/dify-golden-1-13-0-20260316"
+custom_image_tag = "dify-golden-1-13-0-20260316"
 
 # =============================================================================
 # Cloud SQL Configuration
