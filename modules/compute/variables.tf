@@ -43,8 +43,8 @@ variable "disk_size_gb" {
   type        = number
 }
 
-variable "custom_image_tag" {
-  description = "Image tag of a custom VM image for the boot disk"
+variable "image_name" {
+  description = "Custom VM image name for the MIG boot disk"
   type        = string
   default     = ""
 }

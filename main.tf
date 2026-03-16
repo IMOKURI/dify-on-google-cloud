@@ -151,7 +151,7 @@ module "compute" {
   # Instance configuration
   machine_type          = var.machine_type
   disk_size_gb          = var.disk_size_gb
-  custom_image_tag      = var.custom_image_tag
+  image_name      = var.image_name
   service_account_email = module.iam.service_account_email
 
   # Startup script with all service configurations
@@ -171,7 +171,7 @@ module "compute" {
     filestore_share_name       = module.filestore.filestore_share_name
     dify_version               = var.dify_version
     initial_password           = random_password.initial_password.result
-    use_golden_image           = var.custom_image_tag != ""
+    use_golden_image           = var.image_name != ""
   })
 
   # Sandbox python requirements file content

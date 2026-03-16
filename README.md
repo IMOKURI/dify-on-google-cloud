@@ -205,7 +205,7 @@ project_id = "your-gcp-project-id"
 dify_version = "1.13.0"
 
 # Custom VM image with pre-pulled Docker images
-custom_image_tag = "dify-golden-1-13-0-20260316"
+image_name = "dify-golden-1-13-0-20260316"
 
 # If you have a domain name (recommended)
 domain_name = "dify.example.com"
@@ -366,7 +366,7 @@ When Terraform is applied:
 ```hcl
 # Specify new version tag
 dify_version = "1.13.x"
-custom_image_tag = "dify-golden-1-13-0-20260316-01"
+image_name = "dify-golden-1-13-0-20260316-01"
 ```
 
 ```bash
