@@ -9,6 +9,9 @@ zone              = "asia-northeast1-a"
 # Dify Configuration
 dify_version = "1.13.0"
 
+# Enable Unstructured API integration when you want Dify to use Unstructured.io
+# enable_unstructured_api = true
+
 # =============================================================================
 # Network Configuration
 # =============================================================================
@@ -27,7 +30,7 @@ domain_name = "dify.example.com"
 
 image_name = "dify-golden-1-13-0-20260316"
 machine_type = "e2-standard-8"
-disk_size_gb = 50
+disk_size_gb = 200
 
 # =============================================================================
 # Cloud SQL Configuration

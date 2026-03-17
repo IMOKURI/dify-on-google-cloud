@@ -171,6 +171,7 @@ module "compute" {
     filestore_share_name       = module.filestore.filestore_share_name
     dify_version               = var.dify_version
     initial_password           = random_password.initial_password.result
+    enable_unstructured_api    = var.enable_unstructured_api
   })
 
   # Sandbox python requirements file content

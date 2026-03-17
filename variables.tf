@@ -121,7 +121,7 @@ variable "machine_type" {
 variable "disk_size_gb" {
   description = "Boot disk size in GB"
   type        = number
-  default     = 50
+  default     = 200
 
   validation {
     condition     = var.disk_size_gb >= 10 && var.disk_size_gb <= 65536
@@ -386,6 +386,12 @@ variable "dify_version" {
   description = "Dify version to download and deploy"
   type        = string
   default     = "1.13.0"
+}
+
+variable "enable_unstructured_api" {
+  description = "Enable Unstructured API integration and start the unstructured Docker Compose profile"
+  type        = bool
+  default     = false
 }
 
 # =============================================================================

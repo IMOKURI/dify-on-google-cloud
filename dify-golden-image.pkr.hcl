@@ -36,7 +36,7 @@ source "googlecompute" "dify" {
   image_family            = "dify-golden"
   ssh_username            = "packer"
   machine_type            = "e2-standard-8"
-  disk_size               = 50
+  disk_size               = 200
 }
 
 build {
@@ -59,8 +59,7 @@ build {
       "sudo mkdir -p /opt",
       "sudo tar -xzf /tmp/dify.tar.gz -C /opt",
       "cd /opt/dify-${var.dify_version}/docker && sudo docker compose pull",
-      "sudo docker pull downloads.unstructured.io/unstructured-io/unstructured-api:latest",
-      "sudo docker image prune -f"
+      "sudo docker pull downloads.unstructured.io/unstructured-io/unstructured-api:latest"
     ]
   }
 }

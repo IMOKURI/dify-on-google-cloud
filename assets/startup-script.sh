@@ -37,7 +37,14 @@ sed -i "s|^REDIS_PASSWORD=.*|REDIS_PASSWORD='${redis_auth_string}'|" .env
 sed -i "s|^CELERY_BROKER_URL=.*|CELERY_BROKER_URL='redis://:${redis_auth_string}@${redis_host}:${redis_port}/1'|" .env
 
 # Disable Default DB
-sed -i "s|^COMPOSE_PROFILES=.*|COMPOSE_PROFILES=|" .env
+# ETL / Unstructured Configuration
+if [ "${enable_unstructured_api}" = "true" ]; then
+    sed -i "s|^COMPOSE_PROFILES=.*|COMPOSE_PROFILES=unstructured|" .env
+    sed -i "s|^ETL_TYPE=.*|ETL_TYPE=Unstructured|" .env
+    sed -i "s|^UNSTRUCTURED_API_URL=.*|UNSTRUCTURED_API_URL=http://unstructured:8000/general/v0/general|" .env
+else
+    sed -i "s|^COMPOSE_PROFILES=.*|COMPOSE_PROFILES=|" .env
+fi
 
 # Password for admin user initialization.
 sed -i "s|^INIT_PASSWORD=.*|INIT_PASSWORD='${initial_password}'|" .env
@@ -84,13 +91,13 @@ fi
 
 # Get python-requirements.txt from metadata and save to sandbox volume
 curl -s "http://metadata.google.internal/computeMetadata/v1/instance/attributes/python-requirements" \
-    -H "Metadata-Flavor: Google" > "$TEMP_MOUNT/sandbox/dependencies/python-requirements.txt"
+    -H "Metadata-Flavor: Google" >"$TEMP_MOUNT/sandbox/dependencies/python-requirements.txt"
 echo "Python requirements copied to sandbox volume" >>/var/log/startup-script.log
 
 # Get sandbox config from metadata and save to sandbox volume only if python-requirements.txt is not empty
 if [ -s "$TEMP_MOUNT/sandbox/dependencies/python-requirements.txt" ]; then
     curl -s "http://metadata.google.internal/computeMetadata/v1/instance/attributes/sandbox-config" \
-        -H "Metadata-Flavor: Google" > "$TEMP_MOUNT/sandbox/conf/config.yaml"
+        -H "Metadata-Flavor: Google" >"$TEMP_MOUNT/sandbox/conf/config.yaml"
     echo "Sandbox config copied to sandbox volume" >>/var/log/startup-script.log
 else
     echo "Python requirements is empty. Skipping sandbox config." >>/var/log/startup-script.log
