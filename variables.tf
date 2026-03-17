@@ -121,7 +121,7 @@ variable "machine_type" {
 variable "disk_size_gb" {
   description = "Boot disk size in GB"
   type        = number
-  default     = 100
+  default     = 200
 
   validation {
     condition     = var.disk_size_gb >= 10 && var.disk_size_gb <= 65536

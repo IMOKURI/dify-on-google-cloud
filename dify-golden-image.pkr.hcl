@@ -36,7 +36,7 @@ source "googlecompute" "dify" {
   image_family            = "dify-golden"
   ssh_username            = "packer"
   machine_type            = "e2-standard-8"
-  disk_size               = 100
+  disk_size               = 200
 }
 
 build {
