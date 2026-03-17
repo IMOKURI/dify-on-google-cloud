@@ -59,8 +59,7 @@ build {
       "sudo mkdir -p /opt",
       "sudo tar -xzf /tmp/dify.tar.gz -C /opt",
       "cd /opt/dify-${var.dify_version}/docker && sudo docker compose pull",
-      "sudo docker pull --platform=linux/amd64 downloads.unstructured.io/unstructured-io/unstructured-api:latest",
-      "sudo docker image prune -f"
+      "sudo docker pull --platform=linux/amd64 downloads.unstructured.io/unstructured-io/unstructured-api:latest"
     ]
   }
 }
