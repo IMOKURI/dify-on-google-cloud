@@ -19,12 +19,12 @@ variable "zone" {
 
 variable "dify_version" {
   type    = string
-  default = "1.13.1"
+  default = "1.13.2"
 }
 
 variable "image_name" {
   type    = string
-  default = "dify-golden-1-13-1-20260318"
+  default = "dify-golden-1-13-2-20260323"
 }
 
 source "googlecompute" "dify" {
