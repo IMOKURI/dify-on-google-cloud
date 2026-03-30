@@ -185,8 +185,8 @@ packer init dify-golden-image.pkr.hcl
 packer build \
     -var "project_id=your-gcp-project-id" \
     -var "zone=asia-northeast1-a" \
-    -var "dify_version=1.13.2" \
-    -var "image_name=dify-golden-1-13-2-20260323" \
+    -var "dify_version=1.13.3" \
+    -var "image_name=dify-golden-1-13-3" \
     dify-golden-image.pkr.hcl
 ```
 
@@ -203,10 +203,10 @@ Edit `terraform.tfvars` and set **at least** the following values:
 project_id = "your-gcp-project-id"
 
 # Dify version to be deployed
-dify_version = "1.13.2"
+dify_version = "1.13.3"
 
 # Custom VM image with pre-pulled Docker images
-image_name = "dify-golden-1-13-2-20260323"
+image_name = "dify-golden-1-13-3"
 
 # If you have a domain name (recommended)
 domain_name = "dify.example.com"
@@ -376,7 +376,7 @@ When Terraform is applied:
 ```hcl
 # Specify new version tag
 dify_version = "1.13.x"
-image_name = "dify-golden-1-13-x-20260323-01"
+image_name = "dify-golden-1-13-x"
 ```
 
 ```bash
