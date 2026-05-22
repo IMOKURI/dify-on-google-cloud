@@ -22,13 +22,17 @@ sed -i "s|^DB_DATABASE=.*|DB_DATABASE=${database_name}|" .env
 
 # pgvector Configuration
 sed -i "s|^VECTOR_STORE=.*|VECTOR_STORE=pgvector|" .env
-sed -i "s|^PGVECTOR_HOST=.*|PGVECTOR_HOST=${pgvector_private_ip}|" .env
-sed -i "s|^PGVECTOR_USER=.*|PGVECTOR_USER=${pgvector_database_user}|" .env
-sed -i "s|^PGVECTOR_PGUSER=.*|PGVECTOR_PGUSER=${pgvector_database_user}|" .env
-sed -i "s|^PGVECTOR_PASSWORD=.*|PGVECTOR_PASSWORD='${pgvector_database_password}'|" .env
-sed -i "s|^PGVECTOR_POSTGRES_PASSWORD=.*|PGVECTOR_POSTGRES_PASSWORD='${pgvector_database_password}'|" .env
-sed -i "s|^PGVECTOR_DATABASE=.*|PGVECTOR_DATABASE=${pgvector_database_name}|" .env
-sed -i "s|^PGVECTOR_POSTGRES_DB=.*|PGVECTOR_POSTGRES_DB=${pgvector_database_name}|" .env
+cat >>.env <<EOF
+
+# pgvector Configuration (appended)
+PGVECTOR_HOST=${pgvector_private_ip}
+PGVECTOR_USER=${pgvector_database_user}
+PGVECTOR_PGUSER=${pgvector_database_user}
+PGVECTOR_PASSWORD='${pgvector_database_password}'
+PGVECTOR_POSTGRES_PASSWORD='${pgvector_database_password}'
+PGVECTOR_DATABASE=${pgvector_database_name}
+PGVECTOR_POSTGRES_DB=${pgvector_database_name}
+EOF
 
 # Redis Configuration
 sed -i "s|^REDIS_HOST=.*|REDIS_HOST=${redis_host}|" .env
@@ -36,21 +40,28 @@ sed -i "s|^REDIS_PORT=.*|REDIS_PORT=${redis_port}|" .env
 sed -i "s|^REDIS_PASSWORD=.*|REDIS_PASSWORD='${redis_auth_string}'|" .env
 sed -i "s|^CELERY_BROKER_URL=.*|CELERY_BROKER_URL='redis://:${redis_auth_string}@${redis_host}:${redis_port}/1'|" .env
 
-# Disable Default DB
 # ETL / Unstructured Configuration
 if [ "${enable_unstructured_api}" = "true" ]; then
-    sed -i "s|^COMPOSE_PROFILES=.*|COMPOSE_PROFILES=unstructured|" .env
-    sed -i "s|^ETL_TYPE=.*|ETL_TYPE=Unstructured|" .env
-    sed -i "s|^UNSTRUCTURED_API_URL=.*|UNSTRUCTURED_API_URL=http://unstructured:8000/general/v0/general|" .env
+    sed -i "s|^COMPOSE_PROFILES=.*|COMPOSE_PROFILES=collaboration,unstructured|" .env
+    cat >>.env <<EOF
+
+# Unstructured Configuration (appended)
+ETL_TYPE=Unstructured
+UNSTRUCTURED_API_URL=http://unstructured:8000/general/v0/general
+EOF
 else
-    sed -i "s|^COMPOSE_PROFILES=.*|COMPOSE_PROFILES=|" .env
+    sed -i "s|^COMPOSE_PROFILES=.*|COMPOSE_PROFILES=collaboration|" .env
 fi
 
 # Password for admin user initialization.
 sed -i "s|^INIT_PASSWORD=.*|INIT_PASSWORD='${initial_password}'|" .env
 
 # Comma-separated list of file extensions blocked from upload for security reasons.
-sed -i "s|^UPLOAD_FILE_EXTENSION_BLACKLIST=.*|UPLOAD_FILE_EXTENSION_BLACKLIST=exe,bat,cmd,com,scr,vbs,ps1,msi,dll|" .env
+cat >>.env <<EOF
+
+# Upload security (appended)
+UPLOAD_FILE_EXTENSION_BLACKLIST=exe,bat,cmd,com,scr,vbs,ps1,msi,dll
+EOF
 
 chown -R ubuntu:ubuntu /opt/dify-$DIFY_VERSION
 echo "Dify was configured." >>/var/log/startup-script.log
