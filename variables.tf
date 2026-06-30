@@ -385,7 +385,7 @@ variable "redis_maintenance_start_hour" {
 variable "dify_version" {
   description = "Dify version to download and deploy"
   type        = string
-  default     = "1.14.2"
+  default     = "1.15.0"
 }
 
 variable "enable_unstructured_api" {

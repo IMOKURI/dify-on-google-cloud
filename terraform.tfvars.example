@@ -7,7 +7,7 @@ region            = "asia-northeast1"
 zone              = "asia-northeast1-a"
 
 # Dify Configuration
-dify_version = "1.14.2"
+dify_version = "1.15.0"
 
 # Enable Unstructured API integration when you want Dify to use Unstructured.io
 # enable_unstructured_api = true
@@ -28,7 +28,7 @@ domain_name = "dify.example.com"
 # VM Instance Configuration
 # =============================================================================
 
-image_name = "dify-golden-1-14-2"
+image_name = "dify-golden-1-15-0"
 machine_type = "e2-standard-8"
 disk_size_gb = 200
 
